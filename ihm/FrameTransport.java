@@ -1,7 +1,7 @@
 package ihm;
 
-import javax.swing.*;
 import Controleur.*;
+import javax.swing.*;
 
 
 public class FrameTransport extends JFrame
@@ -14,5 +14,7 @@ public class FrameTransport extends JFrame
 	public FrameTransport(Controleur ctrl)
 	{
 		this.ctrl = ctrl;
+		this.setSize(700,500);
+		this.setTitle("Réseau Express Parisien");
 	}
 }

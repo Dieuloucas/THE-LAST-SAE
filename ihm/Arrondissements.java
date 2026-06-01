@@ -1,6 +1,8 @@
 package ihm;
 
-public class Arrondissements 
+import javax.swing.*;
+
+public class Arrondissements extends JPanel 
 {
 	
 }

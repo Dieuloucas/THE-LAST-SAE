@@ -1,23 +1,27 @@
 package ihm;
+
+import java.awt.Color;
+
 public class Tronçons 
 {
-	private String couleur;
+	private Color couleur;
 	private String Orientation;
 
 	public Tronçons()
 	{
-		this("Rouge");
+		this(Color.RED);
 	}
-	public Tronçons(String couleur)
+	public Tronçons(Color couleur)
 	{
 		this(couleur,"Droit");
 
 	}
-	public Tronçons(String couleur,String Orientation)
+	public Tronçons(Color couleur,String Orientation)
 	{
 		this.couleur = couleur;
 		this.Orientation = Orientation;
 
 	}
-	public String getCouleur(){return this.couleur;};
+	public Color getCouleur(){return this.couleur;};
+	public void setCouleur(Color couleur){this.couleur = couleur;}
 }
