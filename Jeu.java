@@ -351,9 +351,9 @@ public class Jeu
         return classement;
     }
 
-    public Plateau getPlateau()          { return plateau; }
-    public Manche getMancheActuelle()    { return mancheActuelle; }
-    public Etat getEtat()                { return etat; }
-    public List<Joueur> getJoueurs()     { return Collections.unmodifiableList(joueurs); }
-    public Couleur getCouleurActuelle()  { return mancheActuelle.getCouleur(); }
+    public Plateau      getPlateau        () { return plateau;                                             }
+    public Manche       getMancheActuelle () { return mancheActuelle;                                      }
+    public Etat         getEtat           () { return etat;                                                }
+    public List<Joueur> getJoueurs        () { return Collections.unmodifiableList(joueurs);               }
+    public Couleur      getCouleurActuelle() { return mancheActuelle.getCouleur();                         }
 }
