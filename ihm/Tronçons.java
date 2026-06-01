@@ -1,27 +1,50 @@
 package ihm;
 
 import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import javax.swing.*;
 
-public class Tronçons 
+public class Tronçons extends JPanel
 {
-	private Color couleur;
-	private String Orientation;
+	private Color      couleur;
+	private Graphics2D trait;
+	private Stations   Debut;
+	private Stations   Fin;
 
 	public Tronçons()
 	{
-		this(Color.RED);
+		this(Color.BLACK);
 	}
 	public Tronçons(Color couleur)
 	{
-		this(couleur,"Droit");
-
-	}
-	public Tronçons(Color couleur,String Orientation)
-	{
 		this.couleur = couleur;
-		this.Orientation = Orientation;
-
+		this.Debut   = null;
+		this.Fin     = null;
 	}
-	public Color getCouleur(){return this.couleur;};
-	public void setCouleur(Color couleur){this.couleur = couleur;}
+	public void paintComponent(Graphics g)			
+	{
+		super.paintComponent(g);
+
+		trait = (Graphics2D) g;
+		
+		
+		try 
+		{
+
+			trait.drawLine( this.Debut.getX(), this.Debut.getY(), this.Fin.getX(), this.Fin.getY());
+
+		} catch (Exception e) {}
+
+		
+	}
+
+
+	public Color  getCouleur(){return this.couleur;}
+
+
+	public void   setCouleur (Color    Couleur){this.couleur = Couleur;}
+	public void   setDebut   (Stations Debut  ){this.Debut   = Debut  ;}
+	public void   setFin     (Stations Debut  ){this.Debut   = Debut  ;}
+
 }
