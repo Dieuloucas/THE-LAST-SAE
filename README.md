@@ -23,13 +23,13 @@ L'application permet de concevoir et de modifier librement l'architecture du ré
 * **Arrière-plan :** Intégration d'une image de fond (ex: plan ou carte de Paris).
 * **Configuration des Arrondissements (Zones) :** Définition des zones du plateau. Plusieurs configurations de découpes peuvent être sauvegardées et conservées.
 * **Placement des Stations (Sommets) :** Les stations sont placées manuellement sur la grille et possèdent l'un des 4 symboles définis (représentant les types de quartiers) :
-* ● **Cercle** (Zone Résidentielle)
-* ✖ **Croix** (Hub Intermodal)
-* ▲ **Triangle** (Quartier d'Affaires)
-* ■ **Carré** (Zone Touristique)
+(Zone Résidentielle)
+(Hub Intermodal)
+(Quartier d'Affaires)
+Zone Touristique)
 
 
-* **Génération des Tronçons (Arêtes) :** Les liens entre les sommets sont générés automatiquement selon 8 directions possibles (similaire aux mouvements du Roi aux échecs, étudiés dans le cours sur l'héritage), comme illustré dans le fichier `graphe.png`.
+* **Génération des Tronçons (Arêtes) :** Les liens entre les sommets sont générés automatiquement selon 8 directions possibles (similaire aux mouvements du Roi aux échecs, étudiés dans le cours sur l'héritage).
 > **Règle de suppression :** Si une station est supprimée par l'utilisateur, tous ses liens et tronçons adjacents sont automatiquement supprimés.
 
 

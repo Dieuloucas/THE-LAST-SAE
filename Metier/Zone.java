@@ -34,7 +34,6 @@ public class Zone
 		}
 	}
 
-	// Suppression du unmodifiableList
 	public List<Sommet> getSommets()
 	{
 		return sommets;
