@@ -9,11 +9,15 @@ public class Plateau
 	private int colonnes;
 	private Sommet s;
 
+	 public enum Direction
+	{
+		//a faire
+	} 
 
 	public Plateau(int lignes, int colonnes)
 	{
-		this.lignes		= lignes
-		this.colonnes	= colonnes
+		this.lignes		= lignes;
+		this.colonnes	= colonnes;
 	}
 	
 	public Zone(int id)
