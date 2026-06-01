@@ -1,1 +1,5 @@
-*.class
+./Main.java
+./ihm/FrameTransport.java
+./ihm/PanelCarte.java
+./ihm/PanelPlateau.java
+./ihm/PanelEnnemie.java
