@@ -1,4 +1,4 @@
-package metier;
+package Metier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,12 +15,12 @@ public class Plateau
 
 	public Plateau(int lignes, int colonnes)
 	{
-		this.lignes = lignes;
+		this.lignes   = lignes;
 		this.colonnes = colonnes;
-		this.sommets = new ArrayList<>();
-		this.aretes = new ArrayList<>();
-		this.zones = new ArrayList<>();
-		this.bases = new ArrayList<>();
+		this.sommets  = new ArrayList<>();
+		this.aretes   = new ArrayList<>();
+		this.zones    = new ArrayList<>();
+		this.bases    = new ArrayList<>();
 	}
 
 	public Sommet ajouterSommet(int ligne, int colonne, Symbole symbole)

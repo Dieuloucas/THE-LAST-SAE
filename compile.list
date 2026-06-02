@@ -8,3 +8,4 @@
 ./ihm/Arrondissements.java
 ./Metier/Plateau.java
 ./Metier/Zone.java
+./Metier/Sommet.java
