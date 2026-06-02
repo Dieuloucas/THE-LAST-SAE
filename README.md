@@ -4,7 +4,7 @@ Ce document formalise les règles du jeu de plateau et d'édition de graphes. Jo
 
 ## But du Jeu
 
-L'objectif est d'obtenir le plus de points. Les joueurs développent leur réseau stratégiquement en :
+#### L'objectif est d'obtenir le plus de points. Les joueurs développent leur réseau stratégiquement en :
 
 1. Capturant une ligne entre 2 métros.
 
@@ -24,12 +24,7 @@ L'objectif est d'obtenir le plus de points. Les joueurs développent leur résea
 | **Sommet** | **Station de Métro** | Points d'arrêt du réseau (comportant une apparence visuelle précise). |
 | **Arête / Lien** | **Tronçon de Voie** | Rails reliant deux stations directes. |
 | **Couleur** | **Ligne de Transport** | 4 lignes distinctes : Verte, Rouge, Bleue, Noire.
-
- |
 | **Base** | **Station de départ** | Station de départ spécifique à une couleur de ligne.
-
- |
-
 ---
 
 ## 1. Mode Éditeur : Création et Modification du Plateau
@@ -37,8 +32,7 @@ L'objectif est d'obtenir le plus de points. Les joueurs développent leur résea
 L'application permet de concevoir et de modifier librement l'architecture du réseau parisien avant de lancer une partie.
 
 * **Gestion des plateaux :** Possibilité de créer un nouveau plan, de modifier un plan existant ou de dupliquer un réseau enregistré.
-* 
-**Dimensions de la grille :** Le plateau est un quadrillage de 7x7 cases, mais n'est pas forcément carré (il peut être rectangulaire). Chaque case mesure 50 pixels afin de pouvoir accueillir des icônes ou des images en interface graphique.
+* **Dimensions de la grille :** Le plateau est un quadrillage de 7x7 cases, mais n'est pas forcément carré (il peut être rectangulaire). Chaque case mesure 50 pixels afin de pouvoir accueillir des icônes ou des images en interface graphique.
 
 
 * **Arrière-plan :** Intégration d'une image de fond (plan ou carte de Paris).
@@ -48,8 +42,7 @@ L'application permet de concevoir et de modifier librement l'architecture du ré
 
 > **Règle de suppression :** Si une station est supprimée par l'utilisateur, tous ses liens et tronçons adjacents sont automatiquement supprimés.
 
-* 
-**Positionnement des Stations de départ (Bases) :** Chaque ligne de couleur possède sa propre station de départ. Il est possible de placer plusieurs bases de couleurs différentes au sein d'un même arrondissement (socles de couleurs considérés comme des départs). Les joueurs déploient leurs lignes en glisser-déposer (*Drag and drop*) à partir de ces sommets.
+*  **Positionnement des Stations de départ (Bases) :** Chaque ligne de couleur possède sa propre station de départ. Il est possible de placer plusieurs bases de couleurs différentes au sein d'un même arrondissement (socles de couleurs considérés comme des départs). Les joueurs déploient leurs lignes en glisser-déposer (*Drag and drop*) à partir de ces sommets.
 
 
 
@@ -63,12 +56,10 @@ $$\text{Nombre de cartes} = (\text{nombre de types de métro} + 1) \times 2$$
 
 Pour 6 types de métro, le paquet comprend **14 cartes** réparties en deux catégories (cette distinction claire/sombre apporte une variation visuelle au jeu tout en dictant le temps de la manche):
 
-* 
-**7 Cartes Sombres :** 1 carte pour chaque type de métro (1 à 6) + 1 carte JOKER (Père Noël).
+* **7 Cartes Sombres :** 1 carte pour chaque type de métro (1 à 6) + 1 carte JOKER (Père Noël).
 
 
-* 
-**7 Cartes Claires :** 1 carte pour chaque type de métro (1 à 6) + 1 carte JOKER (Père Noël).
+* **7 Cartes Claires :** 1 carte pour chaque type de métro (1 à 6) + 1 carte JOKER (Père Noël).
 
 
 
@@ -91,8 +82,7 @@ La partie se déroule en un nombre de manches égal au nombre de lignes de métr
 3. Il doit relier une nouvelle station correspondant au type de métro indiqué sur la carte tirée. Si la carte est un 🎅 **Père Noël (JOKER)**, il peut se connecter à n'importe quel type de métro.
 
 
-4. 
-**Contrainte de connexion (Règle des extrémités) :** Le nouveau tronçon doit impérativement être connecté soit directement à la station de départ de la manche, soit à l'une des **extrémités (feuilles)** du réseau déjà construit.
+4. **Contrainte de connexion (Règle des extrémités) :** Le nouveau tronçon doit impérativement être connecté soit directement à la station de départ de la manche, soit à l'une des **extrémités (feuilles)** du réseau déjà construit.
 
 
 * *Embranchements autorisés :* Il est possible de créer des embranchements, mais **uniquement** à partir de la station de départ ou d'une station qui ne possède actuellement qu'un seul lien (une extrémité).
@@ -110,12 +100,10 @@ Le score d'une manche récompense l'expansion géographique de la ligne et sa fo
 
 $$\text{Points} = \text{Zones Conquises} \times \text{Max Stations}$$
 
-* 
-**Arrondissements conquis (Zones) :** Le nombre total d'arrondissements de Paris traversés par la ligne.
+* **Arrondissements conquis (Zones) :** Le nombre total d'arrondissements de Paris traversés par la ligne.
 
 
-* 
-**Max Stations :** Le nombre de stations détenues dans l'arrondissement le plus représenté par le joueur.
+* **Max Stations :** Le nombre de stations détenues dans l'arrondissement le plus représenté par le joueur.
 
 
 
