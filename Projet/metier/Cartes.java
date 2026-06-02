@@ -7,7 +7,7 @@ public class Cartes
 
 	private Cartes(String couleur)
 	{
-		this.NuméroCartes = ++this.nbCartes;
+		this.NuméroCartes = ++Cartes.nbCartes;
 	}
 	public Cartes CreerCartes(String couleur)
 	{

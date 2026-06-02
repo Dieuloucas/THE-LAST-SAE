@@ -8,7 +8,7 @@ public class Joueur
     private String                      nom;
     private Map<Couleur, CheminCouleur> chemins = new EnumMap<>(Couleur.class);
 
-    Joueur(int id, String nom)
+    public Joueur(int id, String nom)
     {
         this.id  = id;
         this.nom = nom;

@@ -10,7 +10,7 @@ public class Sommet
 
     Sommet(int ligne, int colonne, Symbole symbole)
     {
-        this.id++;
+        Sommet.id++;
         this.ligne   = ligne;
         this.colonne = colonne;
         this.symbole = symbole;
