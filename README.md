@@ -1,6 +1,6 @@
 # Règles du Jeu : Réseau Express Parisien (SAE)
 
-Ce document formalise les règles du jeu de plateau et d'édition de graphes appliquées au thème des transports en commun de Paris, utilisables pour votre présentation. L'objectif principal est de concevoir un petit jeu de plateau avec des sommets reliés par des arêtes.
+Ce document formalise les règles du jeu de plateau et d'édition de graphes appliquées au thème des transports en commun de Paris.
 
 ## Correspondance du Thème
 
