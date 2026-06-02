@@ -14,4 +14,5 @@ public class Stations
 	}
 	public int getX(){return this.getX();}
 	public int getY(){return this.getY();}
+	public Stations[] getAdjacent(){return this.stationsAdjacente;}
 }

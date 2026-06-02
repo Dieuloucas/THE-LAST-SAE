@@ -3,6 +3,10 @@ package Controleur;
 import java.io.*;
 import java.util.*;
 
+import Metier.Plateau;
+import Metier.Sommet;
+import Metier.Zone;
+
 /**
  * Façade unique entre l'IHM et le métier.
  * Gère deux modes : ÉDITION (construction du plateau) et JEU (déroulé de la partie).
