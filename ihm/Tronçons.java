@@ -5,7 +5,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 
 import Controleur.Controleur;
-import Metier.Arete;
+import Metier.Plateau;
 
 import java.util.List;
 import javax.swing.*;
@@ -33,16 +33,18 @@ public class Tronçons extends JPanel
 	}
 	public Tronçons CreerTronçons()
 	{
-		Tronçons tr;
+		Tronçons tr = null;
 		String message; 
 
 		if (this.Debut.getX() == this.Fin.getX() || this.Debut.getY() == this.Fin.getY()) tr = null;
 		
 		try
 		{
-			System.out.println("La créations du Panel a bien été effectué");
+			System.out.println("La créations du Tronçons a bien été effectué");
 			return tr;
-		}catch(Exception e){message = }
+		}catch(Exception e){message = "La créations du Tronçons a échoué";}
+		System.out.println(message);
+		return tr;
 	}
 	public Tronçons CreerTronçons(Color couleur)
 	{
@@ -59,13 +61,16 @@ public class Tronçons extends JPanel
 
 		trait = (Graphics2D) g;
 		
-		for (Arete arr : aretelist)
+		for (Plateau.Arete arr : aretelist)
+		{
+			if (arr.s1.getS1().f)
+		}
 		try 
 		{
 
 			trait.drawLine( this.Debut.getX(), this.Debut.getY(), this.Fin.getX(), this.Fin.getY());
 			
-		} catch (Exception e) {}
+		} catch (Exception e){}
 
 		
 	}

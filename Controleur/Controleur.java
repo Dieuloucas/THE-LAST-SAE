@@ -4,8 +4,6 @@ import java.io.*;
 import java.util.*;
 
 import Metier.Plateau;
-import Metier.Sommet;
-import Metier.Zone;
 
 /**
  * Façade unique entre l'IHM et le métier.
