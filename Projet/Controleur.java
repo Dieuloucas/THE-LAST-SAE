@@ -1,9 +1,7 @@
-package Controleur;
-
 import java.io.*;
 import java.util.*;
 
-import Metier.Plateau;
+import metier.Plateau;
 import ihm.FrameTransport;
 
 /**
