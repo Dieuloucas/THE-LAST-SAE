@@ -1,6 +1,6 @@
-package Metier;
+package metier;
 
-class Carte
+public class Carte
 {
     private Symbole symbole; // null si c'est un joker
     private Teinte  teinte;

@@ -1,3 +1,3 @@
-package Metier;
+package metier;
 
-enum Teinte { FONCE, CLAIR }
+public enum Teinte { FONCE, CLAIR }

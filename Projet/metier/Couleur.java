@@ -1,3 +1,3 @@
-package Metier;
+package metier;
 
-enum Couleur { ROUGE, VERT, BLEU, MARRON }
+public enum Couleur { ROUGE, VERT, BLEU, MARRON }

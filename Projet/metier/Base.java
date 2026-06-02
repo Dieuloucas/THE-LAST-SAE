@@ -1,6 +1,6 @@
-package Metier;
+package metier;
 
-class Base
+public class Base
 {
     private Couleur couleur;
     private Sommet  sommet;

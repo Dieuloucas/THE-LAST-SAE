@@ -1,8 +1,8 @@
-package Metier;
+package metier;
 
 import java.util.*;
 
-class Joueur
+public class Joueur
 {
     private int                         id;
     private String                      nom;

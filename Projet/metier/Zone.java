@@ -1,8 +1,8 @@
-package Metier;
+package metier;
 
 import java.util.*;
 
-class Zone
+public class Zone
 {
     private int         id;
     private List<int[]> cases = new ArrayList<>();

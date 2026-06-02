@@ -1,6 +1,6 @@
-package Metier;
+package metier;
 
-class Manche
+public class Manche
 {
     private Couleur couleur;
     private Pioche  pioche;

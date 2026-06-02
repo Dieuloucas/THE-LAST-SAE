@@ -1,6 +1,6 @@
-package Metier;
+package metier;
 
-class Arete
+public class Arete
 {
     private Sommet s1;
     private Sommet s2;

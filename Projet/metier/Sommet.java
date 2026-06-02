@@ -1,6 +1,6 @@
-package Metier;
+package metier;
 
-class Sommet
+public class Sommet
 {
     private static int id = 0;
     private int     ligne;

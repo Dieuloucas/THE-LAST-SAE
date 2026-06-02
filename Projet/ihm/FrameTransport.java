@@ -1,6 +1,6 @@
 package ihm;
 
-import Controleur.Controleur;
+import controleur.Controleur;
 
 import java.awt.BorderLayout;
 import javax.swing.JFrame;

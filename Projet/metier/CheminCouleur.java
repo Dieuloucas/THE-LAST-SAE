@@ -1,8 +1,8 @@
-package Metier;
+package metier;
 
 import java.util.*;
 
-class CheminCouleur
+public class CheminCouleur
 {
     private Couleur      couleur;
     private Base         base;

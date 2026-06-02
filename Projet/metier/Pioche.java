@@ -1,8 +1,8 @@
-package Metier;
+package metier;
 
 import java.util.*;
 
-class Pioche
+public class Pioche
 {
     private List<Carte> toutesLesCartes = new ArrayList<>();
     private List<Carte> restantes       = new ArrayList<>();

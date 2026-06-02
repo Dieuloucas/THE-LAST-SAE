@@ -5,6 +5,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 
 import controleur.Controleur;
+
+import metier.Sommet;
 import metier.Plateau;
 
 import java.util.List;
@@ -15,8 +17,8 @@ public class Tronçons extends JPanel
 	private Controleur ctrl;
 	private Color      couleur;
 	private Graphics2D trait;
-	private Stations   Debut;
-	private Stations   Fin;
+	private Sommet     Debut;
+	private Sommet     Fin;
 
 
 	public Tronçons(Controleur ctrl)
@@ -34,7 +36,7 @@ public class Tronçons extends JPanel
 
 	public void paintComponent(Graphics g)			
 	{
-		List<Plateau.Sommet> sommetlist = this.ctrl.getPlateau().getSommets();
+		List<Sommet> sommetlist = this.ctrl.getPlateau().getSommets();
 		super.paintComponent(g);
 
 		trait = (Graphics2D) g;
@@ -58,7 +60,7 @@ public class Tronçons extends JPanel
 
 
 	public void   setCouleur (Color    Couleur){this.couleur = Couleur;}
-	public void   setDebut   (Stations Debut  ){this.Debut   = Debut  ;}
-	public void   setFin     (Stations Debut  ){this.Debut   = Debut  ;}
+	public void   setDebut   (Sommet   Debut  ){this.Debut   = Debut  ;}
+	public void   setFin     (Sommet   Fin    ){this.Debut   = Debut  ;}
 
 }

@@ -1,3 +1,3 @@
-package Metier;
+package metier;
 
-enum Symbole { CERCLE, CROIX, TRIANGLE, CARRE }
+public enum Symbole { CERCLE, CROIX, TRIANGLE, CARRE }
