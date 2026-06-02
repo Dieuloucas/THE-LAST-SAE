@@ -27,8 +27,8 @@ class Carte
 
     public String toString()
     {
-        if (joker) return teinte + "_JOKER";
-        return teinte + "_" + symbole;
+        // TODO (12)
+        return "";
     }
 }
 
@@ -41,30 +41,21 @@ class Pioche
 
     Pioche()
     {
-        // une carte par symbole dans chaque teinte, plus un joker par teinte
-        for (Symbole s : Symbole.values())
-        {
-            toutesLesCartes.add(Carte.de(s, Teinte.FONCE));
-            toutesLesCartes.add(Carte.de(s, Teinte.CLAIR));
-        }
-        toutesLesCartes.add(Carte.joker(Teinte.FONCE));
-        toutesLesCartes.add(Carte.joker(Teinte.CLAIR));
-        reinitialiser();
+        // TODO (13)
     }
 
     public void reinitialiser()
     {
-        restantes = new ArrayList<>(toutesLesCartes);
-        Collections.shuffle(restantes);
+        // TODO (14)
     }
 
     public Carte piocher()
     {
-        if (restantes.isEmpty()) return null;
-        return restantes.remove(restantes.size() - 1);
+        // TODO (15)
+        return null;
     }
 
-    public boolean estVide()    { return restantes.isEmpty(); }
+    public boolean estVide()        { return restantes.isEmpty(); }
     public int     getNbRestantes() { return restantes.size(); }
 }
 
@@ -84,61 +75,18 @@ class CheminCouleur
         this.couleur = couleur;
         this.base    = base;
         this.plateau = plateau;
-        relies.add(base.getSommet());
-        recalculer();
+        // TODO (16)
     }
 
-    /**
-     * Relie un nouveau sommet au réseau. Il doit être voisin d'un sommet déjà
-     * relié. Les arêtes qui le connectent au réseau deviennent des liens internes,
-     * puis on recalcule la frontière.
-     */
     public boolean ajouter(Sommet s)
     {
-        if (relies.contains(s) || !estAdjacent(s)) return false;
-        relies.add(s);
-
-        for (Arete a : plateau.getAretes())
-        {
-            // on ne s'intéresse qu'aux arêtes touchant s
-            if (a.getS1() != s && a.getS2() != s) continue;
-            if (relies.contains(a.getAutre(s)) && !liens.contains(a))
-                liens.add(a);
-        }
-        recalculer();
-        return true;
+        // TODO (17)
+        return false;
     }
 
-    /**
-     * Recalcule les arêtes DISPONIBLES = la frontière du réseau : les arêtes dont
-     * un seul des deux sommets est relié. Ce sont les coups proposés au joueur.
-     * On en profite pour retirer du réseau les sommets/arêtes qui auraient été
-     * supprimés du plateau.
-     */
     public void recalculer()
     {
-        // 1. on enlève ce qui n'existe plus sur le plateau
-        List<Sommet> sommetsMorts = new ArrayList<>();
-        for (Sommet s : relies)
-            if (!plateau.getSommets().contains(s))
-                sommetsMorts.add(s);
-        relies.removeAll(sommetsMorts);
-
-        List<Arete> liensMorts = new ArrayList<>();
-        for (Arete a : liens)
-            if (!plateau.getAretes().contains(a))
-                liensMorts.add(a);
-        liens.removeAll(liensMorts);
-
-        // 2. on recalcule la frontière
-        aretesDisponibles.clear();
-        for (Arete a : plateau.getAretes())
-        {
-            boolean s1Relie = relies.contains(a.getS1());
-            boolean s2Relie = relies.contains(a.getS2());
-            if (s1Relie != s2Relie) // un seul des deux sommets est relié
-                aretesDisponibles.add(a);
-        }
+        // TODO (18)
     }
 
     public boolean contient(Sommet s) { return relies.contains(s); }
@@ -146,17 +94,14 @@ class CheminCouleur
     // vrai s'il existe déjà un lien interne entre a et b
     public boolean aLeLien(Sommet a, Sommet b)
     {
-        for (Arete lien : liens)
-            if (lien.relie(a, b)) return true;
+        // TODO (19)
         return false;
     }
 
     // vrai si s est voisin d'au moins un sommet déjà relié
     public boolean estAdjacent(Sommet s)
     {
-        for (Sommet relie : relies)
-            for (Arete a : plateau.getAretes())
-                if (a.relie(s, relie)) return true;
+        // TODO (20)
         return false;
     }
 
@@ -165,32 +110,16 @@ class CheminCouleur
     public List<Arete>  getLiens()             { return liens; }
     public List<Arete>  getAretesDisponibles() { return aretesDisponibles; }
 
-    // ── Score ──────────────────────────────────────────────────────────────────
-
     public List<Zone> getZonesConquises()
     {
-        List<Zone> zones = new ArrayList<>();
-        for (Sommet s : relies)
-        {
-            Zone z = s.getZone();
-            if (z != null && !zones.contains(z))
-                zones.add(z);
-        }
-        return zones;
+        // TODO (21)
+        return null;
     }
 
-    /** Score = nombre de zones conquises × taille de la plus grosse. */
     public int calculerScore()
     {
-        List<Zone> zones = getZonesConquises();
-        if (zones.isEmpty()) return 0;
-
-        int tailleMax = 0;
-        for (Zone z : zones)
-            if (z.getTaille() > tailleMax)
-                tailleMax = z.getTaille();
-
-        return zones.size() * tailleMax;
+        // TODO (22)
+        return 0;
     }
 }
 
@@ -203,7 +132,6 @@ class Manche
     private int     nbFoncees = 0;
     private int     nbClaires = 0;
 
-    // seuil de cartes d'une teinte qui arrête le tour (à ajuster selon les règles)
     private static final int SEUIL_ARRET = 3;
 
     Manche(Couleur couleur)
@@ -216,19 +144,17 @@ class Manche
 
     public Carte piocher()
     {
-        Carte c = pioche.piocher();
-        if (c == null) return null;
-        if (c.estFonce()) nbFoncees++;
-        else              nbClaires++;
-        return c;
+        // TODO (23)
+        return null;
     }
 
     public boolean tourTermine()
     {
-        return nbFoncees >= SEUIL_ARRET || nbClaires >= SEUIL_ARRET;
+        // TODO (24)
+        return false;
     }
 
-    public boolean piocheVide()  { return pioche.estVide(); }
+    public boolean piocheVide()   { return pioche.estVide(); }
     public int     getNbFoncees() { return nbFoncees; }
     public int     getNbClaires() { return nbClaires; }
 }
@@ -237,8 +163,8 @@ class Manche
 
 class Joueur
 {
-    private int                       id;
-    private String                    nom;
+    private int                         id;
+    private String                      nom;
     private Map<Couleur, CheminCouleur> chemins = new EnumMap<>(Couleur.class);
 
     Joueur(int id, String nom)
@@ -255,23 +181,19 @@ class Joueur
         chemins.put(couleur, new CheminCouleur(couleur, base, plateau));
     }
 
-    public CheminCouleur getChemin(Couleur couleur) { return chemins.get(couleur); }
-
-    public Map<Couleur, CheminCouleur> getChemins() { return chemins; }
+    public CheminCouleur               getChemin(Couleur couleur) { return chemins.get(couleur); }
+    public Map<Couleur, CheminCouleur> getChemins()               { return chemins; }
 
     public int getScoreTotal()
     {
-        int total = 0;
-        for (CheminCouleur c : chemins.values())
-            total += c.calculerScore();
-        return total;
+        // TODO (25)
+        return 0;
     }
 
     public int getScorePourCouleur(Couleur couleur)
     {
-        CheminCouleur c = chemins.get(couleur);
-        if (c == null) return 0;
-        return c.calculerScore();
+        // TODO (26)
+        return 0;
     }
 }
 
@@ -292,31 +214,12 @@ public class Jeu
     {
         this.plateau = plateau;
         this.joueurs = new ArrayList<>(joueurs);
-
-        // une manche par couleur, dans l'ordre de l'énumération
-        for (Couleur c : Couleur.values())
-            ordreManche.add(c);
+        // TODO (27)
     }
 
     public void demarrer()
     {
-        // chaque joueur reçoit un chemin par couleur, à partir d'une base
-        for (Joueur j : joueurs)
-        {
-            for (Couleur c : Couleur.values())
-            {
-                List<Base> basesCouleur = plateau.getBases(c);
-                if (!basesCouleur.isEmpty())
-                {
-                    int indice = j.getId();
-                    if (indice >= basesCouleur.size())
-                        indice = basesCouleur.size() - 1;
-                    j.initialiserChemin(c, basesCouleur.get(indice), plateau);
-                }
-            }
-        }
-        etat = Etat.EN_COURS;
-        demarrerManche();
+        // TODO (28)
     }
 
     private void demarrerManche()
@@ -328,61 +231,37 @@ public class Jeu
 
     public boolean connecter(Joueur joueur, Sommet sommet)
     {
-        CheminCouleur chemin = joueur.getChemin(mancheActuelle.getCouleur());
-        if (chemin == null || !peutConnecter(joueur, sommet)) return false;
-        chemin.ajouter(sommet);
-        return true;
+        // TODO (29)
+        return false;
     }
 
     public boolean peutConnecter(Joueur joueur, Sommet sommet)
     {
-        CheminCouleur chemin = joueur.getChemin(mancheActuelle.getCouleur());
-        if (chemin == null || chemin.contient(sommet)) return false;
-        return chemin.estAdjacent(sommet);
+        // TODO (30)
+        return false;
     }
 
-    /**
-     * Supprime un sommet du plateau puis recalcule les chemins de tous les
-     * joueurs pour répercuter la disparition du sommet et de ses liens.
-     */
     public void supprimerSommet(Sommet sommet)
     {
-        plateau.supprimerSommet(sommet);
-        for (Joueur j : joueurs)
-            for (CheminCouleur chemin : j.getChemins().values())
-                chemin.recalculer();
+        // TODO (31)
     }
 
     public boolean tourActuelTermine()
     {
-        return mancheActuelle.tourTermine() || mancheActuelle.piocheVide();
+        // TODO (32)
+        return false;
     }
 
     public boolean mancheSuivante()
     {
-        indiceManche++;
-        if (indiceManche >= ordreManche.size())
-        {
-            etat = Etat.TERMINE;
-            return false;
-        }
-        demarrerManche();
-        return true;
+        // TODO (33)
+        return false;
     }
 
     public List<Joueur> getClassement()
     {
-        List<Joueur> classement = new ArrayList<>(joueurs);
-        // tri du meilleur score au moins bon (petit tri à bulles, simple à lire)
-        for (int i = 0; i < classement.size() - 1; i++)
-            for (int k = 0; k < classement.size() - 1 - i; k++)
-                if (classement.get(k).getScoreTotal() < classement.get(k + 1).getScoreTotal())
-                {
-                    Joueur tmp = classement.get(k);
-                    classement.set(k, classement.get(k + 1));
-                    classement.set(k + 1, tmp);
-                }
-        return classement;
+        // TODO (34)
+        return null;
     }
 
     public Plateau      getPlateau()         { return plateau; }

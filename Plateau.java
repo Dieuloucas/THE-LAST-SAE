@@ -12,15 +12,15 @@ enum Teinte  { FONCE, CLAIR }
 
 class Sommet
 {
-    private int     id;
+    private static int     id = 0;
     private int     ligne;
     private int     colonne;
     private Symbole symbole;
     private Zone    zone;
 
-    Sommet(int id, int ligne, int colonne, Symbole symbole)
+    Sommet(int ligne, int colonne, Symbole symbole)
     {
-        this.id      = id;
+        this.id++;
         this.ligne   = ligne;
         this.colonne = colonne;
         this.symbole = symbole;
@@ -55,14 +55,21 @@ class Arete
     // renvoie l'autre bout de l'arête
     public Sommet getAutre(Sommet s)
     {
-        if (s == s1) return s2;
-        return s1;
+        if (s == this.s1)
+			return this.s2;
+        else if (s == this.s2)
+			return this.s1;
+		else 
+			return null;
     }
 
     // vrai si l'arête relie bien les deux sommets a et b
     public boolean relie(Sommet a, Sommet b)
     {
-        return (s1 == a && s2 == b) || (s1 == b && s2 == a);
+		if (a == s1 && b == s2 || a == s2 && b == s1 )
+        	return true ;
+		else 
+			return false;
     }
 }
 
@@ -70,28 +77,30 @@ class Arete
 
 class Zone
 {
-    private int          id;
-    private List<Sommet> sommets = new ArrayList<>();
+    private int         id;
+    private List<int[]> cases = new ArrayList<>();
 
     Zone(int id) { this.id = id; }
 
     public int getId() { return id; }
 
-    public void ajouterSommet(Sommet s)
+    public void ajouterCase(int ligne, int colonne)
     {
-        if (!sommets.contains(s))
-        {
-            sommets.add(s);
-            s.setZone(this);
-        }
+        if (!contientCase(ligne, colonne))  
+            cases.add(new int[]{ligne, colonne});
     }
 
-    public void retirerSommet(Sommet s) { sommets.remove(s); }
+    public boolean contientCase(int ligne, int colonne)
+    {
+        for (int[] c : cases)
+            if (c[0] == ligne && c[1] == colonne)
+                return true;
+        return false;
+    }
 
-    public List<Sommet> getSommets() { return sommets; }
-    public int          getTaille()  { return sommets.size(); }
+    public List<int[]> getCases()  { return cases; }
+    public int         getTaille() { return cases.size(); } // taille = nombre de cases
 }
-
 // ── Base ──────────────────────────────────────────────────────────────────────
 
 class Base
@@ -134,33 +143,21 @@ public class Plateau
 
     public Sommet ajouterSommet(int ligne, int colonne, Symbole symbole)
     {
-        Sommet s = new Sommet(prochainId, ligne, colonne, symbole);
-        prochainId++;
-        sommets.add(s);
-        return s;
+        Sommet s = new Sommet(ligne, colonne, symbole);
+		sommets.add(s);
+		return s;
     }
 
-    public void supprimerSommet(Sommet s)
-    {
-        sommets.remove(s);
-
-        // on enlève les arêtes qui touchent ce sommet
-        List<Arete> aSupprimer = new ArrayList<>();
-        for (Arete a : aretes)
-            if (a.getS1() == s || a.getS2() == s)
-                aSupprimer.add(a);
-        aretes.removeAll(aSupprimer);
-
-        if (s.getZone() != null)
-            s.getZone().retirerSommet(s);
-    }
+    public void supprimerSommet(Sommet s){sommets.remove(s);}
 
     // cherche le sommet à une position donnée (null si la case est vide)
     public Sommet getSommet(int ligne, int colonne)
     {
-        for (Sommet s : sommets)
-            if (s.getLigne() == ligne && s.getColonne() == colonne)
-                return s;
+		for (int i = 0; i < sommets.size(); i++)
+		{
+			if (sommets.get(i).getLigne() == ligne && sommets.get(i).getColonne() == colonne)
+				return sommets.get(i);
+		}
         return null;
     }
 
@@ -168,51 +165,45 @@ public class Plateau
 
     // ── Arêtes ─────────────────────────────────────────────────────────────────
 
-    /**
-     * Reconstruit toutes les arêtes du plateau. Un sommet est relié à ses voisins
-     * dans les 8 directions. Pour ne pas créer deux fois la même arête, on ne
-     * regarde que 4 directions (la droite et les trois du bas) : l'autre moitié
-     * sera ajoutée quand on traitera le sommet voisin.
-     */
-    public void genererAretes()
-    {
-        aretes.clear();
+   public void genererAretes()
+	{
+    aretes.clear();
 
-        // {décalage ligne, décalage colonne} : E, SW, S, SE
-        int[][] directions = { {0, 1}, {1, -1}, {1, 0}, {1, 1} };
+    // {décalage ligne, décalage colonne} : Est, Sud-Ouest, Sud, Sud-Est
+    int[][] directions = { {0, 1}, {1, -1}, {1, 0}, {1, 1} };
 
-        for (Sommet s : sommets)
-        {
-            for (int[] d : directions)
-            {
-                Sommet voisin = getSommet(s.getLigne() + d[0], s.getColonne() + d[1]);
-                if (voisin != null)
-                    aretes.add(new Arete(s, voisin));
-            }
-        }
-    }
+    for (Sommet s : sommets)
+    	{
+        	for (int[] d : directions)
+        	{
+            	Sommet voisin = getSommet(s.getLigne() + d[0], s.getColonne() + d[1]);
+            	if (voisin != null)
+             	   aretes.add(new Arete(s, voisin));
+   	    	}
+   		}
+	}
 
     public List<Arete> getAretes() { return aretes; }
 
     public List<Sommet> getVoisins(Sommet s)
-    {
-        List<Sommet> voisins = new ArrayList<>();
-        for (Arete a : aretes)
-        {
-            if (a.getS1() == s)      voisins.add(a.getS2());
-            else if (a.getS2() == s) voisins.add(a.getS1());
-        }
-        return voisins;
-    }
+	{
+    	List<Sommet> voisins = new ArrayList<>();
+    	for (Arete a : aretes)                      // on regarde TOUTES les arêtes
+    	{
+        	if (a.getS1() == s || a.getS2() == s)   // celles qui touchent s
+            	voisins.add(a.getAutre(s));         // on prend l'autre bout
+    	}
+    	return voisins;
+}
 
     // ── Zones ──────────────────────────────────────────────────────────────────
 
     public Zone ajouterZone()
-    {
-        Zone z = new Zone(zones.size());
-        zones.add(z);
-        return z;
-    }
+	{
+   		Zone z = new Zone(zones.size());
+    	zones.add(z);
+    	return z;
+	}
 
     public List<Zone> getZones() { return zones; }
 
@@ -220,17 +211,13 @@ public class Plateau
 
     public Base ajouterBase(Couleur couleur, Sommet sommet)
     {
-        Base b = new Base(couleur, sommet);
-        bases.add(b);
+		Base b = new Base(couleur, sommet);
+		bases.add(b);
         return b;
     }
 
     public List<Base> getBases(Couleur couleur)
     {
-        List<Base> resultat = new ArrayList<>();
-        for (Base b : bases)
-            if (b.getCouleur() == couleur)
-                resultat.add(b);
-        return resultat;
+        return bases;
     }
 }
