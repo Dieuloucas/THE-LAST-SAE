@@ -1,6 +1,6 @@
 @startuml Cartographes-du-Metro
 !pragma layout smetana
-title Les Cartographes du Metro - Diagramme de classes (2 applis : Edition + Jeu)
+title Les Cartographes du Metro - Diagramme de classes (2 applis 100% independantes : Edition + Jeu)
 
 skinparam classAttributeIconSize 0
 hide empty members
@@ -196,8 +196,9 @@ class ControleurJeu {
 }
 }
 
-note top of ControleurEdition : APP 1 - Edition\ncree/edite un plateau\npuis ecrit un fichier .txt
-note top of ControleurJeu : APP 2 - Jeu\ncharge le .txt\net joue (2 joueurs)
+note top of ControleurEdition : APP 1 - Edition (AppEdition/)\ncree/edite un plateau\npuis ecrit un fichier .txt
+note top of ControleurJeu : APP 2 - Jeu (AppJeu/)\ncharge le .txt\net joue (2 joueurs)
+note bottom of Plateau : Le metier est DUPLIQUE :\nAppEdition a sa copie (plateau seul),\nAppJeu a la sienne (plateau + moteur).\nLes 2 applis sont autonomes.
 
 ' ===================== RELATIONS =====================
 
