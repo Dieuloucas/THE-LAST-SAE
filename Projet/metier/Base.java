@@ -5,7 +5,7 @@ public class Base
     private Couleur couleur;
     private Sommet  sommet;
 
-    Base(Couleur couleur, Sommet sommet)
+    public Base(Couleur couleur, Sommet sommet)
     {
         this.couleur = couleur;
         this.sommet  = sommet;

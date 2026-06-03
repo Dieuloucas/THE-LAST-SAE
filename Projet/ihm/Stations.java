@@ -12,7 +12,7 @@ public class Stations
 		this.x = x;
 		this.y = y;
 	}
-	public int getX(){return this.getX();}
-	public int getY(){return this.getY();}
+	public int getX(){return this.x;}
+	public int getY(){return this.y;}
 	public Stations[] getAdjacent(){return this.stationsAdjacente;}
 }

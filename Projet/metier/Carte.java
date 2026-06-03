@@ -21,6 +21,7 @@ public class Carte
     public boolean estJoker()   { return joker; }
     public boolean estFonce()   { return teinte == Teinte.FONCE; }
 
+    @Override
     public String toString()
     {
         // TODO : affichage de la carte

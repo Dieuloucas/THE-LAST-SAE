@@ -1,11 +1,9 @@
 package controleur;
 
+import ihm.FrameTransport;
 import java.io.*;
 import java.util.*;
 import metier.*;
-
-import metier.Plateau;
-import ihm.FrameTransport;
 
 // Facade entre l'IHM et le metier : ici on ne fait qu'appeler le metier.
 // Deux modes : EDITION (construire le plateau) et JEU (jouer).
@@ -13,7 +11,7 @@ public class Controleur
 {
     public enum Mode { EDITION, JEU }
 
-    private GestionnairePlateaux gestionnaire = new GestionnairePlateaux();
+    private final GestionnairePlateaux gestionnaire = new GestionnairePlateaux();
     private Plateau plateau;
     private Jeu     jeu;
     private Mode    mode = Mode.EDITION;

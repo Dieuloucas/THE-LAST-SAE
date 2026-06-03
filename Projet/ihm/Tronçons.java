@@ -61,6 +61,6 @@ public class Tronçons extends JPanel
 
 	public void   setCouleur (Color    Couleur){this.couleur = Couleur;}
 	public void   setDebut   (Sommet   Debut  ){this.Debut   = Debut  ;}
-	public void   setFin     (Sommet   Fin    ){this.Debut   = Debut  ;}
+	public void   setFin     (Sommet   Fin    ){this.Fin     = Fin  ;}
 
 }

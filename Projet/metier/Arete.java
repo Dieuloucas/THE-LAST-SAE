@@ -28,9 +28,6 @@ public class Arete
     // vrai si l'arête relie bien les deux sommets a et b
     public boolean relie(Sommet a, Sommet b)
     {
-        if (a == s1 && b == s2 || a == s2 && b == s1)
-            return true;
-        else
-            return false;
+        return (a == s1 && b == s2 || a == s2 && b == s1);
     }
 }
