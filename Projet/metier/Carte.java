@@ -23,7 +23,7 @@ public class Carte
 
     public String toString()
     {
-        // TODO (12)
+        // TODO : affichage de la carte
         return "";
     }
 }

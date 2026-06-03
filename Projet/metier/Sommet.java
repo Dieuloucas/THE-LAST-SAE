@@ -6,7 +6,6 @@ public class Sommet
     private int     ligne;
     private int     colonne;
     private Symbole symbole;
-    private Zone    zone;
 
     Sommet(int ligne, int colonne, Symbole symbole)
     {
@@ -20,8 +19,6 @@ public class Sommet
     public int     getLigne()   { return ligne; }
     public int     getColonne() { return colonne; }
     public Symbole getSymbole() { return symbole; }
-    public Zone    getZone()    { return zone; }
 
     public void setSymbole(Symbole symbole) { this.symbole = symbole; }
-    public void setZone(Zone zone)          { this.zone = zone; }
 }

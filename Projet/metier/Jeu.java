@@ -62,6 +62,24 @@ public class Jeu
         return chemin.estAdjacent(sommet);
     }
 
+    // coups possibles : bouts libres des aretes filtres par le symbole de la carte (joker = tous)
+    public Set<Sommet> getSommetsJouables(Joueur joueur, Carte carte)
+    {
+        Set<Sommet> jouables = new HashSet<>();
+        if (joueur == null || carte == null) return jouables;
+
+        CheminCouleur chemin = joueur.getChemin(getCouleurActuelle());
+        if (chemin == null) return jouables;
+
+        for (Arete a : chemin.getAretesDisponibles())
+        {
+            Sommet libre = chemin.contient(a.getS1()) ? a.getS2() : a.getS1();
+            if (carte.estJoker() || libre.getSymbole() == carte.getSymbole())
+                jouables.add(libre);
+        }
+        return jouables;
+    }
+
     public void supprimerSommet(Sommet sommet)
     {
         plateau.supprimerSommet(sommet);

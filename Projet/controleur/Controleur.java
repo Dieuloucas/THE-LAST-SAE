@@ -7,36 +7,34 @@ import metier.*;
 import metier.Plateau;
 import ihm.FrameTransport;
 
-/**
- * Façade unique entre l'IHM et le métier.
- * Gère deux modes : ÉDITION (construction du plateau) et JEU (déroulé de la partie).
- */
+// Facade entre l'IHM et le metier : ici on ne fait qu'appeler le metier.
+// Deux modes : EDITION (construire le plateau) et JEU (jouer).
 public class Controleur
 {
     public enum Mode { EDITION, JEU }
 
+    private GestionnairePlateaux gestionnaire = new GestionnairePlateaux();
     private Plateau plateau;
     private Jeu     jeu;
     private Mode    mode = Mode.EDITION;
 
-    // état du tour de jeu
+    // etat du tour de jeu
     private int    indiceJoueur = 0;
     private Joueur joueurActuel;
     private Carte  carteActuelle;
 
     public Controleur() { new FrameTransport(this);}
 
-    public Plateau getPlateau() { return plateau; }
-    public Jeu     getJeu()     { return jeu; }
-    public Mode    getMode()    { return mode; }
+    public Plateau              getPlateau()      { return plateau; }
+    public Jeu                  getJeu()          { return jeu; }
+    public Mode                 getMode()         { return mode; }
+    public GestionnairePlateaux getGestionnaire() { return gestionnaire; }
 
-    // ════════════════════════════════════════════════════════════════════════
-    //  ÉDITEUR
-    // ════════════════════════════════════════════════════════════════════════
+    // ── Editeur ──
 
-    public Plateau creerPlateau(int lignes, int colonnes)
+    public Plateau creerPlateau(int lignes, int colonnes, String nom)
     {
-        plateau = new Plateau(lignes, colonnes);
+        plateau = gestionnaire.creer(lignes, colonnes, nom);
         mode    = Mode.EDITION;
         return plateau;
     }
@@ -44,7 +42,7 @@ public class Controleur
     public Sommet ajouterSommet(int ligne, int colonne, Symbole symbole)
     {
         Sommet s = plateau.ajouterSommet(ligne, colonne, symbole);
-        plateau.genererAretes(); // les arêtes se régénèrent à chaque modification
+        plateau.genererAretes(); // aretes a refaire apres chaque modif
         return s;
     }
 
@@ -59,9 +57,9 @@ public class Controleur
         return plateau.ajouterZone();
     }
 
-    public void ajouterSommetAZone(Zone zone, Sommet s)
+    public void ajouterCaseAZone(Zone zone, int ligne, int colonne)
     {
-        zone.ajouterSommet(s);
+        zone.ajouterCase(ligne, colonne);
     }
 
     public Base poserBase(Couleur couleur, Sommet s)
@@ -69,123 +67,31 @@ public class Controleur
         return plateau.ajouterBase(couleur, s);
     }
 
-    // ── Duplication ────────────────────────────────────────────────────────────
+    // ── Duplication ──
 
-    /** Renvoie une copie indépendante du plateau courant. */
-    public Plateau dupliquerPlateau()
+    // copie du plateau courant (le metier fait le travail)
+    public Plateau dupliquerPlateau(String nouveauNom)
     {
-        return copier(plateau);
+        return gestionnaire.dupliquer(plateau, nouveauNom);
     }
 
-    private Plateau copier(Plateau src)
-    {
-        Plateau copie = new Plateau(src.getLignes(), src.getColonnes());
+    // ── Sauvegarde / chargement ──
 
-        // zones (même ordre → mêmes ids)
-        Map<Integer, Zone> zones = new HashMap<>();
-        for (Zone z : src.getZones())
-            zones.put(z.getId(), copie.ajouterZone());
-
-        // sommets + rattachement à leur zone
-        for (Sommet s : src.getSommets())
-        {
-            Sommet ns = copie.ajouterSommet(s.getLigne(), s.getColonne(), s.getSymbole());
-            if (s.getZone() != null)
-                zones.get(s.getZone().getId()).ajouterSommet(ns);
-        }
-
-        // bases (résolues par position)
-        for (Couleur c : Couleur.values())
-            for (Base b : src.getBases(c))
-            {
-                Sommet origine = b.getSommet();
-                Sommet ns = copie.getSommet(origine.getLigne(), origine.getColonne());
-                copie.ajouterBase(c, ns);
-            }
-
-        copie.genererAretes();
-        return copie;
-    }
-
-    // ── Sauvegarde / chargement ─────────────────────────────────────────────────
-
-    /**
-     * Sauvegarde le plateau courant en texte.
-     * On ne stocke pas les arêtes : elles sont régénérées au chargement.
-     */
     public void sauvegarderPlateau(String chemin) throws IOException
     {
-        try (PrintWriter out = new PrintWriter(new FileWriter(chemin)))
-        {
-            out.println("PLATEAU");
-            out.println(plateau.getLignes() + " " + plateau.getColonnes());
-            out.println("ZONES " + plateau.getZones().size());
-
-            out.println("SOMMETS");
-            for (Sommet s : plateau.getSommets())
-            {
-                int z = (s.getZone() == null) ? -1 : s.getZone().getId();
-                out.println(s.getLigne() + " " + s.getColonne() + " " + s.getSymbole() + " " + z);
-            }
-
-            out.println("BASES");
-            for (Couleur c : Couleur.values())
-                for (Base b : plateau.getBases(c))
-                    out.println(c + " " + b.getSommet().getLigne() + " " + b.getSommet().getColonne());
-        }
+        gestionnaire.sauvegarder(plateau, chemin);
     }
 
-    /** Charge un plateau depuis un fichier texte et le rend courant. */
     public Plateau chargerPlateau(String chemin) throws IOException
     {
-        try (BufferedReader in = new BufferedReader(new FileReader(chemin)))
-        {
-            in.readLine(); // "PLATEAU"
-            String[] dim = in.readLine().trim().split("\\s+");
-            Plateau p = new Plateau(Integer.parseInt(dim[0]), Integer.parseInt(dim[1]));
-
-            // zones
-            String[] zl = in.readLine().trim().split("\\s+"); // "ZONES n"
-            int nbZones = Integer.parseInt(zl[1]);
-            List<Zone> zones = new ArrayList<>();
-            for (int i = 0; i < nbZones; i++)
-                zones.add(p.ajouterZone());
-
-            // sommets (jusqu'à la ligne "BASES")
-            in.readLine(); // "SOMMETS"
-            String ligne;
-            while ((ligne = in.readLine()) != null && !ligne.equals("BASES"))
-            {
-                String[] t  = ligne.trim().split("\\s+");
-                Sommet   s  = p.ajouterSommet(Integer.parseInt(t[0]),
-                                              Integer.parseInt(t[1]),
-                                              Symbole.valueOf(t[2]));
-                int z = Integer.parseInt(t[3]);
-                if (z >= 0)
-                    zones.get(z).ajouterSommet(s);
-            }
-
-            // bases ("BASES" déjà consommée)
-            while ((ligne = in.readLine()) != null)
-            {
-                String[] t = ligne.trim().split("\\s+");
-                Sommet   s = p.getSommet(Integer.parseInt(t[1]), Integer.parseInt(t[2]));
-                if (s != null)
-                    p.ajouterBase(Couleur.valueOf(t[0]), s);
-            }
-
-            p.genererAretes();
-            plateau = p;
-            mode    = Mode.EDITION;
-            return p;
-        }
+        plateau = gestionnaire.charger(chemin);
+        mode    = Mode.EDITION;
+        return plateau;
     }
 
-    // ════════════════════════════════════════════════════════════════════════
-    //  JEU
-    // ════════════════════════════════════════════════════════════════════════
+    // ── Jeu ──
 
-    /** Crée les joueurs à partir de leurs noms et démarre la partie sur le plateau courant. */
+    // cree les joueurs et lance la partie sur le plateau courant
     public void demarrerPartie(List<String> noms)
     {
         List<Joueur> joueurs = new ArrayList<>();
@@ -201,45 +107,28 @@ public class Controleur
         carteActuelle = null;
     }
 
-    /** Tire une carte pour le tour courant. */
+    // pioche la carte du tour
     public Carte piocher()
     {
         carteActuelle = jeu.piocher();
         return carteActuelle;
     }
 
-    /**
-     * Sommets jouables par le joueur courant : les bouts libres des arêtes
-     * disponibles, filtrés par le symbole de la carte tirée (joker = tous).
-     */
+    // coups possibles du joueur courant (calcule par le metier)
     public Set<Sommet> getSommetsJouables()
     {
-        Set<Sommet> jouables = new HashSet<>();
-        if (joueurActuel == null || carteActuelle == null)
-            return jouables;
-
-        CheminCouleur chemin = joueurActuel.getChemin(jeu.getCouleurActuelle());
-        if (chemin == null)
-            return jouables;
-
-        for (Arete a : chemin.getAretesDisponibles())
-        {
-            Sommet libre = chemin.contient(a.getS1()) ? a.getS2() : a.getS1();
-            if (carteActuelle.estJoker() || libre.getSymbole() == carteActuelle.getSymbole())
-                jouables.add(libre);
-        }
-        return jouables;
+        return jeu.getSommetsJouables(joueurActuel, carteActuelle);
     }
 
-    /** Connecte un sommet pour le joueur courant (vérifie qu'il est bien jouable). */
+    // joue un sommet pour le joueur courant si le coup est valide
     public boolean connecter(Sommet s)
     {
-        if (!getSommetsJouables().contains(s))
+        if (!jeu.getSommetsJouables(joueurActuel, carteActuelle).contains(s))
             return false;
         return jeu.connecter(joueurActuel, s);
     }
 
-    /** Passe au joueur suivant (réseau : même tirage, bases différentes). */
+    // joueur suivant (meme tirage, base differente)
     public void joueurSuivant()
     {
         List<Joueur> joueurs = jeu.getJoueurs();
@@ -247,13 +136,13 @@ public class Controleur
         joueurActuel = joueurs.get(indiceJoueur);
     }
 
-    /** Vrai si le seuil de cartes est atteint ou la pioche vide. */
+    // fin du tour : seuil de cartes atteint ou pioche vide
     public boolean tourTermine()
     {
         return jeu.tourActuelTermine();
     }
 
-    /** Passe à la manche suivante. Renvoie false si la partie est terminée. */
+    // manche suivante (false si la partie est finie)
     public boolean mancheSuivante()
     {
         boolean encore = jeu.mancheSuivante();
@@ -265,7 +154,7 @@ public class Controleur
 
     public List<Joueur> getClassement() { return jeu.getClassement(); }
 
-    // ── Accesseurs jeu ───────────────────────────────────────────────────────
+    // ── Accesseurs jeu ──
 
     public Joueur  getJoueurActuel()    { return joueurActuel; }
     public Carte   getCarteActuelle()   { return carteActuelle; }
