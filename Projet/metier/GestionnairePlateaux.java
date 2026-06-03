@@ -7,6 +7,9 @@ public class GestionnairePlateaux
 {
     private List<Plateau> plateaux   = new ArrayList<>();
     private int           prochainId = 0;        // id auto-incremente
+    private int[]         dernieresCouleurs;     // couleurs des cases gardees en memoire (pour l'IHM)
+
+    public static final int FOND_VIDE = -4144960; // gris clair (LIGHT_GRAY) = case sans zone
 
     public Plateau creer(int lignes, int colonnes, String nom)
     {
@@ -38,84 +41,93 @@ public class GestionnairePlateaux
 
     public List<Plateau> getPlateaux() { return plateaux; }   // pour le menu
 
-    // ── Persistance ──
-    // on ne sauve pas les aretes (recalculees au chargement) ; zones = leurs cases
+    // ── Persistance (echange entre l'appli d'edition et l'appli de jeu) ──
+    // tout est ecrit a la suite, separe par des espaces, pour pouvoir le relire avec un Scanner.
+    // les zones sont stockees sous forme de couleurs (1 couleur = 1 zone) ; on ne sauve pas les aretes.
 
-    public void sauvegarder(Plateau p, String chemin) throws IOException
+    // l'IHM d'edition envoie les couleurs de TOUTES les cases ; on ajoute les infos du plateau
+    public void sauvegarder(int[] couleurs, Plateau p, String chemin) throws IOException
     {
+        this.dernieresCouleurs = couleurs;
+
         try (PrintWriter out = new PrintWriter(new FileWriter(chemin)))
         {
-            out.println("PLATEAU");
-            out.println(p.getNom() == null ? "" : p.getNom());
-            out.println(p.getLignes() + " " + p.getColonnes());
+            out.print(p.getLignes() + " " + p.getColonnes() + " ");          // dimensions
 
-            out.println("ZONES " + p.getZones().size());
-            for (Zone z : p.getZones())
-            {
-                StringBuilder sb = new StringBuilder();
-                sb.append(z.getCases().size());
-                for (int[] c : z.getCases())
-                    sb.append(" ").append(c[0]).append(" ").append(c[1]);
-                out.println(sb.toString());
-            }
+            out.print(couleurs.length + " ");                                // couleurs des cases
+            for (int c : couleurs) out.print(c + " ");
 
-            out.println("SOMMETS " + p.getSommets().size());
+            out.print(p.getSommets().size() + " ");                          // stations : ligne colonne symbole
             for (Sommet s : p.getSommets())
-                out.println(s.getLigne() + " " + s.getColonne() + " " + s.getSymbole());
+                out.print(s.getLigne() + " " + s.getColonne() + " " + s.getSymbole() + " ");
 
             int nbBases = 0;
             for (Couleur c : Couleur.values()) nbBases += p.getBases(c).size();
-            out.println("BASES " + nbBases);
+            out.print(nbBases + " ");                                        // bases : couleur ligne colonne
             for (Couleur c : Couleur.values())
                 for (Base b : p.getBases(c))
-                    out.println(c + " " + b.getSommet().getLigne() + " " + b.getSommet().getColonne());
+                    out.print(c + " " + b.getSommet().getLigne() + " " + b.getSommet().getColonne() + " ");
         }
     }
 
-    // charge un plateau et l'enregistre
+    public int[] getDernieresCouleurs() { return dernieresCouleurs; }
+
+    // charge un plateau produit par l'appli d'edition (et reconstruit les zones a partir des couleurs)
     public Plateau charger(String chemin) throws IOException
     {
-        try (BufferedReader in = new BufferedReader(new FileReader(chemin)))
+        try (Scanner sc = new Scanner(new File(chemin)))
         {
-            in.readLine();                                   // "PLATEAU"
-            String nom = in.readLine();                      // nom
-            String[] dim = in.readLine().trim().split("\\s+");
-            Plateau p = new Plateau(Integer.parseInt(dim[0]), Integer.parseInt(dim[1]));
+            int lignes = sc.nextInt(), colonnes = sc.nextInt();
+            Plateau p = new Plateau(lignes, colonnes);
 
-            // zones (une ligne par zone : nbCases l c l c ...)
-            int nbZones = Integer.parseInt(in.readLine().trim().split("\\s+")[1]);
-            for (int i = 0; i < nbZones; i++)
+            int n = sc.nextInt();                          // couleurs des cases
+            int[] couleurs = new int[n];
+            for (int i = 0; i < n; i++) couleurs[i] = sc.nextInt();
+            this.dernieresCouleurs = couleurs;
+
+            int nbS = sc.nextInt();                        // stations
+            for (int i = 0; i < nbS; i++)
+                p.ajouterSommet(sc.nextInt(), sc.nextInt(), Symbole.valueOf(sc.next()));
+
+            int nbB = sc.nextInt();                        // bases
+            for (int i = 0; i < nbB; i++)
             {
-                Zone z = p.ajouterZone();
-                String[] t = in.readLine().trim().split("\\s+");
-                int nbCases = Integer.parseInt(t[0]);
-                for (int k = 0; k < nbCases; k++)
-                    z.ajouterCase(Integer.parseInt(t[1 + k * 2]), Integer.parseInt(t[2 + k * 2]));
+                Couleur col = Couleur.valueOf(sc.next());
+                Sommet s = p.getSommet(sc.nextInt(), sc.nextInt());
+                if (s != null) p.ajouterBase(col, s);
             }
 
-            // sommets
-            int nbSommets = Integer.parseInt(in.readLine().trim().split("\\s+")[1]);
-            for (int i = 0; i < nbSommets; i++)
-            {
-                String[] t = in.readLine().trim().split("\\s+");
-                p.ajouterSommet(Integer.parseInt(t[0]), Integer.parseInt(t[1]), Symbole.valueOf(t[2]));
-            }
-
-            // bases
-            int nbBases = Integer.parseInt(in.readLine().trim().split("\\s+")[1]);
-            for (int i = 0; i < nbBases; i++)
-            {
-                String[] t = in.readLine().trim().split("\\s+");
-                Sommet s = p.getSommet(Integer.parseInt(t[1]), Integer.parseInt(t[2]));
-                if (s != null)
-                    p.ajouterBase(Couleur.valueOf(t[0]), s);
-            }
-
+            reconstruireZones(p, couleurs, colonnes);      // couleurs -> objets Zone (pour le score)
             p.genererAretes();
             p.setId(prochainId++);
-            p.setNom(nom);
             plateaux.add(p);
             return p;
+        }
+    }
+
+    // une couleur (sauf le fond vide) = une zone ; les cases de meme couleur vont dans la meme zone
+    private void reconstruireZones(Plateau p, int[] couleurs, int colonnes)
+    {
+        List<Integer> couleursVues = new ArrayList<>();
+        List<Zone>    zones        = new ArrayList<>();
+
+        for (int i = 0; i < couleurs.length; i++)
+        {
+            int couleur = couleurs[i];
+            if (couleur == FOND_VIDE) continue;            // case vide -> pas de zone
+
+            int index = couleursVues.indexOf(couleur);
+            Zone zone;
+            if (index == -1)                               // nouvelle couleur -> nouvelle zone
+            {
+                zone = p.ajouterZone();
+                couleursVues.add(couleur);
+                zones.add(zone);
+            }
+            else
+                zone = zones.get(index);
+
+            zone.ajouterCase(i / colonnes, i % colonnes);  // index -> (ligne, colonne)
         }
     }
 }

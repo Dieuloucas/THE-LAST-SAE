@@ -14,4 +14,3 @@
 ./Projet/metier/Jeu.java
 ./Projet/metier/GestionnairePlateaux.java
 ./Projet/controleur/ControleurEdition.java
-./Projet/controleur/ControleurJeu.java
