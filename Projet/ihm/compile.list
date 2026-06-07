@@ -1,9 +1,0 @@
-./plateau/Controleur.java
-
-./plateau/ihm/FrameAcceuil.java
-./plateau/ihm/FrameConfiguration.java
-./plateau/ihm/FrameLocalSolo.java
-
-./plateau/ihm/PanelAcceuil.java
-./plateau/ihm/PanelConfiguration.java
-./plateau/ihm/PanelLocalSolo.java

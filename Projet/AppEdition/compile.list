@@ -1,9 +1,0 @@
-metier/Symbole.java
-metier/Couleur.java
-metier/Sommet.java
-metier/Arete.java
-metier/Zone.java
-metier/Base.java
-metier/Plateau.java
-metier/GestionnairePlateaux.java
-controleur/ControleurEdition.java
