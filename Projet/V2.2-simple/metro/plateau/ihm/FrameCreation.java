@@ -1,17 +1,27 @@
 package plateau.ihm;
 
 import plateau.Controleur;
-import javax.swing.JFrame;
+
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+
+import javax.swing.*;
 
 public class FrameCreation extends JFrame
 {
-	public FrameCreation(Controleur ctrl, int nbArrondissements, int tailleCases)
-	{
-		this.setTitle("Creation du plateau");
-		this.add(new PanelCreation(this, ctrl, nbArrondissements, tailleCases));
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.pack();
-		this.setLocationRelativeTo(null);
-		this.setVisible(true);
-	}
+    public FrameCreation(Controleur ctrl)
+    {
+        this.setTitle       ("Création Plateau");
+
+        this.setLayout ( new FlowLayout() );
+
+        this.add ( new PanelCreation(this, ctrl) );
+
+        this.setDefaultCloseOperation ( JFrame.EXIT_ON_CLOSE );
+
+        this.pack();
+        this.setLocationRelativeTo(null); // Centre la fenêtre
+        this.setVisible ( true );
+    }
+
 }

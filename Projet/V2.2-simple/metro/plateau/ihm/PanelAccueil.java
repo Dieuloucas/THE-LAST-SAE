@@ -1,49 +1,83 @@
 package plateau.ihm;
 
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.JButton;
-import javax.swing.JPanel;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
 
 import plateau.Controleur;
 
 public class PanelAccueil extends JPanel implements ActionListener
 {
-	private FrameAccueil frmAccueil;
-	private Controleur   ctrl;
+    private JButton btnConfiguration;
+    private JButton btnRegles;
 
-	private JButton btnConfiguration;
-	private JButton btnRegles;
+    private FrameAccueil        frmAccueil;
+    private FrameConfiguration  frmConfiguration;
+    private Controleur          ctrl;
 
-	public PanelAccueil(FrameAccueil frmAccueil, Controleur ctrl)
-	{
-		this.frmAccueil = frmAccueil;
-		this.ctrl       = ctrl;
+    private Image imgFond;
 
-		this.setLayout(new GridLayout(2, 1, 10, 10));
+    public PanelAccueil(FrameAccueil frmAccueil, Controleur ctrl)
+    {
+        this.frmAccueil = frmAccueil;
+        this.ctrl       = ctrl;
 
-		this.btnConfiguration = new JButton("Configuration du plateau");
-		this.btnRegles        = new JButton("Regles");
+        this.imgFond = new ImageIcon( this.ctrl.getImageFond() ).getImage();
+        this.setPreferredSize(new Dimension(800, 600));
 
-		this.add(this.btnConfiguration);
-		this.add(this.btnRegles);
+        /*-------------------------*/
+        /* Création des composants */
+        /*-------------------------*/
 
-		this.btnConfiguration.addActionListener(this);
-		this.btnRegles       .addActionListener(this);
-	}
+        this.btnConfiguration = new JButton("Configuration du plateau");
+        this.btnRegles        = new JButton("Règles");
 
-	public void actionPerformed(ActionEvent e)
-	{
-		if (e.getSource() == this.btnConfiguration)
-		{
-			new FrameConfiguration(this.ctrl);
-			this.frmAccueil.dispose();
-		}
-		else if (e.getSource() == this.btnRegles)
-		{
-			// affichage simple dans la console (pas de fenetre popup)
-			System.out.println("Regles : reliez les stations de meme symbole pour conquerir des arrondissements.");
-		}
-	}
+        /*-------------------------------*/
+        /* Positionnement des composants */
+        /*-------------------------------*/
+
+        this.setLayout(new GridBagLayout());
+
+        JPanel panelBoutons = new JPanel(new GridLayout(2, 1, 10, 10));
+        panelBoutons.setOpaque(false);
+
+        panelBoutons.add(this.btnConfiguration);
+        panelBoutons.add(this.btnRegles);
+
+        this.add(panelBoutons);
+
+        /*---------------------------*/
+        /* Activation des composants */
+        /*---------------------------*/
+
+        this.btnConfiguration.addActionListener(this);
+        this.btnRegles       .addActionListener(this);
+    }
+
+    public void actionPerformed(ActionEvent e)
+    {
+        if (e.getSource() == this.btnConfiguration)
+        {
+            this.frmConfiguration = new FrameConfiguration(this.ctrl);
+            this.frmAccueil.setVisible(false);
+            this.frmConfiguration.setVisible(true);
+        }
+        else if (e.getSource() == this.btnRegles)
+        {
+            JOptionPane.showMessageDialog(this,
+                "Les règles du jeu seront affichées ici.",
+                "Règles",
+                JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    protected void paintComponent(Graphics g)
+    {
+        super.paintComponent(g);
+
+        if ( imgFond != null )
+        {
+            g.drawImage(imgFond, 0, 0, this.getWidth(), this.getHeight(), this);
+        }
+    }
 }
