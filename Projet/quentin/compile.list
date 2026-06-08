@@ -1,0 +1,10 @@
+./plateau/Controleur.java
+./plateau/metier/Plateau.java
+./plateau/ihm/FrameAccueil.java
+./plateau/ihm/FrameConfiguration.java
+./plateau/ihm/FrameCreation.java
+./plateau/ihm/FrameJeu.java
+./plateau/ihm/PanelAccueil.java
+./plateau/ihm/PanelConfiguration.java
+./plateau/ihm/PanelCreation.java
+./plateau/ihm/PanelJeu.java
