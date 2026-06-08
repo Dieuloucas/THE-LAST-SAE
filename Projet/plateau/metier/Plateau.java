@@ -5,38 +5,50 @@ import java.io.FileOutputStream;
 import java.io.File;
 import java.util.Scanner;
 
+// Le plateau = une grille de cases (objets Case) + la configuration de la partie.
+// Une case est reperee par un numero unique : numCase = ligne * largeur + colonne.
 public class Plateau
 {
-	private int[] tabCases;
-	private int[] tabMetros;
-	private int[] tabDeparts;
-	private int   largeur;
-	private int   hauteur;
-	private int   nbJoueurs;
-	private int   nbMetro;
+	private Case[]        cases;
+	private int           largeur;
+	private int           hauteur;
+	private Configuration config = new Configuration();
 
 	public Plateau(int largeur, int hauteur)
 	{
-		this.largeur  = largeur;
-		this.hauteur  = hauteur;
-		this.tabCases = new int[largeur * hauteur];
-		this.tabMetros = new int[largeur * hauteur];
-		this.tabDeparts = new int[largeur * hauteur];
+		this.largeur = largeur;
+		this.hauteur = hauteur;
+		this.cases   = new Case[largeur * hauteur];
+		for (int i = 0; i < this.cases.length; i++)   // chaque case est un objet Case (vide au depart)
+			this.cases[i] = new Case();
 	}
 
 	public int getLargeur() { return this.largeur; }
 	public int getHauteur() { return this.hauteur; }
-	public int getNbCases() { return this.tabCases.length; }
+	public int getNbCases() { return this.cases.length; }
 
 	// ── Config de la partie (sauvegardee avec le plateau) ──
-	public void setConfig(int nbJoueurs, int nbMetro) { this.nbJoueurs = nbJoueurs; this.nbMetro = nbMetro; }
-	public int  getNbJoueurs() { return this.nbJoueurs; }
-	public int  getNbMetro()   { return this.nbMetro; }
+	public void setConfig(int nbJoueurs, int nbMetro) { this.config.setConfig(nbJoueurs, nbMetro); }
+	public int  getNbJoueurs() { return this.config.getNbJoueurs(); }
+	public int  getNbMetro()   { return this.config.getNbMetro(); }
 
 	// ── Numero de case <-> coordonnees ──
 	public int getLigne(int numCase)              { return numCase / this.largeur; }
 	public int getColonne(int numCase)            { return numCase % this.largeur; }
 	public int getNumCase(int ligne, int colonne) { return ligne * this.largeur + colonne; }
+
+	// garde-fou : la case existe-t-elle ?
+	private boolean caseValide(int numCase) { return numCase >= 0 && numCase < this.cases.length; }
+
+	// ── Acces a une case (delegue a l'objet Case) ──
+	public int  getArrondissement(int numCase)               { return caseValide(numCase) ? this.cases[numCase].getArrondissement() : 0; }
+	public void affecterArrondissement(int numCase, int arr) { if (caseValide(numCase)) this.cases[numCase].setArrondissement(arr); }
+
+	public int  getMetro(int numCase)                 { return caseValide(numCase) ? this.cases[numCase].getMetro() : 0; }
+	public void affecterMetro(int numCase, int metro) { if (caseValide(numCase)) this.cases[numCase].setMetro(metro); }
+
+	public int  getDepart(int numCase)                  { return caseValide(numCase) ? this.cases[numCase].getDepart() : 0; }
+	public void affecterDepart(int numCase, int depart) { if (caseValide(numCase)) this.cases[numCase].setDepart(depart); }
 
 	// ── Requetes sur le plateau ──
 
@@ -44,7 +56,7 @@ public class Plateau
 	public int compterArrondissement(int arrondissement)
 	{
 		int n = 0;
-		for (int c : this.tabCases) if (c == arrondissement) n++;
+		for (Case c : this.cases) if (c.getArrondissement() == arrondissement) n++;
 		return n;
 	}
 
@@ -53,8 +65,8 @@ public class Plateau
 	{
 		int[] res = new int[compterArrondissement(arrondissement)];
 		int k = 0;
-		for (int i = 0; i < this.tabCases.length; i++)
-			if (this.tabCases[i] == arrondissement) res[k++] = i;
+		for (int i = 0; i < this.cases.length; i++)
+			if (this.cases[i].getArrondissement() == arrondissement) res[k++] = i;
 		return res;
 	}
 
@@ -81,48 +93,44 @@ public class Plateau
 	public boolean estValide()
 	{
 		int nbMetros = 0, nbDeparts = 0;
-		for (int m : this.tabMetros)  if (m != 0) nbMetros++;
-		for (int d : this.tabDeparts) if (d != 0) nbDeparts++;
-		return nbMetros > 0 && nbDeparts >= this.nbJoueurs;
+		for (Case c : this.cases)
+		{
+			if (c.getMetro()  != 0) nbMetros++;
+			if (c.getDepart() != 0) nbDeparts++;
+		}
+		return nbMetros > 0 && nbDeparts >= this.config.getNbJoueurs();
 	}
 
-	public int getArrondissement(int numCase)
-	{
-		if (numCase >= 0 && numCase < this.tabCases.length)
-			return this.tabCases[numCase];
-		return 0;
-	}
+	// ── Sauvegarde / chargement (fichier texte) ──
+	// format : 1re ligne = largeur;hauteur;nbJoueurs;nbMetro , puis 1 ligne par case = numCase;arr;metro;depart
 
-	public void affecterArrondissement(int numCase, int arrondissement)
+	public boolean enregistrerPlateau(String nomFichier)
 	{
-		if (numCase >= 0 && numCase < this.tabCases.length)
-			this.tabCases[numCase] = arrondissement;
-	}
+		try
+		{
+			File dossier = new File("sauvegarde");
+			if (!dossier.exists()) dossier.mkdirs();
 
-	public void affecterMetro(int numCase, int metro)
-	{
-		if (numCase >= 0 && numCase < this.tabMetros.length)
-			this.tabMetros[numCase] = metro;
-	}
+			if (!nomFichier.endsWith(".txt")) nomFichier = nomFichier + ".txt";
+			File file = new File(dossier, nomFichier);
 
-	public int getMetro(int numCase)
-	{
-		if (numCase >= 0 && numCase < this.tabMetros.length)
-			return this.tabMetros[numCase];
-		return 0;
-	}
+			PrintWriter pw = new PrintWriter(new FileOutputStream(file));
+			pw.println(this.largeur + ";" + this.hauteur + ";" + this.config.getNbJoueurs() + ";" + this.config.getNbMetro());
+			for (int i = 0; i < this.cases.length; i++)
+			{
+				Case c = this.cases[i];
+				pw.println(i + ";" + c.getArrondissement() + ";" + c.getMetro() + ";" + c.getDepart());
+			}
+			pw.close();
 
-	public void affecterDepart(int numCase, int depart)
-	{
-		if (numCase >= 0 && numCase < this.tabDeparts.length)
-			this.tabDeparts[numCase] = depart;
-	}
-
-	public int getDepart(int numCase)
-	{
-		if (numCase >= 0 && numCase < this.tabDeparts.length)
-			return this.tabDeparts[numCase];
-		return 0;
+			System.out.println("Plateau enregistre.");
+			return true;
+		}
+		catch (Exception e)
+		{
+			System.out.println("Erreur d'enregistrement : " + e.getMessage());
+			return false;
+		}
 	}
 
 	public boolean chargerPlateau(File file)
@@ -132,34 +140,27 @@ public class Plateau
 			Scanner scanner = new Scanner(file);
 			if (!scanner.hasNextLine()) { scanner.close(); return false; }
 
-			String firstLine = scanner.nextLine();
-			String[] dim = firstLine.split(";");
+			String[] dim = scanner.nextLine().split(";");
 			this.largeur = Integer.parseInt(dim[0]);
 			this.hauteur = Integer.parseInt(dim[1]);
 			if (dim.length >= 4)   // config presente (nouveau format)
-			{
-				this.nbJoueurs = Integer.parseInt(dim[2]);
-				this.nbMetro   = Integer.parseInt(dim[3]);
-			}
+				this.config.setConfig(Integer.parseInt(dim[2]), Integer.parseInt(dim[3]));
 
 			int size = this.largeur * this.hauteur;
-			this.tabCases   = new int[size];
-			this.tabMetros  = new int[size];
-			this.tabDeparts = new int[size];
+			this.cases = new Case[size];
+			for (int i = 0; i < size; i++) this.cases[i] = new Case();
 
 			while (scanner.hasNextLine())
 			{
-				String line = scanner.nextLine();
-				if (line.trim().isEmpty()) continue;
-				String[] parts = line.split(";");
+				String ligne = scanner.nextLine();
+				if (ligne.trim().isEmpty()) continue;
+				String[] parts = ligne.split(";");
 				int index = Integer.parseInt(parts[0]);
 				if (index >= 0 && index < size)
 				{
-					this.tabCases[index] = Integer.parseInt(parts[1]);
-
-					// compatibilite ancien format (2 colonnes) / nouveau format (4 colonnes)
-					if (parts.length >= 3) this.tabMetros[index]  = Integer.parseInt(parts[2]);
-					if (parts.length >= 4) this.tabDeparts[index] = Integer.parseInt(parts[3]);
+					this.cases[index].setArrondissement(Integer.parseInt(parts[1]));
+					if (parts.length >= 3) this.cases[index].setMetro(Integer.parseInt(parts[2]));
+					if (parts.length >= 4) this.cases[index].setDepart(Integer.parseInt(parts[3]));
 				}
 			}
 			scanner.close();
@@ -170,38 +171,5 @@ public class Plateau
 			System.out.println("Erreur de lecture : " + e.getMessage());
 			return false;
 		}
-	}
-
-	public boolean enregistrerPlateau(String nomFichier)
-	{
-		try
-		{
-			java.io.File dossier = new java.io.File("sauvegarde");
-			if (!dossier.exists())
-			{
-				dossier.mkdirs();
-			}
-
-			File file = new java.io.File(dossier, nomFichier.endsWith(".txt") ? nomFichier : nomFichier + ".txt");
-			PrintWriter pw = new PrintWriter(new FileOutputStream(file));
-
-			// largeur ; hauteur ; nbJoueurs ; nbMetro (la config est sauvegardee avec le plateau)
-			pw.println(this.largeur + ";" + this.hauteur + ";" + this.nbJoueurs + ";" + this.nbMetro);
-
-			for (int i = 0; i < this.tabCases.length; i++)
-			{
-				pw.println(i + ";" + this.tabCases[i] + ";" + this.tabMetros[i] + ";" + this.tabDeparts[i]);
-			}
-
-			pw.close();
-		}
-		catch (Exception e)
-		{
-			System.out.println("Erreur d'enregistrement : " + e.getMessage());
-			return false;
-		}
-
-		System.out.println("Plateau enregistre.");
-		return true;
 	}
 }

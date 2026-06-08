@@ -1,4 +1,6 @@
 ./plateau/Controleur.java
+./plateau/metier/Case.java
+./plateau/metier/Configuration.java
 ./plateau/metier/Plateau.java
 ./plateau/ihm/FrameAccueil.java
 ./plateau/ihm/FrameConfiguration.java
