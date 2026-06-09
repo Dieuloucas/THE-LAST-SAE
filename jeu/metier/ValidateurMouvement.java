@@ -16,13 +16,11 @@ public class ValidateurMouvement
 		// 3. La case ne doit pas être déjà dans le réseau
 		if (joueur.getReseau().contient(numCase)) return false;
 
-		// 4. La case doit être voisine (arête du graphe) d'une extrémité du réseau
-		ArrayList<Integer> extremites = joueur.getReseau().getExtremites(plateau.getGraphe());
-		for (int i = 0; i < extremites.size(); i++)
-		{
-			if (plateau.getGraphe().aArete(extremites.get(i), numCase)) return true;
-		}
-		return false;
+		// 4. La case doit être voisine de la DERNIÈRE station posée uniquement
+		//    (on prolonge le chemin depuis son bout, pas depuis n'importe quelle extrémité)
+		int derniere = joueur.getReseau().getDerniereStation();
+		if (derniere == -1) return false;
+		return plateau.getGraphe().aArete(derniere, numCase);
 	}
 
 	public static ArrayList<Integer> getCasesValides(Joueur joueur, Carte carte, Plateau plateau)

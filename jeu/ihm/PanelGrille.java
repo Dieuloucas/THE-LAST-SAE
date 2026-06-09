@@ -118,30 +118,27 @@ public class PanelGrille extends JPanel
 			}
 		}
 
-		// --- 3. Lignes de réseau par joueur ---
+		// --- 3. Lignes de réseau par joueur (dans l'ordre de pose uniquement) ---
+		// On relie station[0]→station[1]→station[2]... pas tous les voisins
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 		for (int j = 1; j <= nbJoueurs; j++)
 		{
-			// Notre réseau : trait plus épais
 			float epaisseur = (j == this.numeroJoueur) ? 5f : 2.5f;
 			g2d.setStroke(new BasicStroke(epaisseur));
 			g2d.setColor(this.ctrl.getCouleurJoueur(j));
-			for (int i = 0; i < taille; i++)
-			{
-				if (!this.ctrl.estDansReseau(j, i)) continue;
-				for (int k = i + 1; k < taille; k++)
-				{
-					if (!this.ctrl.estDansReseau(j, k)) continue;
-					if (!this.ctrl.aArete(i, k))        continue;
 
-					int x1 = (i % largeur) * cellW + cellW / 2;
-					int y1 = (i / largeur) * cellH + cellH / 2;
-					int x2 = (k % largeur) * cellW + cellW / 2;
-					int y2 = (k / largeur) * cellH + cellH / 2;
-					g2d.drawLine(x1, y1, x2, y2);
-				}
+			ArrayList<Integer> chemin = this.ctrl.getCheminJoueur(j);
+			for (int idx = 0; idx < chemin.size() - 1; idx++)
+			{
+				int s1 = chemin.get(idx);
+				int s2 = chemin.get(idx + 1);
+				int x1 = (s1 % largeur) * cellW + cellW / 2;
+				int y1 = (s1 / largeur) * cellH + cellH / 2;
+				int x2 = (s2 % largeur) * cellW + cellW / 2;
+				int y2 = (s2 / largeur) * cellH + cellH / 2;
+				g2d.drawLine(x1, y1, x2, y2);
 			}
 		}
 

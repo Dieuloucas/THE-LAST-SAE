@@ -1,7 +1,6 @@
 package jeu.metier;
 
 import java.util.ArrayList;
-import plateau.metier.GraphePlateau;
 
 public class ReseauJoueur
 {
@@ -35,26 +34,10 @@ public class ReseauJoueur
 		this.stations.clear();
 	}
 
-	// Retourne les extrémités : stations qui ont 0 ou 1 voisin (du graphe) aussi dans le réseau
-	public ArrayList<Integer> getExtremites(GraphePlateau graphe)
+	// Retourne la dernière station ajoutée au chemin (celle depuis laquelle on peut continuer)
+	public int getDerniereStation()
 	{
-		ArrayList<Integer> extremites = new ArrayList<Integer>();
-		int taille = graphe.getTaille();
-
-		for (int i = 0; i < this.stations.size(); i++)
-		{
-			int s = this.stations.get(i);
-			int nbVoisinsDansReseau = 0;
-
-			for (int j = 0; j < taille; j++)
-			{
-				if (graphe.aArete(s, j) && this.contient(j))
-					nbVoisinsDansReseau++;
-			}
-
-			if (nbVoisinsDansReseau <= 1)
-				extremites.add(s);
-		}
-		return extremites;
+		if (this.stations.isEmpty()) return -1;
+		return this.stations.get(this.stations.size() - 1);
 	}
 }

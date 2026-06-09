@@ -121,6 +121,15 @@ public class ControleurJeu
 		return joueurs[numeroJoueur - 1].getReseau().contient(numCase);
 	}
 
+	// Retourne les stations dans l'ordre où elles ont été posées (pour dessiner les lignes)
+	public ArrayList<Integer> getCheminJoueur(int numeroJoueur)
+	{
+		if (this.partie == null) return new ArrayList<Integer>();
+		Joueur[] joueurs = this.partie.getJoueurs();
+		if (numeroJoueur < 1 || numeroJoueur > joueurs.length) return new ArrayList<Integer>();
+		return joueurs[numeroJoueur - 1].getReseau().getStations();
+	}
+
 	// Pioche d'un joueur particulier
 	public int getNbFonceesRestantes(int numeroJoueur)
 	{
