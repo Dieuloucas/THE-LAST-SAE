@@ -1,0 +1,8 @@
+# Fichiers compilés Java
+*.class
+
+# Fichiers système macOS
+.DS_Store
+
+# Dossier images (lourds, générés localement)
+jeu/images/
