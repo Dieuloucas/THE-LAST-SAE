@@ -9,10 +9,12 @@ public class ValidateurMouvement
 	//  1. La case doit contenir une station
 	//  2. Le type de station doit correspondre à la carte (sauf joker)
 	//  3. La station ne doit pas déjà être dans le réseau du joueur
+	//  3b. La station ne doit pas être occupée par un autre joueur
 	//  4. La station doit être accessible depuis l'une des deux extrémités du chemin
 	//     (le graphe garantit déjà qu'il n'y a pas de station intermédiaire sur la section)
 	//  5. La nouvelle section ne doit pas en croiser une déjà tracée
-	public static boolean estValide(int numCase, Joueur joueur, Carte carte, Plateau plateau)
+	public static boolean estValide(int numCase, Joueur joueur, Carte carte, Plateau plateau,
+	                                ArrayList<Integer> casesBloquees)
 	{
 		// 1. Il faut qu'une station soit posée ici
 		if (plateau.getStation(numCase) == 0) return false;
@@ -20,8 +22,12 @@ public class ValidateurMouvement
 		// 2. Le type doit correspondre à la carte (sauf joker)
 		if (!carte.estJoker() && plateau.getStation(numCase) != carte.getTypeStation()) return false;
 
-		// 3. La case ne doit pas être déjà dans le réseau
+		// 3. La case ne doit pas être déjà dans le réseau de ce joueur
 		if (joueur.getReseau().contient(numCase)) return false;
+
+		// 3b. La case ne doit pas être occupée par un autre joueur
+		for (int i = 0; i < casesBloquees.size(); i++)
+			if (casesBloquees.get(i) == numCase) return false;
 
 		// 4 & 5. La case doit être accessible depuis une extrémité, sans croisement
 		ArrayList<Integer> extremites = joueur.getReseau().getExtremites();
@@ -92,13 +98,14 @@ public class ValidateurMouvement
 		return 0;
 	}
 
-	public static ArrayList<Integer> getCasesValides(Joueur joueur, Carte carte, Plateau plateau)
+	public static ArrayList<Integer> getCasesValides(Joueur joueur, Carte carte, Plateau plateau,
+	                                                  ArrayList<Integer> casesBloquees)
 	{
 		ArrayList<Integer> casesValides = new ArrayList<Integer>();
 		int taille = plateau.getLargeur() * plateau.getHauteur();
 		for (int i = 0; i < taille; i++)
 		{
-			if (estValide(i, joueur, carte, plateau))
+			if (estValide(i, joueur, carte, plateau, casesBloquees))
 				casesValides.add(i);
 		}
 		return casesValides;
