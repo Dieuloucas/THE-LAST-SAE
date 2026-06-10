@@ -77,7 +77,16 @@ public class PartieJeu
 		Carte carte = joueur.getCarteCourante();
 		if (carte == null) return false;
 		if (!ValidateurMouvement.estValide(numCase, joueur, carte, this.plateau)) return false;
-		joueur.getReseau().ajouterStation(numCase);
+
+		// Ajouter la station à l'extrémité correcte du chemin :
+		// si la case est adjacente à la DERNIÈRE station → extension en avant (append)
+		// sinon → elle est forcément adjacente à la PREMIÈRE station → extension en arrière (prepend)
+		int derniere = joueur.getReseau().getDerniereStation();
+		if (this.plateau.getGraphe().aArete(derniere, numCase))
+			joueur.getReseau().ajouterStation(numCase);
+		else
+			joueur.getReseau().ajouterStationEnDebut(numCase);
+
 		joueur.piocherCarte();
 		verifierFinManche();
 		return true;

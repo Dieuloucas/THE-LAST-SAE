@@ -86,7 +86,7 @@ public class ControleurJeu
 	// --- Partie ---
 	public int      getNumeroManche()  { return this.partie == null ? 0 : this.partie.getNumeroManche(); }
 	public int      getNbManches()     { return this.partie == null ? 0 : this.partie.getNbManches(); }
-	public int      getNbJoueurs()     { return this.partie == null ? 0 : this.partie.getNbManches(); }
+	public int      getNbJoueurs()     { return this.partie == null ? 0 : this.partie.getJoueurs().length; }
 	public int      getNbStations()    { return this.partie == null ? 0 : this.partie.getNbStations(); }
 	public Joueur[] getJoueurs()       { return this.partie == null ? new Joueur[0] : this.partie.getJoueurs(); }
 	public boolean  isPartieTerminee() { return this.partie != null && this.partie.isPartieTerminee(); }
