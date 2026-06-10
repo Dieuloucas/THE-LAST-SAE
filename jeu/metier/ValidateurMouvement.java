@@ -9,12 +9,15 @@ public class ValidateurMouvement
 	//  1. La case doit contenir une station
 	//  2. Le type de station doit correspondre à la carte (sauf joker)
 	//  3. La station ne doit pas déjà être dans le réseau du joueur
-	//  3b. La station ne doit pas être occupée par un autre joueur
 	//  4. La station doit être accessible depuis l'une des deux extrémités du chemin
 	//     (le graphe garantit déjà qu'il n'y a pas de station intermédiaire sur la section)
-	//  5. La nouvelle section ne doit pas en croiser une déjà tracée
+	//  5. La nouvelle section ne doit pas croiser une section déjà tracée par ce joueur
+	//  6. La nouvelle section ne doit pas être déjà empruntée par un autre joueur
+	//     Nota : un sommet peut être partagé, mais pas un tronçon (arête)
+	//
+	// sectionsBloquees : liste plate [s1a, s1b, s2a, s2b, ...] — chaque paire est un tronçon interdit
 	public static boolean estValide(int numCase, Joueur joueur, Carte carte, Plateau plateau,
-	                                ArrayList<Integer> casesBloquees)
+	                                ArrayList<Integer> sectionsBloquees)
 	{
 		// 1. Il faut qu'une station soit posée ici
 		if (plateau.getStation(numCase) == 0) return false;
@@ -25,19 +28,17 @@ public class ValidateurMouvement
 		// 3. La case ne doit pas être déjà dans le réseau de ce joueur
 		if (joueur.getReseau().contient(numCase)) return false;
 
-		// 3b. La case ne doit pas être occupée par un autre joueur
-		for (int i = 0; i < casesBloquees.size(); i++)
-			if (casesBloquees.get(i) == numCase) return false;
-
-		// 4 & 5. La case doit être accessible depuis une extrémité, sans croisement
+		// 4, 5 & 6. La case doit être accessible depuis une extrémité,
+		//            sans croisement avec les sections de ce joueur,
+		//            et sans emprunter un tronçon déjà tracé par un autre joueur
 		ArrayList<Integer> extremites = joueur.getReseau().getExtremites();
 		for (int i = 0; i < extremites.size(); i++)
 		{
 			int ext = extremites.get(i);
 			if (plateau.getGraphe().aArete(ext, numCase))
 			{
-				// Adjacente à cette extrémité : vérifier qu'on ne croise aucune section existante
-				if (!croiseSectionExistante(ext, numCase, joueur.getReseau(), plateau.getLargeur()))
+				if (!croiseSectionExistante(ext, numCase, joueur.getReseau(), plateau.getLargeur())
+				 && !tronconDejaEmprunte(ext, numCase, sectionsBloquees))
 					return true; // Coup valide
 			}
 		}
@@ -98,14 +99,29 @@ public class ValidateurMouvement
 		return 0;
 	}
 
+	// Vérifie si le tronçon (from → to) est déjà emprunté par un autre joueur.
+	// sectionsBloquees est une liste plate : [s1a, s1b, s2a, s2b, ...]
+	// Un tronçon est bidirectionnel : A→B et B→A sont identiques.
+	private static boolean tronconDejaEmprunte(int from, int to, ArrayList<Integer> sectionsBloquees)
+	{
+		for (int i = 0; i + 1 < sectionsBloquees.size(); i += 2)
+		{
+			int a = sectionsBloquees.get(i);
+			int b = sectionsBloquees.get(i + 1);
+			if ((a == from && b == to) || (a == to && b == from))
+				return true;
+		}
+		return false;
+	}
+
 	public static ArrayList<Integer> getCasesValides(Joueur joueur, Carte carte, Plateau plateau,
-	                                                  ArrayList<Integer> casesBloquees)
+	                                                  ArrayList<Integer> sectionsBloquees)
 	{
 		ArrayList<Integer> casesValides = new ArrayList<Integer>();
 		int taille = plateau.getLargeur() * plateau.getHauteur();
 		for (int i = 0; i < taille; i++)
 		{
-			if (estValide(i, joueur, carte, plateau, casesBloquees))
+			if (estValide(i, joueur, carte, plateau, sectionsBloquees))
 				casesValides.add(i);
 		}
 		return casesValides;

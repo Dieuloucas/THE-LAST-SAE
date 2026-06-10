@@ -76,7 +76,7 @@ public class PartieJeu
 		if (joueur.isMancheTerminee()) return false;
 		Carte carte = joueur.getCarteCourante();
 		if (carte == null) return false;
-		if (!ValidateurMouvement.estValide(numCase, joueur, carte, this.plateau, getCasesBloquees(numeroJoueur))) return false;
+		if (!ValidateurMouvement.estValide(numCase, joueur, carte, this.plateau, getSectionsBloquees(numeroJoueur))) return false;
 
 		// Ajouter la station à l'extrémité correcte du chemin :
 		// si la case est adjacente à la DERNIÈRE station → extension en avant (append)
@@ -158,19 +158,24 @@ public class PartieJeu
 		Joueur joueur = this.joueurs[numeroJoueur - 1];
 		Carte  carte  = joueur.getCarteCourante();
 		if (carte == null || joueur.isMancheTerminee()) return new ArrayList<Integer>();
-		return ValidateurMouvement.getCasesValides(joueur, carte, this.plateau, getCasesBloquees(numeroJoueur));
+		return ValidateurMouvement.getCasesValides(joueur, carte, this.plateau, getSectionsBloquees(numeroJoueur));
 	}
 
-	// Retourne toutes les cases occupées par les autres joueurs (interdites au joueur indiqué)
-	private ArrayList<Integer> getCasesBloquees(int numeroJoueur)
+	// Retourne les tronçons (sections) déjà tracés par les autres joueurs.
+	// Format liste plate : [s1a, s1b, s2a, s2b, ...] — chaque paire = un tronçon interdit.
+	// Un sommet peut être partagé entre joueurs ; seul le tronçon (l'arête) est exclusif.
+	private ArrayList<Integer> getSectionsBloquees(int numeroJoueur)
 	{
 		ArrayList<Integer> bloquees = new ArrayList<Integer>();
 		for (int i = 0; i < this.joueurs.length; i++)
 		{
 			if (i == numeroJoueur - 1) continue; // exclure le joueur lui-même
-			ArrayList<Integer> reseau = this.joueurs[i].getReseau().getStations();
-			for (int j = 0; j < reseau.size(); j++)
-				bloquees.add(reseau.get(j));
+			ArrayList<Integer> chemin = this.joueurs[i].getReseau().getStations();
+			for (int j = 0; j < chemin.size() - 1; j++)
+			{
+				bloquees.add(chemin.get(j));      // début du tronçon
+				bloquees.add(chemin.get(j + 1));  // fin du tronçon
+			}
 		}
 		return bloquees;
 	}
