@@ -26,11 +26,10 @@ public class Joueur
 		this.reseau.ajouterStation(numCaseDepart);
 	}
 
-	// Crée une nouvelle pioche mélangée pour ce joueur (début de manche)
-	public void initialiserPioche(int nbStations)
+	// Reçoit une copie de la pioche modèle déjà mélangée (même ordre pour tous les joueurs)
+	public void initialiserPioche(Pioche piocheModele)
 	{
-		this.pioche        = new Pioche(nbStations);
-		this.pioche.melanger();
+		this.pioche        = new Pioche(piocheModele);
 		this.carteCourante = null;
 	}
 

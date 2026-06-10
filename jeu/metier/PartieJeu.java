@@ -53,12 +53,15 @@ public class PartieJeu
 		initialiserManche();
 	}
 
-	// Donne à chaque joueur sa propre pioche et tire sa première carte
+	// Crée UNE pioche mélangée (le même ordre pour tous), puis en donne une copie à chaque joueur
 	private void initialiserManche()
 	{
+		Pioche piocheModele = new Pioche(this.nbStations);
+		piocheModele.melanger();
+
 		for (int i = 0; i < this.joueurs.length; i++)
 		{
-			this.joueurs[i].initialiserPioche(this.nbStations);
+			this.joueurs[i].initialiserPioche(piocheModele);
 			this.joueurs[i].piocherCarte();
 		}
 	}

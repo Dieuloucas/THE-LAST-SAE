@@ -23,6 +23,18 @@ public class Pioche
 		this.cartes.add(new Carte(Carte.JOKER, false));
 	}
 
+	// Constructeur de copie : reproduit exactement l'ordre d'une pioche modèle
+	public Pioche(Pioche modele)
+	{
+		this.cartes             = new ArrayList<Carte>();
+		this.nbFonceesRestantes = modele.nbFonceesRestantes;
+		for (int i = 0; i < modele.cartes.size(); i++)
+		{
+			Carte c = modele.cartes.get(i);
+			this.cartes.add(new Carte(c.getTypeStation(), c.estFoncee()));
+		}
+	}
+
 	// Mélange aléatoire Fisher-Yates
 	public void melanger()
 	{
