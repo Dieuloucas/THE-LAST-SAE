@@ -20,5 +20,7 @@ jeu/ihm/PanelGrille.java
 jeu/ihm/PanelJoueur.java
 jeu/ihm/FrameResultats.java
 jeu/ihm/PanelResultats.java
+jeu/ihm/FrameResultatsManche.java
+jeu/ihm/PanelResultatsManche.java
 jeu/ControleurJeu.java
 jeu/MainJeu.java

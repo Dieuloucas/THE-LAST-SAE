@@ -3,6 +3,7 @@ package jeu;
 import jeu.ihm.FrameAccueilJeu;
 import jeu.ihm.FrameJoueur;
 import jeu.ihm.FrameResultats;
+import jeu.ihm.FrameResultatsManche;
 import jeu.metier.*;
 import plateau.metier.*;
 
@@ -18,6 +19,7 @@ public class ControleurJeu
 	private PartieJeu       partie;
 	private FrameJoueur[]   framesJoueurs;
 	private boolean         resultatsAffichees;
+	private boolean         mancheResultatsAffichees;
 
 	// Couleurs des 4 joueurs (partagées entre IHM et contrôleur)
 	public static final Color[] COULEURS_JOUEURS = {
@@ -29,9 +31,10 @@ public class ControleurJeu
 
 	public ControleurJeu()
 	{
-		this.partie             = null;
-		this.framesJoueurs      = null;
-		this.resultatsAffichees = false;
+		this.partie                     = null;
+		this.framesJoueurs              = null;
+		this.resultatsAffichees         = false;
+		this.mancheResultatsAffichees   = false;
 		this.ihm                = new FrameAccueilJeu(this);
 	}
 
@@ -161,11 +164,12 @@ public class ControleurJeu
 	// Enregistre toutes les FrameJoueur pour pouvoir les rafraîchir en bloc
 	public void enregistrerFrames(FrameJoueur[] frames)
 	{
-		this.framesJoueurs      = frames;
-		this.resultatsAffichees = false;
+		this.framesJoueurs            = frames;
+		this.resultatsAffichees       = false;
+		this.mancheResultatsAffichees = false;
 	}
 
-	// Rafraîchit toutes les fenêtres et ouvre FrameResultats si la partie est finie
+	// Rafraîchit toutes les fenêtres et gère les transitions (fin de manche / fin de partie)
 	public void rafraichirTout()
 	{
 		if (this.framesJoueurs == null) return;
@@ -174,16 +178,51 @@ public class ControleurJeu
 			if (this.framesJoueurs[i] != null)
 				this.framesJoueurs[i].rafraichir();
 		}
-		// Ouvrir les résultats une seule fois quand la partie est terminée
+
+		// Fin de partie → écran final
 		if (isPartieTerminee() && !this.resultatsAffichees)
 		{
 			this.resultatsAffichees = true;
-			for (int i = 0; i < this.framesJoueurs.length; i++)
-			{
-				if (this.framesJoueurs[i] != null)
-					this.framesJoueurs[i].setVisible(false);
-			}
+			cacherFramesJoueurs();
 			new FrameResultats(this);
+		}
+		// Fin de manche (pas fin de partie) → écran de résultats intermédiaire
+		else if (isEntreManche() && !this.mancheResultatsAffichees)
+		{
+			this.mancheResultatsAffichees = true;
+			cacherFramesJoueurs();
+			new FrameResultatsManche(this);
+		}
+	}
+
+	// Cache toutes les fenêtres joueurs
+	private void cacherFramesJoueurs()
+	{
+		for (int i = 0; i < this.framesJoueurs.length; i++)
+		{
+			if (this.framesJoueurs[i] != null)
+				this.framesJoueurs[i].setVisible(false);
+		}
+	}
+
+	// Indique si on est en pause entre deux manches
+	public boolean isEntreManche()
+	{
+		return this.partie != null && this.partie.isEntreManche();
+	}
+
+	// Appelé par FrameResultatsManche quand le joueur clique "Manche suivante"
+	public void reprendreManche()
+	{
+		this.mancheResultatsAffichees = false;
+		this.partie.continuerPartie();
+		for (int i = 0; i < this.framesJoueurs.length; i++)
+		{
+			if (this.framesJoueurs[i] != null)
+			{
+				this.framesJoueurs[i].rafraichir();
+				this.framesJoueurs[i].setVisible(true);
+			}
 		}
 	}
 

@@ -2,15 +2,14 @@ package jeu.ihm;
 
 import jeu.ControleurJeu;
 import jeu.metier.Carte;
-import jeu.metier.Joueur;
 
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
 // Panneau principal de la fenêtre d'un joueur.
-// Gauche : informations (manche, carte, pioche, scores, boutons).
-// Centre : grille du plateau avec le réseau de tous les joueurs.
+// Gauche : infos essentielles (manche, carte, pioche, boutons).
+// Centre : grille du plateau.
 public class PanelJoueur extends JPanel implements ActionListener
 {
 	private FrameJoueur   frame;
@@ -22,9 +21,7 @@ public class PanelJoueur extends JPanel implements ActionListener
 
 	private JLabel        lblManche;
 	private JLabel        lblStatut;
-	private JLabel        lblNatureCarte;
 	private JLabel        lblPioche;
-	private JLabel[]      lblScores;
 	private JButton       btnPasser;
 	private JButton       btnQuitter;
 
@@ -44,70 +41,45 @@ public class PanelJoueur extends JPanel implements ActionListener
 		/*---------------------------------*/
 		JPanel panelInfos = new JPanel();
 		panelInfos.setLayout(new BoxLayout(panelInfos, BoxLayout.Y_AXIS));
-		panelInfos.setPreferredSize(new Dimension(195, 520));
+		panelInfos.setPreferredSize(new Dimension(155, 460));
 		panelInfos.setBackground(new Color(25, 25, 40));
-		panelInfos.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+		panelInfos.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
 		Font gras18 = new Font("Arial", Font.BOLD, 18);
-		Font gras13 = new Font("Arial", Font.BOLD, 13);
+		Font gras12 = new Font("Arial", Font.BOLD, 12);
 		Font gras11 = new Font("Arial", Font.BOLD, 11);
 		Font ital10 = new Font("Arial", Font.ITALIC, 10);
 
-		// En-tête : "JOUEUR N" en grand dans la couleur du joueur
+		// Titre joueur
 		JLabel lblTitre = new JLabel("JOUEUR " + numeroJoueur);
 		lblTitre.setFont(gras18);
 		lblTitre.setForeground(couleurJoueur);
 		lblTitre.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-		// Manche courante
+		// Manche
 		this.lblManche = new JLabel("Manche — / —");
-		this.lblManche.setFont(gras13);
+		this.lblManche.setFont(gras12);
 		this.lblManche.setForeground(Color.WHITE);
 		this.lblManche.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-		// Statut (en attente des autres joueurs…)
+		// Statut (en attente des autres)
 		this.lblStatut = new JLabel(" ");
 		this.lblStatut.setFont(ital10);
 		this.lblStatut.setForeground(new Color(200, 170, 100));
 		this.lblStatut.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-		// Carte tirée
-		JLabel lblTitreCarte = new JLabel("Carte tirée :");
-		lblTitreCarte.setFont(gras11);
-		lblTitreCarte.setForeground(new Color(180, 180, 220));
-		lblTitreCarte.setAlignmentX(Component.LEFT_ALIGNMENT);
-
+		// Carte
 		this.panelCarte = new PanelCarte(ctrl, numeroJoueur);
 		this.panelCarte.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-		this.lblNatureCarte = new JLabel(" ");
-		this.lblNatureCarte.setFont(ital10);
-		this.lblNatureCarte.setForeground(Color.LIGHT_GRAY);
-		this.lblNatureCarte.setAlignmentX(Component.LEFT_ALIGNMENT);
-
 		// Pioche
-		this.lblPioche = new JLabel("Pioche : —");
+		this.lblPioche = new JLabel("— foncées restantes");
 		this.lblPioche.setFont(gras11);
 		this.lblPioche.setForeground(new Color(180, 180, 220));
 		this.lblPioche.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-		// Scores des joueurs
-		JLabel lblTitreScores = new JLabel("Scores");
-		lblTitreScores.setFont(gras13);
-		lblTitreScores.setForeground(Color.WHITE);
-		lblTitreScores.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-		this.lblScores = new JLabel[4];
-		for (int i = 0; i < 4; i++)
-		{
-			this.lblScores[i] = new JLabel("Joueur " + (i + 1) + " : —");
-			this.lblScores[i].setFont(gras11);
-			this.lblScores[i].setForeground(ControleurJeu.COULEURS_JOUEURS[i]);
-			this.lblScores[i].setAlignmentX(Component.LEFT_ALIGNMENT);
-		}
-
 		// Boutons
-		this.btnPasser  = new JButton("Passer ce tour");
+		this.btnPasser  = new JButton("Passer");
 		this.btnQuitter = new JButton("Quitter");
 		this.btnPasser .setFont(gras11);
 		this.btnQuitter.setFont(gras11);
@@ -122,25 +94,15 @@ public class PanelJoueur extends JPanel implements ActionListener
 		panelInfos.add(this.lblManche);
 		panelInfos.add(Box.createVerticalStrut(4));
 		panelInfos.add(this.lblStatut);
-		panelInfos.add(Box.createVerticalStrut(6));
+		panelInfos.add(Box.createVerticalStrut(10));
 		panelInfos.add(creerSep());
-		panelInfos.add(Box.createVerticalStrut(6));
-		panelInfos.add(lblTitreCarte);
-		panelInfos.add(Box.createVerticalStrut(4));
+		panelInfos.add(Box.createVerticalStrut(10));
 		panelInfos.add(this.panelCarte);
-		panelInfos.add(Box.createVerticalStrut(4));
-		panelInfos.add(this.lblNatureCarte);
-		panelInfos.add(Box.createVerticalStrut(4));
+		panelInfos.add(Box.createVerticalStrut(8));
 		panelInfos.add(this.lblPioche);
-		panelInfos.add(Box.createVerticalStrut(6));
-		panelInfos.add(creerSep());
-		panelInfos.add(Box.createVerticalStrut(6));
-		panelInfos.add(lblTitreScores);
-		panelInfos.add(Box.createVerticalStrut(4));
-		for (int i = 0; i < 4; i++) panelInfos.add(this.lblScores[i]);
 		panelInfos.add(Box.createVerticalGlue());
 		panelInfos.add(creerSep());
-		panelInfos.add(Box.createVerticalStrut(6));
+		panelInfos.add(Box.createVerticalStrut(8));
 		panelInfos.add(this.btnPasser);
 		panelInfos.add(Box.createVerticalStrut(4));
 		panelInfos.add(this.btnQuitter);
@@ -164,13 +126,11 @@ public class PanelJoueur extends JPanel implements ActionListener
 		this.btnPasser .addActionListener(this);
 		this.btnQuitter.addActionListener(this);
 
-		// Construction initiale de la grille
 		this.panelGrille.construireGrille();
 		this.frame.pack();
 		rafraichir();
 	}
 
-	// Appelée par PanelGrille quand le joueur clique sur une case
 	public void caseCliquee(int index)
 	{
 		if (this.ctrl.isMancheJoueurTerminee(this.numeroJoueur)) return;
@@ -178,7 +138,6 @@ public class PanelJoueur extends JPanel implements ActionListener
 		this.ctrl.rafraichirTout();
 	}
 
-	// Gestion des boutons "Passer" et "Quitter"
 	public void actionPerformed(ActionEvent e)
 	{
 		if (e.getSource() == this.btnPasser)
@@ -195,17 +154,15 @@ public class PanelJoueur extends JPanel implements ActionListener
 		}
 	}
 
-	// Met à jour tous les composants selon l'état courant du jeu
 	public void rafraichir()
 	{
 		int manche    = this.ctrl.getNumeroManche();
 		int nbManches = this.ctrl.getNbManches();
 		this.lblManche.setText("Manche " + manche + " / " + nbManches);
 
-		// Statut : désactivation une fois les foncées épuisées
 		if (this.ctrl.isMancheJoueurTerminee(this.numeroJoueur))
 		{
-			this.lblStatut.setText("En attente des autres joueurs…");
+			this.lblStatut.setText("En attente…");
 			this.btnPasser.setEnabled(false);
 		}
 		else
@@ -214,51 +171,10 @@ public class PanelJoueur extends JPanel implements ActionListener
 			this.btnPasser.setEnabled(true);
 		}
 
-		// Carte courante (repaint du composant dessiné)
 		this.panelCarte.repaint();
 
-		// Nature de la carte
-		Carte carte = this.ctrl.getCarteCourante(this.numeroJoueur);
-		if (carte != null)
-		{
-			if (carte.estFoncee())
-			{
-				this.lblNatureCarte.setText("Foncée — à poser sur le réseau");
-				this.lblNatureCarte.setForeground(new Color(255, 140, 100));
-			}
-			else
-			{
-				this.lblNatureCarte.setText("Claire — facultative");
-				this.lblNatureCarte.setForeground(new Color(100, 200, 100));
-			}
-		}
-		else
-		{
-			this.lblNatureCarte.setText(" ");
-		}
-
-		// Pioche
 		int fonceesR = this.ctrl.getNbFonceesRestantes(this.numeroJoueur);
-		int totalR   = this.ctrl.getNbCartesRestantes(this.numeroJoueur);
-		this.lblPioche.setText(fonceesR + " foncées / " + totalR + " restantes");
-
-		// Scores de tous les joueurs
-		Joueur[] joueurs = this.ctrl.getJoueurs();
-		for (int i = 0; i < 4; i++)
-		{
-			if (i < joueurs.length)
-			{
-				Joueur j  = joueurs[i];
-				int score = j.getScoreManche(manche - 1);
-				int total = j.getScoreTotal();
-				this.lblScores[i].setText("J" + j.getNumero() + " : " + score + " pt  (tot. " + total + ")");
-				this.lblScores[i].setVisible(true);
-			}
-			else
-			{
-				this.lblScores[i].setVisible(false);
-			}
-		}
+		this.lblPioche.setText(fonceesR + " foncée(s) restante(s)");
 
 		this.panelGrille.repaint();
 	}
@@ -266,7 +182,7 @@ public class PanelJoueur extends JPanel implements ActionListener
 	private JSeparator creerSep()
 	{
 		JSeparator sep = new JSeparator();
-		sep.setMaximumSize(new Dimension(185, 4));
+		sep.setMaximumSize(new Dimension(140, 4));
 		sep.setAlignmentX(Component.LEFT_ALIGNMENT);
 		sep.setForeground(new Color(80, 80, 100));
 		return sep;

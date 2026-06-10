@@ -14,12 +14,14 @@ public class PartieJeu
 	private int      nbManches;    // = nombre de joueurs = nombre de départs distincts
 	private int      nbStations;
 	private boolean  partieTerminee;
+	private boolean  entreManche;    // true quand une manche vient de finir, en attente de "continuer"
 
 	public PartieJeu(Plateau plateau)
 	{
 		this.plateau        = plateau;
 		this.numeroManche   = 0;
 		this.partieTerminee = false;
+		this.entreManche    = false;
 
 		// Détecter nbJoueurs (max valeur depart) et nbStations (max valeur station)
 		int taille     = plateau.getLargeur() * plateau.getHauteur();
@@ -118,9 +120,19 @@ public class PartieJeu
 		}
 
 		if (this.numeroManche < this.nbManches)
-			prochaineManche();
+			this.entreManche = true; // pause : attend que le joueur clique "Manche suivante"
 		else
 			this.partieTerminee = true;
+	}
+
+	// Appelée quand le joueur clique "Manche suivante" sur l'écran de résultats
+	public void continuerPartie()
+	{
+		if (this.entreManche)
+		{
+			this.entreManche = false;
+			prochaineManche();
+		}
 	}
 
 	private void prochaineManche()
@@ -147,4 +159,5 @@ public class PartieJeu
 	public int      getNbManches()     { return this.nbManches; }
 	public int      getNbStations()    { return this.nbStations; }
 	public boolean  isPartieTerminee() { return this.partieTerminee; }
+	public boolean  isEntreManche()    { return this.entreManche; }
 }
