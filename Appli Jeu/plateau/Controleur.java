@@ -61,7 +61,7 @@ public class Controleur
 	// Renvoie la liste des plateaux (.txt) trouvés dans plateau/sauvegarde.
 	public File[] getSauvegardes()
 	{
-		File[] liste = new File("plateau/sauvegarde").listFiles();
+		File[] liste = new File("../plateau/sauvegarde").listFiles();
 		if (liste == null) return new File[0];
 
 		ArrayList<File> txt = new ArrayList<File>();
