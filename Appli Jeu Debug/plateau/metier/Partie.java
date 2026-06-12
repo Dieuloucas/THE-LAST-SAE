@@ -188,6 +188,24 @@ public class Partie
 		return ValidateurMouvement.getCasesValides(joueur, this.carteCourante, this.plateau);
 	}
 
+	// ===== MODE DEBUG (démonstration à l'oral) =====
+
+	// Remplace la carte commune courante par une carte choisie (au lieu de la pioche aléatoire).
+	public void forcerCarteDebug(int typeStation, boolean foncee)
+	{
+		this.carteCourante = new Carte(typeStation, foncee);
+	}
+
+	// Termine immédiatement la manche en cours (calcule les scores, comme si la pioche était épuisée).
+	public void sauterMancheDebug()
+	{
+		if (this.partieTerminee || this.entreManche) return;
+		finManche();
+	}
+
+	// Nombre de types de stations (sert au sélecteur de carte du mode debug).
+	public int getNbStations() { return this.nbStations; }
+
 	public boolean estDansReseau(int numeroJoueur, int numCase)
 	{
 		if (numeroJoueur < 1 || numeroJoueur > this.joueurs.length) return false;

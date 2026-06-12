@@ -26,6 +26,7 @@ public class Controleur
 	private FrameJoueur[] framesJoueurs;
 	private FrameInfos    frameInfos;
 	private boolean       resultatsAffiches;
+	private boolean       modeDebug;          // outils de démonstration (graphe, logs, carte forcée)
 
 	// Couleurs des joueurs. Elles tournent à chaque manche (la couleur du J2 passe au J1, etc.).
 	public static final Color[] COULEURS_JOUEURS = {
@@ -35,11 +36,17 @@ public class Controleur
 		new Color(220, 140,   0)   // orange
 	};
 
-	public Controleur()
+	public Controleur() { this(false); }
+
+	public Controleur(boolean modeDebug)
 	{
-		this.metier = new Plateau(10, 10);
-		this.ihm    = new FrameAccueil(this);
+		this.modeDebug = modeDebug;
+		this.metier    = new Plateau(10, 10);
+		this.ihm       = new FrameAccueil(this);
 	}
+
+	// Vrai si le jeu a été lancé en mode debug (argument "debug" au démarrage).
+	public boolean isModeDebug() { return this.modeDebug; }
 
 	/*-------------------------------------*/
 	/* Chargement d'un plateau             */
@@ -105,6 +112,8 @@ public class Controleur
 		this.partie            = new Partie(this.metier, nbManches);
 		this.resultatsAffiches = false;
 
+		if (this.modeDebug) afficherInfosDemarrage();
+
 		this.frameInfos = new FrameInfos(this);
 
 		int nb = this.partie.getNbJoueurs();
@@ -143,7 +152,28 @@ public class Controleur
 
 	public boolean jouerCoup(int numeroJoueur, int numCase)
 	{
-		return this.partie != null && this.partie.jouerCoup(numeroJoueur, numCase);
+		if (this.partie == null) return false;
+
+		// DEBUG : on prépare l'explication AVANT de jouer (jouer change l'état du tour).
+		// On vérifie d'abord le tour, puis les 4 règles de validité de la case.
+		String info = null;
+		if (this.modeDebug && numeroJoueur >= 1 && numeroJoueur <= this.partie.getNbJoueurs())
+		{
+			if (!this.partie.estSonTour(numeroJoueur))
+				info = "REFUSE : ce n'est pas le tour du joueur " + numeroJoueur;
+			else
+			{
+				Joueur joueur = this.partie.getJoueurs()[numeroJoueur - 1];
+				info = ValidateurMouvement.raisonRefus(numCase, joueur, this.partie.getCarteCourante(), this.metier);
+			}
+		}
+
+		boolean ok = this.partie.jouerCoup(numeroJoueur, numCase);
+
+		if (info != null)
+			System.out.println("[DEBUG] Joueur " + numeroJoueur + " -> case " + numCase + " : " + info);
+
+		return ok;
 	}
 
 	public void passerTour(int numeroJoueur)
@@ -185,11 +215,41 @@ public class Controleur
 		int      m  = this.partie.getNumeroManche();
 		Joueur[] js = this.partie.getJoueurs();
 
+		// DEBUG : détail du calcul du score (zone par zone) dans la console.
+		if (this.modeDebug)
+		{
+			System.out.println("[DEBUG] === Fin de la manche " + m + " : calcul des scores ===");
+			for (int i = 0; i < js.length; i++)
+			{
+				System.out.println("[DEBUG] Joueur " + (i + 1) + " :");
+				System.out.println(CalculateurScore.detailler(js[i].getReseau(), this.metier));
+			}
+		}
+
 		String texte = "Manche " + m + " terminée\n\n";
 		for (int i = 0; i < js.length; i++)
 			texte += "Joueur " + (i + 1) + " : " + js[i].getScoreManche(m - 1) + " points\n";
 
 		JOptionPane.showMessageDialog(null, texte);
+	}
+
+	// DEBUG : récapitulatif de la partie au démarrage (joueurs, manches, stations, arêtes du graphe).
+	private void afficherInfosDemarrage()
+	{
+		int taille     = this.metier.getLargeur() * this.metier.getHauteur();
+		int nbStations = 0;
+		int nbAretes   = 0;
+		for (int i = 0; i < taille; i++)
+		{
+			if (this.metier.getStation(i) > 0) nbStations++;
+			for (int j = i + 1; j < taille; j++)
+				if (this.metier.getGraphe().aArete(i, j)) nbAretes++;
+		}
+		System.out.println("[DEBUG] === Demarrage de la partie ===");
+		System.out.println("[DEBUG] Joueurs  : " + this.partie.getNbJoueurs());
+		System.out.println("[DEBUG] Manches  : " + this.partie.getNbManches());
+		System.out.println("[DEBUG] Stations : " + nbStations + " (types 1.." + this.partie.getNbStations() + ")");
+		System.out.println("[DEBUG] Aretes   : " + nbAretes + " (liaisons du graphe)");
 	}
 
 	/*-------------------------------------*/
@@ -269,6 +329,29 @@ public class Controleur
 	public int getArrondissement(int i) { return this.metier.getArrondissement(i); }
 	public int getStation(int i)        { return this.metier.getStation(i); }
 
+	// MODE DEBUG : accès au graphe et à la pioche pour la démonstration.
+	public boolean aArete(int i, int j)                  { return this.metier.getGraphe().aArete(i, j); }
+	public int     getNbStations()                       { return this.partie == null ? 0 : this.partie.getNbStations(); }
+	public void forcerCarte(int type, boolean foncee)
+	{
+		if (this.partie == null) return;
+		this.partie.forcerCarteDebug(type, foncee);
+		if (this.modeDebug)
+		{
+			String nom = (type == Carte.JOKER) ? "Joker" : ("Station " + type);
+			System.out.println("[DEBUG] Carte forcee : " + nom + (foncee ? " (foncee)" : " (claire)"));
+		}
+	}
+
+	// MODE DEBUG : termine immédiatement la manche en cours (passe au calcul des scores).
+	public void sauterManche()
+	{
+		if (this.partie == null) return;
+		this.partie.sauterMancheDebug();
+		if (this.modeDebug) System.out.println("[DEBUG] Manche sautee (fin forcee)");
+		rafraichirTout();
+	}
+
 	/*-------------------------------------*/
 	/* Images                              */
 	/*-------------------------------------*/
@@ -326,6 +409,8 @@ public class Controleur
 
 	public static void main(String[] a)
 	{
-		new Controleur();
+		// Mode debug activé en lançant :  java plateau.Controleur debug
+		boolean debug = (a.length > 0 && a[0].equals("debug"));
+		new Controleur(debug);
 	}
 }

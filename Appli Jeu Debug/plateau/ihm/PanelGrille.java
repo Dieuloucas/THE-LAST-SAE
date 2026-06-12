@@ -94,6 +94,28 @@ public class PanelGrille extends JPanel implements MouseListener
 			}
 		}
 
+		// --- DEBUG : arêtes du graphe (lignes fines grises entre stations reliées) ---
+		// On rend visible la MATRICE D'ADJACENCE : une ligne par liaison du graphe.
+		// Paires (a, b) avec a < b pour ne pas tracer deux fois la même arête.
+		if (this.ctrl.isModeDebug())
+		{
+			g.setColor(new Color(120, 120, 120));
+			for (int a = 0; a < taille; a++)
+			{
+				for (int b = a + 1; b < taille; b++)
+				{
+					if (this.ctrl.aArete(a, b))
+					{
+						int xa = (a % largeur) * cellW + cellW / 2;
+						int ya = (a / largeur) * cellH + cellH / 2;
+						int xb = (b % largeur) * cellW + cellW / 2;
+						int yb = (b / largeur) * cellH + cellH / 2;
+						g.drawLine(xa, ya, xb, yb);
+					}
+				}
+			}
+		}
+
 		// Couleur du tracé = couleur de CE joueur pour la manche en cours
 		// (les couleurs tournent entre les joueurs à chaque manche)
 		Color couleur = this.ctrl.getCouleurJoueur(this.numeroJoueur);
@@ -134,6 +156,14 @@ public class PanelGrille extends JPanel implements MouseListener
 			{
 				g.setColor(new Color(255, 255, 0, 120));
 				g.fillRect(x, y, cellW, cellH);
+			}
+
+			// DEBUG : numéro (index) de la case, en haut à gauche
+			if (this.ctrl.isModeDebug())
+			{
+				g.setColor(new Color(30, 30, 30));
+				g.setFont(new Font("Arial", Font.PLAIN, 9));
+				g.drawString(Integer.toString(i), x + 2, y + 11);
 			}
 		}
 

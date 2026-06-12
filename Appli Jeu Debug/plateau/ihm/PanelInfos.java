@@ -1,6 +1,7 @@
 package plateau.ihm;
 
 import plateau.Controleur;
+import plateau.metier.Carte;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -19,6 +20,12 @@ public class PanelInfos extends JPanel implements ActionListener
 	private JLabel[]   lblStatutJoueur;
 	private JButton[]  btnPasserJoueur;
 	private JButton    btnQuitter;
+
+	// MODE DEBUG : sélecteur pour forcer la carte commune (restent null hors mode debug)
+	private JComboBox<String> cmbTypeDebug;
+	private JCheckBox         chkFonceeDebug;
+	private JButton           btnForcerDebug;
+	private JButton           btnSauterManche;
 
 	public PanelInfos(Controleur ctrl)
 	{
@@ -105,6 +112,56 @@ public class PanelInfos extends JPanel implements ActionListener
 		}
 
 		/*-------------------------*/
+		/* DEBUG : forcer la carte */
+		/*-------------------------*/
+		if (this.ctrl.isModeDebug())
+		{
+			this.add(Box.createVerticalStrut(12));
+			this.add(new JSeparator());
+			this.add(Box.createVerticalStrut(6));
+
+			JLabel lblDebug = new JLabel("DEBUG : forcer la carte");
+			lblDebug.setFont(gras12);
+			lblDebug.setForeground(new Color(180, 0, 0));
+			lblDebug.setAlignmentX(Component.CENTER_ALIGNMENT);
+			this.add(lblDebug);
+			this.add(Box.createVerticalStrut(5));
+
+			// Un choix par type de station (1..N), plus "Joker" en dernier.
+			this.cmbTypeDebug = new JComboBox<String>();
+			for (int t = 1; t <= this.ctrl.getNbStations(); t++)
+				this.cmbTypeDebug.addItem("Station " + t);
+			this.cmbTypeDebug.addItem("Joker");
+			this.cmbTypeDebug.setFont(normal12);
+			this.cmbTypeDebug.setMaximumSize(new Dimension(180, 26));
+			this.cmbTypeDebug.setAlignmentX(Component.CENTER_ALIGNMENT);
+			this.add(this.cmbTypeDebug);
+			this.add(Box.createVerticalStrut(5));
+
+			this.chkFonceeDebug = new JCheckBox("Carte foncée");
+			this.chkFonceeDebug.setFont(normal12);
+			this.chkFonceeDebug.setAlignmentX(Component.CENTER_ALIGNMENT);
+			this.add(this.chkFonceeDebug);
+			this.add(Box.createVerticalStrut(5));
+
+			this.btnForcerDebug = new JButton("Forcer la carte");
+			this.btnForcerDebug.setFont(normal12);
+			this.btnForcerDebug.setMaximumSize(new Dimension(180, 26));
+			this.btnForcerDebug.setAlignmentX(Component.CENTER_ALIGNMENT);
+			this.btnForcerDebug.addActionListener(this);
+			this.add(this.btnForcerDebug);
+
+			this.add(Box.createVerticalStrut(5));
+
+			this.btnSauterManche = new JButton("Sauter la manche");
+			this.btnSauterManche.setFont(normal12);
+			this.btnSauterManche.setMaximumSize(new Dimension(180, 26));
+			this.btnSauterManche.setAlignmentX(Component.CENTER_ALIGNMENT);
+			this.btnSauterManche.addActionListener(this);
+			this.add(this.btnSauterManche);
+		}
+
+		/*-------------------------*/
 		/* Quitter                 */
 		/*-------------------------*/
 		this.add(Box.createVerticalGlue());
@@ -123,6 +180,25 @@ public class PanelInfos extends JPanel implements ActionListener
 		if (e.getSource() == this.btnQuitter)
 		{
 			System.exit(0);
+			return;
+		}
+
+		// DEBUG : forcer la carte commune choisie dans le sélecteur
+		if (this.btnForcerDebug != null && e.getSource() == this.btnForcerDebug)
+		{
+			int idx = this.cmbTypeDebug.getSelectedIndex();
+			int nb  = this.ctrl.getNbStations();
+			// idx 0..nb-1 -> Station 1..N ; dernier indice -> Joker
+			int type = (idx >= 0 && idx < nb) ? (idx + 1) : Carte.JOKER;
+			this.ctrl.forcerCarte(type, this.chkFonceeDebug.isSelected());
+			this.ctrl.rafraichirTout();
+			return;
+		}
+
+		// DEBUG : sauter la manche en cours (fin forcée)
+		if (this.btnSauterManche != null && e.getSource() == this.btnSauterManche)
+		{
+			this.ctrl.sauterManche();
 			return;
 		}
 
