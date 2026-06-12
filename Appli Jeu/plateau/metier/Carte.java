@@ -15,7 +15,6 @@ public class Carte
 	}
 
 	public int     getTypeStation() { return this.typeStation; }
-	
 	public boolean estFoncee()      { return this.estFoncee; }
 	public boolean estJoker()       { return this.typeStation == JOKER; }
 }

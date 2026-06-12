@@ -37,23 +37,19 @@ public class PanelAccueil extends JPanel implements ActionListener
         /*-------------------------*/
         /* Création des composants */
         /*-------------------------*/
-
         this.btnJouer  = new JButton("Jouer");
         this.btnRegles = new JButton("Règles");
 
         Font fontBtn = new Font("Arial", Font.BOLD, 16);
-
         this.btnJouer .setFont(fontBtn);
         this.btnRegles.setFont(fontBtn);
 
         /*-------------------------------*/
         /* Positionnement des composants */
         /*-------------------------------*/
-
         this.setLayout(new GridBagLayout()); // GridBagLayout utilisé pour centrer automatiquement le contenu
 
         // Regroupement des boutons dans une grille verticale transparente (2 lignes, 1 colonne)
-
         JPanel panelBoutons = new JPanel(new GridLayout(2, 1, 10, 10));
         panelBoutons.setOpaque(false);
 
@@ -65,25 +61,20 @@ public class PanelAccueil extends JPanel implements ActionListener
         /*---------------------------*/
         /* Activation des composants */
         /*---------------------------*/
-
         this.btnJouer .addActionListener(this);
         this.btnRegles.addActionListener(this);
     }
 
     // Gestion des actions au clic sur les boutons
-
     public void actionPerformed(ActionEvent e)
     {
         // 1. Action : Clic sur "Jouer" -> Ouvre l'écran de chargement d'un plateau et cache l'accueil
-
         if (e.getSource() == this.btnJouer)
         {
             this.frmChargement = new FrameChargement(this.ctrl);
             this.frmAccueil.setVisible(false);
         }
-        
         // 2. Action : Clic sur "Règles" -> Cherche le fichier PDF local et l'ouvre avec le lecteur par défaut
-
         else if (e.getSource() == this.btnRegles)
         {
             try
@@ -95,9 +86,9 @@ public class PanelAccueil extends JPanel implements ActionListener
                 };
 
                 java.io.File fichierPdf = null;
-                for (String ch : cheminRegles)
+                for (int i = 0; i < cheminRegles.length; i++)
                 {
-                    java.io.File testFichier = new java.io.File(ch);
+                    java.io.File testFichier = new java.io.File(cheminRegles[i]);
                     if (testFichier.exists())
                     {
                         fichierPdf = testFichier;

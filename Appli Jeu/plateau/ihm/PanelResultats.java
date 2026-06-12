@@ -1,154 +1,115 @@
 package plateau.ihm;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.event.*;
-import javax.swing.*;
 import plateau.Controleur;
 import plateau.metier.Joueur;
 
-// Écran de fin de partie : score de chaque joueur + vainqueur.
-// Même DA que les autres écrans : image de fond + voile sombre + texte blanc.
+import java.awt.*;
+import java.awt.event.*;
+import java.util.ArrayList;
+import javax.swing.*;
+
+// Tableau des scores (par manche + total) et annonce du/des gagnant(s).
 public class PanelResultats extends JPanel implements ActionListener
 {
-	private FrameResultats frame;
-	private Controleur     ctrl;
-	private Image          imgFond;
+	private Controleur ctrl;
+	private JButton    btnQuitter;
 
-	private JButton        btnQuitter;
-
-	public PanelResultats(FrameResultats frame, Controleur ctrl)
+	public PanelResultats(Controleur ctrl)
 	{
-		this.frame = frame;
-		this.ctrl  = ctrl;
+		this.ctrl = ctrl;
 
-		String img = this.ctrl.getImageFond2();
-		if (img != null) this.imgFond = new ImageIcon(img).getImage();
-
+		this.setBackground(Color.WHITE);
 		this.setLayout(new BorderLayout(10, 10));
-		this.setBorder(BorderFactory.createEmptyBorder(35, 35, 35, 35));
-		this.setOpaque(false);
-		this.setPreferredSize(new Dimension(460, 400));
+		this.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-		Font gras22 = new Font("Arial", Font.BOLD, 22);
-		Font gras14 = new Font("Arial", Font.BOLD, 14);
-		Font gras12 = new Font("Arial", Font.BOLD, 12);
+		Joueur[] js        = ctrl.getJoueurs();
+		int      nbManches = ctrl.getNbManches();
 
-		Joueur[] joueurs = this.ctrl.getJoueurs();
+		JLabel lblTitre = new JLabel("Résultats", SwingConstants.CENTER);
+		lblTitre.setFont(new Font("Arial", Font.BOLD, 20));
+		this.add(lblTitre, BorderLayout.NORTH);
 
-		/*-------------------------*/
-		/* Titre + vainqueur       */
-		/*-------------------------*/
-		JLabel lblTitre = new JLabel("Partie terminée !", SwingConstants.CENTER);
-		lblTitre.setFont(gras22);
-		lblTitre.setForeground(Color.WHITE);
+		/*-------------------------------------*/
+		/* Tableau des scores                  */
+		/*-------------------------------------*/
+		Font gras   = new Font("Arial", Font.BOLD, 13);
+		Font normal = new Font("Arial", Font.PLAIN, 13);
 
-		// Déterminer le meilleur score et compter les ex-aequo
-		int meilleurScore = -1;
-		for (int i = 0; i < joueurs.length; i++)
+		JPanel grille = new JPanel(new GridLayout(js.length + 1, nbManches + 2, 8, 6));
+		grille.setBackground(Color.WHITE);
+
+		// Ligne d'entête : Joueur | M1 | M2 | ... | Total
+		grille.add(entete("Joueur", gras));
+		for (int m = 1; m <= nbManches; m++) grille.add(entete("M" + m, gras));
+		grille.add(entete("Total", gras));
+
+		// Une ligne par joueur
+		for (int i = 0; i < js.length; i++)
 		{
-			if (joueurs[i].getScore() > meilleurScore) meilleurScore = joueurs[i].getScore();
-		}
-		int nbExAequo  = 0;
-		int numVainqueur = 0;
-		for (int i = 0; i < joueurs.length; i++)
-		{
-			if (joueurs[i].getScore() == meilleurScore)
-			{
-				nbExAequo++;
-				numVainqueur = joueurs[i].getNumero();
-			}
+			grille.add(cellule("Joueur " + (i + 1), gras));
+			for (int m = 0; m < nbManches; m++)
+				grille.add(cellule("" + js[i].getScoreManche(m), normal));
+			grille.add(cellule("" + js[i].getScoreTotal(), gras));
 		}
 
-		JLabel lblVainqueur;
-		if (nbExAequo > 1)
+		this.add(grille, BorderLayout.CENTER);
+
+		/*-------------------------------------*/
+		/* Gagnant(s) + bouton Quitter         */
+		/*-------------------------------------*/
+		ArrayList<Integer> gagnants = ctrl.getGagnants();
+		String texte;
+		if (gagnants.size() == 1)
 		{
-			lblVainqueur = new JLabel("Égalité ! (" + meilleurScore + " pts)", SwingConstants.CENTER);
-			lblVainqueur.setForeground(Color.WHITE);
+			texte = "Gagnant : Joueur " + gagnants.get(0);
 		}
 		else
 		{
-			lblVainqueur = new JLabel("Vainqueur : Joueur " + numVainqueur + " (" + meilleurScore + " pts)", SwingConstants.CENTER);
-			lblVainqueur.setForeground(this.ctrl.getCouleurJoueur(numVainqueur));
+			StringBuilder sb = new StringBuilder("Égalité, victoire partagée : ");
+			for (int k = 0; k < gagnants.size(); k++)
+			{
+				if (k > 0) sb.append(", ");
+				sb.append("Joueur " + gagnants.get(k));
+			}
+			texte = sb.toString();
 		}
-		lblVainqueur.setFont(gras14);
 
-		JPanel panelHaut = new JPanel(new GridLayout(2, 1, 5, 8));
-
-		panelHaut.setOpaque(false);
-
-		panelHaut.add(lblTitre);
-		panelHaut.add(lblVainqueur);
-
-		/*-------------------------*/
-		/* Tableau des scores      */
-		/*-------------------------*/
-
-		String[]   colonnes = { "Joueur", "Score" };
-		Object[][] donnees  = new Object[joueurs.length][2];
-
-		for (int i = 0; i < joueurs.length; i++)
-		{
-			donnees[i][0] = "Joueur " + joueurs[i].getNumero();
-			donnees[i][1] = joueurs[i].getScore() + " pts";
-		}
-		JTable tableau = new JTable(donnees, colonnes);
-
-		tableau.setFont(gras12);
-		tableau.setRowHeight(30);
-
-		tableau.getTableHeader().setFont(gras12);
-
-		tableau.setEnabled(false);
-
-		JScrollPane scroll = new JScrollPane(tableau);
-
-		scroll.setOpaque(false);
-
-		scroll.getViewport().setOpaque(false);
-
-		/*-------------------------*/
-		/* Bouton Quitter          */
-		/*-------------------------*/
+		JLabel lblGagnant = new JLabel(texte, SwingConstants.CENTER);
+		lblGagnant.setFont(new Font("Arial", Font.BOLD, 16));
 
 		this.btnQuitter = new JButton("Quitter");
-		this.btnQuitter.setFont(gras14);
-
-		JPanel panelBas = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
-
-		panelBas.setOpaque(false);
-		panelBas.add(this.btnQuitter);
-
-		/*-------------------------*/
-		/* Assemblage              */
-		/*-------------------------*/
-		
-		this.add(panelHaut, BorderLayout.NORTH);
-		this.add(scroll,    BorderLayout.CENTER);
-		this.add(panelBas,  BorderLayout.SOUTH);
-
 		this.btnQuitter.addActionListener(this);
+
+		JPanel pBouton = new JPanel();
+		pBouton.setBackground(Color.WHITE);
+		pBouton.add(this.btnQuitter);
+
+		JPanel bas = new JPanel(new BorderLayout(10, 10));
+		bas.setBackground(Color.WHITE);
+		bas.add(lblGagnant, BorderLayout.CENTER);
+		bas.add(pBouton, BorderLayout.SOUTH);
+
+		this.add(bas, BorderLayout.SOUTH);
+	}
+
+	private JLabel entete(String t, Font f)
+	{
+		JLabel l = new JLabel(t, SwingConstants.CENTER);
+		l.setFont(f);
+		l.setOpaque(true);
+		l.setBackground(new Color(230, 230, 230));
+		return l;
+	}
+
+	private JLabel cellule(String t, Font f)
+	{
+		JLabel l = new JLabel(t, SwingConstants.CENTER);
+		l.setFont(f);
+		return l;
 	}
 
 	public void actionPerformed(ActionEvent e)
 	{
-		if (e.getSource() == this.btnQuitter)
-			System.exit(0);
-	}
-
-        @Override
-	protected void paintComponent(Graphics g)
-	{
-		super.paintComponent(g);
-		if (this.imgFond != null)
-			g.drawImage(this.imgFond, 0, 0, getWidth(), getHeight(), this);
-		g.setColor(new Color(0, 0, 0, 150));
-		g.fillRect(0, 0, getWidth(), getHeight());
+		if (e.getSource() == this.btnQuitter) System.exit(0);
 	}
 }

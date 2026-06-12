@@ -1,45 +1,61 @@
 package plateau.metier;
 
-import java.util.ArrayList;
-
-// Calcule le score d'un réseau (chemin) selon les règles du jeu :
-// nombre de zones (arrondissements) traversées × nombre de stations
-// présentes dans la zone la plus représentée du chemin.
-
+// Calcule le score d'un réseau à la fin d'une manche.
+// Score = (nombre de zones traversées) x (nombre de sommets le plus élevé dans une seule zone).
+// Une zone = un arrondissement. La station de départ compte comme un sommet.
 public class CalculateurScore
 {
 	public static int calculer(ReseauJoueur reseau, Plateau plateau)
 	{
-		ArrayList<Integer> stations = reseau.getStations();
+		// Compte le nombre de stations du tracé dans chaque arrondissement (1..20)
+		int[] compteParZone = new int[21];
 
-		// Trouver le plus grand numéro d'arrondissement présent dans le chemin
-
-		int maxArr = 0;
+		java.util.ArrayList<Integer> stations = reseau.getStations();
 		for (int i = 0; i < stations.size(); i++)
 		{
 			int arr = plateau.getArrondissement(stations.get(i));
-			if (arr > maxArr) maxArr = arr;
+			if (arr >= 1 && arr <= 20)
+				compteParZone[arr]++;
 		}
-		if (maxArr == 0) return 0;
 
-		// Compter le nombre de stations du chemin par arrondissement
+		int nbZones        = 0; // nombre de zones (arrondissements) traversées
+		int maxDansUneZone = 0; // plus grand nombre de sommets dans une seule zone
 
-		int[] compteParArr = new int[maxArr + 1]; // index 1..maxArr, index 0 ignoré
+		for (int a = 1; a <= 20; a++)
+		{
+			if (compteParZone[a] > 0)              nbZones++;
+			if (compteParZone[a] > maxDansUneZone) maxDansUneZone = compteParZone[a];
+		}
+
+		return nbZones * maxDansUneZone;
+	}
+
+	// MODE DEBUG : renvoie le détail du calcul (pour l'expliquer à l'oral).
+	// Reprend le même calcul que calculer(), mais en listant chaque zone.
+	public static String detailler(ReseauJoueur reseau, Plateau plateau)
+	{
+		int[] compteParZone = new int[21];
+
+		java.util.ArrayList<Integer> stations = reseau.getStations();
 		for (int i = 0; i < stations.size(); i++)
 		{
 			int arr = plateau.getArrondissement(stations.get(i));
-			if (arr >= 1) compteParArr[arr]++;
+			if (arr >= 1 && arr <= 20) compteParZone[arr]++;
 		}
 
-		int nbZones     = 0; // nombre d'arrondissements différents traversés
-		int maxStations = 0; // stations dans l'arrondissement le plus représenté
-
-		for (int a = 1; a <= maxArr; a++)
+		String detail        = "";
+		int    nbZones        = 0;
+		int    maxDansUneZone = 0;
+		for (int a = 1; a <= 20; a++)
 		{
-			if (compteParArr[a] > 0)           nbZones++;
-			if (compteParArr[a] > maxStations) maxStations = compteParArr[a];
+			if (compteParZone[a] > 0)
+			{
+				detail += "      zone " + a + " : " + compteParZone[a] + " station(s)\n";
+				nbZones++;
+				if (compteParZone[a] > maxDansUneZone) maxDansUneZone = compteParZone[a];
+			}
 		}
-
-		return nbZones * maxStations;
+		detail += "      => " + nbZones + " zone(s) x " + maxDansUneZone + " (max) = " + (nbZones * maxDansUneZone) + " points";
+		return detail;
 	}
 }

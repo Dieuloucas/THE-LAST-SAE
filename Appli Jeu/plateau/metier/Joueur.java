@@ -1,42 +1,59 @@
 package plateau.metier;
 
-// Représente un joueur en mode LOCAL : son numéro, sa station de départ et son réseau.
-// Comme la pioche et la carte sont COMMUNES, le joueur n'a qu'un indicateur
-// "a joué" pour savoir s'il a déjà posé (ou passé) la carte commune courante.
+// Un joueur : son numéro, son réseau (sa ligne), et ses scores par manche.
+// La pioche et la carte sont communes, donc le joueur a juste un indicateur "a joué".
 public class Joueur
 {
-	private int          numero;        // 1..4
-	private int          numCaseDepart; // index de sa case de départ sur le plateau
-	private int          score;         // score final calculé en fin de partie
-
 	private ReseauJoueur reseau;
+	private boolean      aJoue;
 
-	private boolean      aJoue;         // a déjà joué la carte commune courante ?
-	
+	private int[]        scoresManches; // score de chaque manche (case 0 = manche 1)
+	private int          scoreTotal;
 
-	public Joueur(int numero, int numCaseDepart)
+	public Joueur(int nbManches)
 	{
-		this.numero        = numero;
-		this.numCaseDepart = numCaseDepart;
-
 		this.reseau        = new ReseauJoueur();
-
 		this.aJoue         = false;
-
-		this.score         = 0;
-
-		// La station de départ fait partie du réseau dès le début
-
-		this.reseau.ajouterStation(numCaseDepart);
+		this.scoresManches = new int[nbManches];
+		this.scoreTotal    = 0;
 	}
 
-	public int          getNumero       ()          { return this.numero;        }
-	public int          getNumCaseDepart()          { return this.numCaseDepart; }
-	public ReseauJoueur getReseau       ()          { return this.reseau;        }
-	public int          getScore        ()          { return this.score;         }
+	// Démarre un nouveau réseau pour une manche, à partir de la case de départ donnée.
+	public void commencerReseau(int caseDepart)
+	{
+		this.reseau.reinitialiser();
+		this.reseau.ajouterStation(caseDepart);
+		this.aJoue = false;
+	}
 
-	public boolean      aJoue           ()          { return this.aJoue;         }
+	// Enregistre le score d'une manche et met à jour le total.
+	public void ajouterScore(int indiceManche, int score)
+	{
+		if (indiceManche >= 0 && indiceManche < this.scoresManches.length)
+		{
+			this.scoresManches[indiceManche] = score;
+			this.scoreTotal += score;
+		}
+	}
 
-	public void         setAJoue        (boolean b) { this.aJoue = b;            }
-	public void         setScore        (int score) { this.score = score;        }
+	public int getScoreManche(int indiceManche)
+	{
+		if (indiceManche >= 0 && indiceManche < this.scoresManches.length)
+			return this.scoresManches[indiceManche];
+		return 0;
+	}
+
+	// Meilleur score réalisé sur une seule manche (sert au départage).
+	public int getMeilleurScoreManche()
+	{
+		int m = 0;
+		for (int i = 0; i < this.scoresManches.length; i++)
+			if (this.scoresManches[i] > m) m = this.scoresManches[i];
+		return m;
+	}
+
+	public ReseauJoueur getReseau()         { return this.reseau; }
+	public boolean      aJoue()             { return this.aJoue; }
+	public void         setAJoue(boolean b) { this.aJoue = b; }
+	public int          getScoreTotal()     { return this.scoreTotal; }
 }

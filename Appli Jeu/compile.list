@@ -4,14 +4,13 @@
 ./plateau/metier/GraphePlateau.java
 ./plateau/metier/ChargeurPlateau.java
 ./plateau/metier/UtilitaireJeu.java
-
 ./plateau/metier/Carte.java
 ./plateau/metier/Pioche.java
 ./plateau/metier/ReseauJoueur.java
 ./plateau/metier/Joueur.java
 ./plateau/metier/ValidateurMouvement.java
-./plateau/metier/Partie.java
 ./plateau/metier/CalculateurScore.java
+./plateau/metier/Partie.java
 
 ./plateau/ihm/FrameAccueil.java
 ./plateau/ihm/PanelAccueil.java

@@ -1,15 +1,11 @@
 package plateau.ihm;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.GridLayout;
-import java.awt.Image;
+import plateau.Controleur;
+
+import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import javax.swing.*;
-import plateau.Controleur;
 
 // Écran de sélection d'un plateau : liste les sauvegardes (.txt) et choix du mode de jeu
 public class PanelChargement extends JPanel implements ActionListener
@@ -24,6 +20,8 @@ public class PanelChargement extends JPanel implements ActionListener
     private JRadioButton        rbLocal;
     private JRadioButton        rbMulti;
 
+    private JTextField          txtManches;
+
     private JButton             btnCharger;
     private JButton             btnRetour;
     private JLabel              lblStatut;
@@ -34,7 +32,6 @@ public class PanelChargement extends JPanel implements ActionListener
         this.ctrl          = ctrl;
 
         // Gestion du fond
-        
         String img = this.ctrl.getImageFond2();
         if (img != null) { this.imgBackground = new ImageIcon(img).getImage(); }
 
@@ -45,15 +42,13 @@ public class PanelChargement extends JPanel implements ActionListener
         /*-------------------------*/
         /* Création des composants */
         /*-------------------------*/
+        Font labelFont = new Font("Arial", Font.BOLD, 13);
 
-        Font labelFont  = new Font("Arial", Font.BOLD, 13);
         JLabel lblTitre = new JLabel("Sélectionnez un plateau de jeu :");
-        
         lblTitre.setForeground(Color.WHITE);
         lblTitre.setFont(new Font("Arial", Font.BOLD, 16));
 
         // Menu déroulant rempli avec les fichiers .txt trouvés
-
         this.comboFichiers = new JComboBox<String>();
         this.comboFichiers.setFont(labelFont);
 
@@ -89,6 +84,14 @@ public class PanelChargement extends JPanel implements ActionListener
         groupeMode.add(this.rbLocal);
         groupeMode.add(this.rbMulti);
 
+        // Nombre de manches (zone de texte)
+        JLabel lblManches = new JLabel("Nombre de manches :");
+        lblManches.setForeground(Color.WHITE);
+        lblManches.setFont(labelFont);
+
+        this.txtManches = new JTextField("1", 3);
+        this.txtManches.setFont(labelFont);
+
         this.lblStatut = new JLabel(" ");
         this.lblStatut.setForeground(new Color(255, 100, 100));
         this.lblStatut.setFont(labelFont);
@@ -103,34 +106,31 @@ public class PanelChargement extends JPanel implements ActionListener
         /* Positionnement des composants */
         /*-------------------------------*/
         // Bloc des deux boutons radio côte à côte
-
-
         JPanel panelModes = new JPanel(new GridLayout(1, 2, 10, 0));
-
         panelModes.setOpaque(false);
-
         panelModes.add(this.rbLocal);
         panelModes.add(this.rbMulti);
 
+        // Bloc "Nombre de manches : [ ]" sur une ligne
+        JPanel panelManches = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+        panelManches.setOpaque(false);
+        panelManches.add(lblManches);
+        panelManches.add(this.txtManches);
+
         // Bloc des boutons d'action
-
         JPanel panelBoutons = new JPanel(new GridLayout(1, 2, 10, 0));
-
         panelBoutons.setOpaque(false);
-
         panelBoutons.add(this.btnRetour);
         panelBoutons.add(this.btnCharger);
 
-        // Formulaire vertical : plateau, puis mode, puis statut, puis boutons
-
-        JPanel panelFormulaire = new JPanel(new GridLayout(6, 1, 10, 10));
-
+        // Formulaire vertical : plateau, mode, nb de manches, statut, boutons
+        JPanel panelFormulaire = new JPanel(new GridLayout(7, 1, 10, 10));
         panelFormulaire.setOpaque(false);
-
         panelFormulaire.add(lblTitre);
         panelFormulaire.add(this.comboFichiers);
         panelFormulaire.add(lblMode);
         panelFormulaire.add(panelModes);
+        panelFormulaire.add(panelManches);
         panelFormulaire.add(this.lblStatut);
         panelFormulaire.add(panelBoutons);
 
@@ -139,7 +139,6 @@ public class PanelChargement extends JPanel implements ActionListener
         /*---------------------------*/
         /* Activation des composants */
         /*---------------------------*/
-        
         this.btnCharger.addActionListener(this);
         this.btnRetour .addActionListener(this);
     }
@@ -164,16 +163,33 @@ public class PanelChargement extends JPanel implements ActionListener
                     // Récupérer le mode coché sur la fenêtre
                     if (this.rbMulti.isSelected())
                     {
-                        this.ctrl.setMode("MULTIJOUEUR");
                         this.lblStatut.setForeground(new Color(255, 180, 80));
                         this.lblStatut.setText("Mode multijoueur (réseau) à venir.");
                         // TODO : lancer la partie en multijoueur via le réseau (étape ultérieure)
                     }
                     else
                     {
-                        this.ctrl.setMode("LOCAL");
+                        // Lire le nombre de manches saisi
+                        int nbManches;
+                        try
+                        {
+                            nbManches = Integer.parseInt(this.txtManches.getText().trim());
+                        }
+                        catch (NumberFormatException ex)
+                        {
+                            this.lblStatut.setForeground(new Color(255, 100, 100));
+                            this.lblStatut.setText("Nombre de manches invalide.");
+                            return;
+                        }
+                        if (nbManches < 1)
+                        {
+                            this.lblStatut.setForeground(new Color(255, 100, 100));
+                            this.lblStatut.setText("Le nombre de manches doit être au moins 1.");
+                            return;
+                        }
+
                         // Lance la partie locale : une fenêtre par joueur, pioche commune
-                        this.ctrl.lancerPartieLocale();
+                        this.ctrl.lancerPartieLocale(nbManches);
                         this.frmChargement.setVisible(false);
                     }
                 }
@@ -192,8 +208,6 @@ public class PanelChargement extends JPanel implements ActionListener
     }
 
     // Dessin : Affiche l'image de fond et applique un filtre noir translucide pour la lisibilité
-
-    @Override
     protected void paintComponent(Graphics g)
     {
         super.paintComponent(g);

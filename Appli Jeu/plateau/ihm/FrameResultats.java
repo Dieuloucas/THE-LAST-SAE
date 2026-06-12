@@ -1,23 +1,20 @@
 package plateau.ihm;
 
-import javax.swing.*;
 import plateau.Controleur;
 
-// Fenêtre de fin de partie : affiche le score de chaque joueur et le vainqueur.
-// Même DA que l'accueil (image de fond).
+import javax.swing.*;
 
+// Écran final : scores de toutes les manches + total + gagnant(s).
 public class FrameResultats extends JFrame
 {
 	public FrameResultats(Controleur ctrl)
 	{
-		this.setTitle("Résultats de la partie");
-
-		this.add(new PanelResultats(this, ctrl));
-
+		this.setTitle("Résultats");
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		this.pack();
 
+		this.add(new PanelResultats(ctrl));
+
+		this.pack();
 		this.setLocationRelativeTo(null);
 		this.setVisible(true);
 	}

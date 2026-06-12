@@ -6,8 +6,7 @@ public class UtilitaireJeu
 {
 	public static String[] getNomsStations()
 	{
-		return new String[]
-		{
+		return new String[]{
 			"Tour Eiffel",
 			"Moulin Rouge",
 			"Louvre",
@@ -43,19 +42,44 @@ public class UtilitaireJeu
 		};
 	}
 
-	// Chemin de l'image d'une station (ex: "plateau/images/1.png").
-	public static String getCheminImageStation(int stationNum)
+	// Chemin de l'image d'une carte : "{numero}_claire.png" ou "{numero}_fonce.png".
+	// numero = type de station (1..6), ou 7 pour le joker. Renvoie null si introuvable.
+	public static String getCheminImageCarte(int numero, boolean foncee)
 	{
-		return "plateau/images/" + stationNum + ".png";
+		String suffixe = foncee ? "_fonce" : "_claire";
+		String[] chemins = {
+			"plateau/images/"       + numero + suffixe + ".png",
+			"images/"               + numero + suffixe + ".png",
+			"../plateau/images/"    + numero + suffixe + ".png",
+			"../../plateau/images/" + numero + suffixe + ".png"
+		};
+		for (int i = 0; i < chemins.length; i++)
+		{
+			File fichier = new File(chemins[i]);
+			if (fichier.exists())
+			{
+				return fichier.getAbsolutePath();
+			}
+		}
+		return null;
 	}
 
-	// Chemin de l'image d'une CARTE de la pioche.
-	// Nom attendu : "<type>_clair.png" / "<type>_foncé.png" (joker : "joker_clair.png").
-	// Renvoie null si l'image n'existe pas (l'affichage bascule alors sur un repli).
-	public static String getCheminImageCarte(int typeStation, boolean foncee)
+	public static String getCheminImageStation(int stationNum)
 	{
-		String base = (typeStation == Carte.JOKER) ? "joker" : Integer.toString(typeStation);
-		File fichier = new File("plateau/images/" + base + (foncee ? "_foncé" : "_clair") + ".png");
-		return fichier.exists() ? fichier.getAbsolutePath() : null;
+		String[] chemins = {
+			"plateau/images/" 		+ stationNum + ".png",
+			"images/" + stationNum 	+ ".png",
+			"../plateau/images/" 	+ stationNum + ".png",
+			"../../plateau/images/" + stationNum + ".png"
+		};
+		for (int i = 0; i < chemins.length; i++)
+		{
+			File fichier = new File(chemins[i]);
+			if (fichier.exists())
+			{
+				return fichier.getAbsolutePath();
+			}
+		}
+		return "plateau/images/" + stationNum + ".png";
 	}
 }
