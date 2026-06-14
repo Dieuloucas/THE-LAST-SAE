@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Les Cartographes du Métro — Documentation orale</title>
+<style>
+  :root{
+    --txt:#2b2b29; --muted:#6b6b66; --bd:#e5e3dc; --bg:#ffffff; --bg2:#f5f4ef;
+    --info-bg:#E6F1FB; --info-tx:#0C447C; --info-bd:#378ADD;
+    --ok-bg:#EAF3DE; --ok-tx:#27500A; --ok-bd:#639922;
+    --warn-bg:#FAEEDA; --warn-tx:#633806; --warn-bd:#BA7517;
+    --mono-bg:#f1efe8;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg2);color:var(--txt);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.7;font-size:16px}
+  .page{max-width:900px;margin:0 auto;padding:24px 20px 60px}
+  header h1{font-size:24px;font-weight:600;margin:0 0 4px}
+  header p{margin:0 0 20px;color:var(--muted)}
+  .nav{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:24px;border-bottom:1px solid var(--bd);padding-bottom:12px;position:sticky;top:0;background:var(--bg2);z-index:5}
+  .tab{padding:7px 13px;border:1px solid var(--bd);border-radius:8px;background:#fff;color:var(--muted);
+    cursor:pointer;font-size:13px;font-family:inherit}
+  .tab[aria-selected="true"]{background:var(--info-bg);color:var(--info-tx);border-color:var(--info-bd)}
+  .sec h2{font-size:18px;font-weight:600;margin:0 0 4px}
+  .sec h3{font-size:16px;font-weight:600;margin:22px 0 8px}
+  .card{background:#fff;border:1px solid var(--bd);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+  .row{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+  .muted{color:var(--muted)}
+  .lbl{font-weight:600}
+  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;background:var(--mono-bg);padding:1px 5px;border-radius:5px}
+  .pre{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;background:var(--mono-bg);
+    padding:12px;border-radius:8px;white-space:pre-wrap;line-height:1.55;margin:8px 0}
+  .ret{border-left:3px solid var(--ok-bd);background:var(--ok-bg);padding:10px 14px;margin:10px 0;border-radius:0 8px 8px 0}
+  .warn{border-left:3px solid var(--warn-bd);background:var(--warn-bg);padding:10px 14px;margin:10px 0;border-radius:0 8px 8px 0;font-size:14px}
+  .step{display:flex;gap:10px;align-items:flex-start;margin-bottom:9px}
+  .num{flex:none;width:24px;height:24px;border-radius:50%;background:var(--info-bg);color:var(--info-tx);
+    display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600}
+  .q{font-weight:600;margin:16px 0 4px}
+  ul.tight{margin:4px 0;padding-left:20px}
+  ul.tight li{margin-bottom:5px}
+  .sec{display:none}
+  .sec.on{display:block}
+  footer{margin-top:30px;padding-top:14px;border-top:1px solid var(--bd);color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<div class="page">
+<header>
+  <h1>Les Cartographes du Métro</h1>
+  <p>Documentation de préparation à l'oral — architecture, flux, classes, graphe, format, mode debug, scénarios.</p>
+</header>
+
+<div class="nav" role="tablist">
+  <button class="tab" data-t="s1" role="tab">Le jeu</button>
+  <button class="tab" data-t="s2" role="tab">Architecture</button>
+  <button class="tab" data-t="s3" role="tab">Le flux</button>
+  <button class="tab" data-t="s4" role="tab">Les classes</button>
+  <button class="tab" data-t="s5" role="tab">Graphe &amp; score</button>
+  <button class="tab" data-t="s6" role="tab">Format fichier</button>
+  <button class="tab" data-t="s7" role="tab">Mode debug</button>
+  <button class="tab" data-t="s8" role="tab">Oral : FAQ &amp; scénarios</button>
+</div>
+
+<section class="sec" id="s1">
+  <h2>Le jeu</h2>
+  <div class="card">Jeu de plateau en Java/Swing inspiré des « Cartographes du Métro ». Chaque joueur trace sa <span class="lbl">ligne de métro</span> en reliant des stations sur une grille. Une <span class="lbl">pioche commune</span> impose à tous le type de station à relier à chaque tour. But : maximiser son score sur une ou plusieurs manches.</div>
+  <h3>Les briques techniques</h3>
+  <div class="row">
+    <div class="card"><span class="lbl">Java + Swing</span><br><span class="muted">interface graphique (fenêtres, panneaux, dessin).</span></div>
+    <div class="card"><span class="lbl">Architecture MVC</span><br><span class="muted">métier / IHM / contrôleur séparés.</span></div>
+    <div class="card"><span class="lbl">Théorie des graphes</span><br><span class="muted">matrice d'adjacence pour relier les stations.</span></div>
+    <div class="card"><span class="lbl">Lecture de fichiers</span><br><span class="muted">les plateaux sont des fichiers <span class="mono">.txt</span>.</span></div>
+  </div>
+  <h3>Lancer le jeu</h3>
+  <div class="pre">cd "Appli Jeu"
+javac @compile.list
+java plateau.Controleur          (jeu normal)
+java plateau.Controleur debug    (mode démonstration)</div>
+  <div class="warn">Le mode « Multijoueur » de l'écran de chargement n'est pas implémenté (marqué « à venir » / TODO). À l'oral, présenter le mode <span class="lbl">Local</span> uniquement.</div>
+</section>
+
+<section class="sec" id="s2">
+  <h2>Architecture MVC</h2>
+  <p class="muted">On sépare le code en 3 responsabilités. Chacune a un rôle, et une seule raison de changer.</p>
+  <div class="card"><span class="lbl">Le métier — <span class="mono">plateau.metier</span></span><br><span class="muted">Toute la logique du jeu : règles, graphe, pioche, score. C'est le cerveau. Il ne connaît rien de l'affichage (aucun <span class="mono">import javax.swing</span>).</span></div>
+  <div class="card"><span class="lbl">L'IHM — <span class="mono">plateau.ihm</span></span><br><span class="muted">Les fenêtres et panneaux. Elle affiche l'état et capte les clics. Elle ne calcule aucune règle : elle demande tout au contrôleur.</span></div>
+  <div class="card"><span class="lbl">Le contrôleur — <span class="mono">plateau.Controleur</span></span><br><span class="muted">La façade : seul pont entre IHM et métier. L'IHM appelle <span class="mono">ctrl.jouerCoup(...)</span>, jamais <span class="mono">Partie</span> directement.</span></div>
+  <h3>Pourquoi faire comme ça ? (la question piège)</h3>
+  <ul class="tight">
+    <li><span class="lbl">Séparation des responsabilités</span> : on peut refaire l'affichage sans toucher aux règles.</li>
+    <li><span class="lbl">Lisibilité</span> : on sait où chercher (un bug de score → <span class="mono">CalculateurScore</span>, pas dans l'IHM).</li>
+    <li><span class="lbl">Réutilisable</span> : le même métier pourrait servir à une version console ou réseau.</li>
+    <li>Le contrôleur évite que l'IHM et le métier soient « collés » : ils ne se parlent qu'à travers lui.</li>
+  </ul>
+</section>
+
+<section class="sec" id="s3">
+  <h2>Le flux : que se passe-t-il quand je clique ?</h2>
+  <p class="muted">Le parcours à savoir raconter : du clic jusqu'au réaffichage.</p>
+  <div class="step"><div class="num">1</div><div><span class="lbl">Clic souris</span> → <span class="mono">PanelGrille.mousePressed</span> convertit la position (x,y) en <span class="lbl">numéro de case</span> (ligne × largeur + colonne).</div></div>
+  <div class="step"><div class="num">2</div><div>→ <span class="mono">PanelJoueur.caseCliquee(case)</span> : vérifie d'abord <span class="mono">ctrl.estSonTour(...)</span>. Si ce n'est pas son tour, on ignore le clic.</div></div>
+  <div class="step"><div class="num">3</div><div>→ <span class="mono">Controleur.jouerCoup(joueur, case)</span> : la façade transmet au métier.</div></div>
+  <div class="step"><div class="num">4</div><div>→ <span class="mono">Partie.jouerCoup(...)</span> : revérifie le tour et la carte, puis appelle le validateur.</div></div>
+  <div class="step"><div class="num">5</div><div>→ <span class="mono">ValidateurMouvement.estValide(...)</span> applique les 4 règles et interroge <span class="mono">GraphePlateau.aArete(...)</span> (stations reliées ?).</div></div>
+  <div class="step"><div class="num">6</div><div>Si valide → <span class="mono">ReseauJoueur.ajouterStation</span> (ou <span class="mono">ajouterDebut</span>) : la station entre dans le tracé.</div></div>
+  <div class="ret"><span class="lbl">Où vont les retours ?</span><br><span class="muted"><span class="mono">jouerCoup</span> renvoie un <span class="mono">boolean</span> (true = posé). Puis <span class="mono">PanelJoueur</span> appelle <span class="mono">ctrl.rafraichirTout()</span> → chaque fenêtre fait <span class="mono">repaint()</span> → <span class="mono">PanelGrille.paintComponent</span> redessine le tracé et <span class="mono">PanelInfos</span> met à jour la carte/les statuts.</span></div>
+  <h3>Les autres retours utiles</h3>
+  <ul class="tight">
+    <li><span class="mono">getCasesValides(joueur)</span> → liste d'index : sert à colorer en jaune les coups jouables.</li>
+    <li><span class="mono">getCheminJoueur(joueur)</span> → liste ordonnée : sert à tracer la ligne.</li>
+    <li>Fin de manche → <span class="mono">rafraichirTout</span> affiche les scores, puis <span class="mono">continuerManche()</span> ou l'écran de résultats.</li>
+  </ul>
+</section>
+
+<section class="sec" id="s4">
+  <h2>Les classes</h2>
+  <h3>Métier (<span class="mono">plateau.metier</span>)</h3>
+  <div class="card"><span class="lbl">Plateau</span> — la grille : 3 tableaux (arrondissements, stations, départs) + le graphe.</div>
+  <div class="card"><span class="lbl">GraphePlateau</span> — matrice d'adjacence <span class="mono">boolean[][]</span> : qui est relié à qui. Génère aussi les liaisons.</div>
+  <div class="card"><span class="lbl">ChargeurPlateau</span> — lit un fichier <span class="mono">.txt</span> et construit un <span class="mono">Plateau</span> (avec sécurités).</div>
+  <div class="card"><span class="lbl">Carte</span> — un type de station (1..N) ou joker, claire ou foncée.</div>
+  <div class="card"><span class="lbl">Pioche</span> — le tas commun. Mélange Fisher-Yates, révèle une carte à la fois.</div>
+  <div class="card"><span class="lbl">ReseauJoueur</span> — la ligne ordonnée de stations. Connaît ses 2 extrémités.</div>
+  <div class="card"><span class="lbl">Joueur</span> — son réseau + ses scores par manche + son total.</div>
+  <div class="card"><span class="lbl">Partie</span> — le chef d'orchestre : manches, tour courant, pioche, fin de manche.</div>
+  <div class="card"><span class="lbl">ValidateurMouvement</span> — les 4 règles de validité d'un coup (statique).</div>
+  <div class="card"><span class="lbl">CalculateurScore</span> — la formule du score (statique).</div>
+  <div class="card"><span class="lbl">UtilitaireJeu</span> — noms de stations, couleurs, chemins des images.</div>
+  <h3>IHM (<span class="mono">plateau.ihm</span>)</h3>
+  <p class="muted">Chaque écran = une <span class="mono">Frame</span> (la fenêtre) + un <span class="mono">Panel</span> (le contenu). La Frame est un conteneur ; le Panel fait le travail.</p>
+  <div class="row">
+    <div class="card"><span class="lbl">Accueil</span> <span class="muted">: Jouer / Règles.</span></div>
+    <div class="card"><span class="lbl">Chargement</span> <span class="muted">: choix plateau, manches.</span></div>
+    <div class="card"><span class="lbl">Joueur</span> <span class="muted">: la grille + les clics.</span></div>
+    <div class="card"><span class="lbl">Infos</span> <span class="muted">: carte, pioche, statuts, debug.</span></div>
+    <div class="card"><span class="lbl">Carte</span> <span class="muted">: dessine l'image de la carte.</span></div>
+    <div class="card"><span class="lbl">Résultats</span> <span class="muted">: tableau scores + gagnant.</span></div>
+  </div>
+</section>
+
+<section class="sec" id="s5">
+  <h2>Graphe &amp; score</h2>
+  <h3>Le graphe : une matrice d'adjacence</h3>
+  <p class="muted"><span class="mono">boolean[][] matriceAretes</span> : <span class="mono">matriceAretes[i][j] == true</span> ⇔ les cases i et j sont reliées. Graphe <span class="lbl">non orienté</span> → on remplit toujours <span class="mono">[i][j]</span> ET <span class="mono">[j][i]</span>.</p>
+  <h3>Génération automatique des arêtes</h3>
+  <p class="muted">Chaque station regarde dans 4 directions (Est, Sud-Est, Sud, Sud-Ouest) et se relie à la première station rencontrée sur ce « rayon ».</p>
+  <div class="warn"><span class="lbl">Pourquoi 4 directions et pas 8 ?</span> Le graphe est non orienté : relier A→B crée aussi B→A. Donc si chaque station regarde vers la droite et le bas, les liaisons vers la gauche et le haut sont créées « gratuitement » par les stations de ce côté. On évite de traiter deux fois chaque paire.</div>
+  <h3>Le calcul du score</h3>
+  <div class="pre">score = (nb de zones traversées) × (max de stations dans une seule zone)</div>
+  <p class="muted">Une « zone » = un arrondissement. On compte les stations de SA ligne par arrondissement, puis on multiplie le nombre de zones touchées par le plus gros paquet.</p>
+  <div class="card"><span class="lbl">Exemple réel (testé)</span><br><span class="muted">Joueur 2 : zone 4 = 1, zone 5 = 4, zone 8 = 2 → 3 zones × 4 (max) = 12 points.</span></div>
+  <h3>Les manches</h3>
+  <ul class="tight">
+    <li>Plusieurs manches possibles (choisi au lancement).</li>
+    <li>À chaque manche, les départs et les couleurs tournent (modulo le nombre de joueurs) → équité.</li>
+    <li>Le réseau est remis à zéro entre les manches ; le total cumule les manches.</li>
+  </ul>
+</section>
+
+<section class="sec" id="s6">
+  <h2>Format de fichier</h2>
+  <h3>Structure d'un fichier plateau <span class="mono">.txt</span></h3>
+  <div class="pre">7;7                ligne 1 : largeur ; hauteur
+0;3;0;0            une ligne par case : index ; arrondissement ; station ; départ
+1;3;2;0
+...
+8;10               après les cases : les arêtes (source ; destination)
+8;16</div>
+  <h3>Comment c'est lu (<span class="mono">ChargeurPlateau</span>)</h3>
+  <ul class="tight">
+    <li>Ligne 1 → dimensions (<span class="mono">split(";")</span>).</li>
+    <li>Tant qu'on n'a pas lu <span class="mono">largeur×hauteur</span> cases → ce sont des cases (index strict 0,1,2…).</li>
+    <li>Ensuite → ce sont des arêtes à ajouter au graphe.</li>
+    <li>Si le fichier ne contient pas d'arêtes → <span class="mono">genererAretesAuto()</span> les calcule.</li>
+  </ul>
+  <h3>Les sécurités (code robuste)</h3>
+  <ul class="tight">
+    <li>Dimensions positives et &lt; 100 ; arrondissement 0–20 ; station 0–10 ; départ 0–4.</li>
+    <li>Index qui doit suivre l'ordre exact, sinon fichier rejeté (<span class="mono">return null</span>).</li>
+    <li><span class="mono">try/catch</span> sur <span class="mono">NumberFormatException</span> : si du texte est écrit au lieu d'un nombre.</li>
+  </ul>
+  <div class="warn"><span class="lbl">À savoir défendre :</span> <span class="mono">ChargeurPlateau</span> utilise un <span class="mono">try-with-resources</span> (<span class="mono">try (Scanner sc = …)</span>) qui ferme le fichier automatiquement. Si le jury préfère le <span class="mono">try/catch</span> classique, c'est un point qu'on peut changer.</div>
+</section>
+
+<section class="sec" id="s7">
+  <h2>Mode debug</h2>
+  <p class="muted">Lancé par <span class="mono">java plateau.Controleur debug</span>. Son but : rendre visible l'invisible pour prouver que tout fonctionne. Un seul booléen <span class="mono">modeDebug</span> dans le contrôleur active tout.</p>
+  <h3>Sur la grille</h3>
+  <div class="row">
+    <div class="card"><span class="lbl">Arêtes du graphe</span><br><span class="muted">lignes grises = la matrice d'adjacence, visible.</span></div>
+    <div class="card"><span class="lbl">Numéros de case</span><br><span class="muted">l'index de chaque case (lien avec le fichier).</span></div>
+  </div>
+  <h3>Dans la console</h3>
+  <div class="pre">[DEBUG] === Demarrage de la partie ===
+[DEBUG] Joueurs : 4 | Manches : 2 | Stations : 28 | Aretes : 76
+[DEBUG] Joueur 1 -> case 14 : ACCEPTE
+[DEBUG] Joueur 4 -> case 10 : REFUSE : station de type 1 mais carte type 2
+[DEBUG] === Fin de la manche 1 : calcul des scores ===
+[DEBUG] Joueur 2 : zone 5 : 4 station(s)  => 3 zone(s) x 4 = 12 points</div>
+  <h3>Dans la bande centrale</h3>
+  <div class="row">
+    <div class="card"><span class="lbl">Forcer la carte</span><br><span class="muted">choisir la prochaine carte au lieu de la pioche.</span></div>
+    <div class="card"><span class="lbl">Sauter la manche</span><br><span class="muted">terminer la manche d'un coup → scores.</span></div>
+  </div>
+</section>
+
+<section class="sec" id="s8">
+  <h2>Oral : FAQ &amp; scénarios</h2>
+  <h3>Questions probables du jury</h3>
+  <div class="q">« Pourquoi avoir choisi une architecture MVC ? »</div>
+  <p class="muted">Pour séparer la logique (métier) de l'affichage (IHM). On peut modifier l'un sans casser l'autre, et le code est plus clair à maintenir et tester.</p>
+  <div class="q">« À quoi sert le contrôleur ? »</div>
+  <p class="muted">C'est la façade : l'IHM ne parle qu'à lui, jamais directement au métier. Il reçoit les actions (clics) et renvoie ce qu'il faut afficher.</p>
+  <div class="q">« Pourquoi une matrice d'adjacence pour le graphe ? »</div>
+  <p class="muted">Simple à coder et à expliquer : un <span class="mono">boolean[][]</span>. Tester si deux stations sont reliées = un accès direct <span class="mono">matrice[i][j]</span>, instantané. Adapté à une petite grille.</p>
+  <div class="q">« Que se passe-t-il si je clique sur une case interdite ? »</div>
+  <p class="muted">Le validateur renvoie <span class="mono">false</span>, rien n'est posé. En mode debug, la console affiche la raison exacte (les 4 règles).</p>
+  <div class="q">« Comment les joueurs partagent-ils les cartes ? »</div>
+  <p class="muted">Pioche commune : une seule carte révélée pour tous. Chacun la pose (ou passe) à son tour ; quand tous ont joué, la carte suivante est révélée.</p>
+  <div class="q">« Où et comment le score est-il calculé ? »</div>
+  <p class="muted">Dans <span class="mono">CalculateurScore.calculer()</span>, en fin de manche : stations par arrondissement, puis (nb de zones) × (max dans une zone).</p>
+
+  <h3>Scénarios de démonstration</h3>
+  <div class="card"><span class="lbl">Scénario 1 — le graphe et le plateau</span><br><span class="muted">Lancer en debug, charger un plateau, montrer les arêtes grises + numéros de case → expliquer le graphe.</span></div>
+  <div class="card"><span class="lbl">Scénario 2 — la validation des coups</span><br><span class="muted">Jouer un coup valide (ACCEPTE), puis cliquer une case interdite → montrer la raison dans la console (les 4 règles).</span></div>
+  <div class="card"><span class="lbl">Scénario 3 — la pioche et le score</span><br><span class="muted">Forcer quelques cartes (dont un joker), puis « sauter la manche » → montrer le détail du calcul du score.</span></div>
+  <div class="card"><span class="lbl">Scénario 4 — les manches</span><br><span class="muted">Lancer une partie en 2-3 manches → montrer la rotation des départs/couleurs et le tableau de résultats final.</span></div>
+</section>
+
+<footer>Les Cartographes du Métro — document de révision généré pour l'oral. Ouvrir ce fichier dans un navigateur ; navigation par les onglets ci-dessus.</footer>
+</div>
+
+<script>
+  (function(){
+    var tabs=[].slice.call(document.querySelectorAll('.nav .tab[data-t]'));
+    var secs=[].slice.call(document.querySelectorAll('.sec'));
+    function show(id){
+      secs.forEach(function(s){ s.classList.toggle('on', s.id===id); });
+      tabs.forEach(function(t){ t.setAttribute('aria-selected', (t.dataset.t===id)?'true':'false'); });
+    }
+    tabs.forEach(function(t){ t.addEventListener('click', function(){ show(t.dataset.t); }); });
+    show('s1');
+  })();
+</script>
+</body>
+</html>
