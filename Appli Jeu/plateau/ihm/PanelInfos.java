@@ -36,18 +36,8 @@ public class PanelInfos extends JPanel implements ActionListener
 		JLabel lblTitre 		= new JLabel("Infos de jeu");
 		lblTitre				.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-<<<<<<< HEAD
-		this.lblManche = new JLabel("Manche — / —");
-		this.lblManche.setFont(gras12);
-		this.lblManche.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-		JLabel lblCarteTitre = new JLabel("Carte commune");
-		lblCarteTitre.setFont(gras12);
-		lblCarteTitre.setAlignmentX(Component.CENTER_ALIGNMENT);
-=======
 		this.lblManche 			= new JLabel("Manche — / —");
 		this.lblManche			.setAlignmentX(Component.CENTER_ALIGNMENT);
->>>>>>> 593288d (Amélioration)
 
 		JLabel lblCarteTitre 	= new JLabel("Carte commune");
 		lblCarteTitre			.setAlignmentX(Component.CENTER_ALIGNMENT);
