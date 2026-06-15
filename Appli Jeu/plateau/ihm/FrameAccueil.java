@@ -4,7 +4,6 @@ import plateau.Controleur;
 
 import javax.swing.*;
 
-// Fenêtre d'accueil : la première affichée au lancement, elle contient le menu principal.
 public class FrameAccueil extends JFrame
 {
 	public FrameAccueil(Controleur ctrl)

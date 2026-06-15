@@ -1,11 +1,10 @@
 package plateau.ihm;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
+import plateau.Controleur;
+
+import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import plateau.Controleur;
 
 // Longue bande verticale centrale : carte commune (pioche) + statut de chaque joueur + boutons.
 // Design simple : fond clair, texte noir lisible.
@@ -26,51 +25,38 @@ public class PanelInfos extends JPanel implements ActionListener
 		this.ctrl      = ctrl;
 		this.nbJoueurs = ctrl.getNbJoueurs();
 
-		// Bande blanche étroite, plus haute que large
 		this.setPreferredSize(new Dimension(220, 660));
 		this.setBackground(Color.WHITE);
-
-		/*-------------------------*/
-		/* Création des composants */
-		/*-------------------------*/
-		JLabel lblTitre      = new JLabel("Infos de jeu");
-		this.lblManche       = new JLabel("Manche — / —");
-		JLabel lblCarteTitre = new JLabel("Carte commune");
-		this.panelCarte      = new PanelCarte(ctrl);
-		this.lblPioche       = new JLabel("— foncée(s) restante(s)");
-		JLabel lblJoueurs    = new JLabel("Joueurs");
-		this.btnQuitter      = new JButton("Quitter");
-
-		// Pour chaque joueur : un libellé d'état et son bouton "Passer"
-		this.lblStatutJoueur = new JLabel[this.nbJoueurs];
-		this.btnPasserJoueur = new JButton[this.nbJoueurs];
-		for (int j = 1; j <= this.nbJoueurs; j++)
-		{
-			this.lblStatutJoueur[j - 1] = new JLabel("Joueur " + j + " : à jouer");
-
-			JButton passer = new JButton("Passer (Joueur " + j + ")");
-			passer.setActionCommand("PASSER_" + j);
-			this.btnPasserJoueur[j - 1] = passer;
-		}
-
-		/*-------------------------------*/
-		/* Positionnement des composants */
-		/*-------------------------------*/
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		this.setBorder(BorderFactory.createEmptyBorder(14, 14, 14, 14));
 
-		// Tout est centré horizontalement dans la bande
-		lblTitre       .setAlignmentX(Component.CENTER_ALIGNMENT);
-		this.lblManche .setAlignmentX(Component.CENTER_ALIGNMENT);
-		lblCarteTitre  .setAlignmentX(Component.CENTER_ALIGNMENT);
+		Font gras16 = new Font("Arial", Font.BOLD, 16);
+		Font gras12 = new Font("Arial", Font.BOLD, 12);
+		Font normal12 = new Font("Arial", Font.PLAIN, 12);
+
+		/*-------------------------*/
+		/* Titre + carte + pioche  */
+		/*-------------------------*/
+		JLabel lblTitre = new JLabel("Infos de jeu");
+		lblTitre.setFont(gras16);
+		lblTitre.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		this.lblManche = new JLabel("Manche — / —");
+		this.lblManche.setFont(gras12);
+		this.lblManche.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		JLabel lblCarteTitre = new JLabel("Carte commune");
+		lblCarteTitre.setFont(gras12);
+		lblCarteTitre.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		this.panelCarte = new PanelCarte(ctrl);
 		this.panelCarte.setAlignmentX(Component.CENTER_ALIGNMENT);
 		this.panelCarte.setMaximumSize(new Dimension(120, 160));
-		this.lblPioche .setAlignmentX(Component.CENTER_ALIGNMENT);
-		lblJoueurs     .setAlignmentX(Component.CENTER_ALIGNMENT);
-		this.btnQuitter.setAlignmentX(Component.CENTER_ALIGNMENT);
-		this.btnQuitter.setMaximumSize(new Dimension(180, 28));
 
-		// Haut de la bande : titre, manche en cours, carte commune et reste de la pioche
+		this.lblPioche = new JLabel("— foncée(s) restante(s)");
+		this.lblPioche.setFont(normal12);
+		this.lblPioche.setAlignmentX(Component.CENTER_ALIGNMENT);
+
 		this.add(lblTitre);
 		this.add(Box.createVerticalStrut(6));
 		this.add(this.lblManche);
@@ -84,31 +70,50 @@ public class PanelInfos extends JPanel implements ActionListener
 		this.add(new JSeparator());
 		this.add(Box.createVerticalStrut(10));
 
-		// Milieu : l'état de chaque joueur suivi de son bouton "Passer"
+		/*-------------------------*/
+		/* Statut des joueurs      */
+		/*-------------------------*/
+		JLabel lblJoueurs = new JLabel("Joueurs");
+		lblJoueurs.setFont(gras12);
+		lblJoueurs.setAlignmentX(Component.CENTER_ALIGNMENT);
 		this.add(lblJoueurs);
 		this.add(Box.createVerticalStrut(8));
-		for (int j = 0; j < this.nbJoueurs; j++)
-		{
-			this.lblStatutJoueur[j].setAlignmentX(Component.CENTER_ALIGNMENT);
-			this.btnPasserJoueur[j].setAlignmentX(Component.CENTER_ALIGNMENT);
-			this.btnPasserJoueur[j].setMaximumSize(new Dimension(180, 26));
 
-			this.add(this.lblStatutJoueur[j]);
+		this.lblStatutJoueur = new JLabel[this.nbJoueurs];
+		this.btnPasserJoueur = new JButton[this.nbJoueurs];
+
+		for (int j = 1; j <= this.nbJoueurs; j++)
+		{
+			JLabel statut = new JLabel("Joueur " + j + " : à jouer");
+			statut.setFont(normal12);
+			statut.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+			JButton pass = new JButton("Passer (Joueur " + j + ")");
+			pass.setFont(normal12);
+			pass.setAlignmentX(Component.CENTER_ALIGNMENT);
+			pass.setMaximumSize(new Dimension(180, 26));
+			pass.setActionCommand("PASSER_" + j);
+			pass.addActionListener(this);
+
+			this.lblStatutJoueur[j - 1] = statut;
+			this.btnPasserJoueur[j - 1] = pass;
+
+			this.add(statut);
 			this.add(Box.createVerticalStrut(3));
-			this.add(this.btnPasserJoueur[j]);
+			this.add(pass);
 			this.add(Box.createVerticalStrut(10));
 		}
 
-		// Bas : le bouton "Quitter" repoussé tout en bas par le glue
+		/*-------------------------*/
+		/* Quitter                 */
+		/*-------------------------*/
 		this.add(Box.createVerticalGlue());
-		this.add(this.btnQuitter);
-
-		/*---------------------------*/
-		/* Activation des composants */
-		/*---------------------------*/
-		for (int j = 0; j < this.nbJoueurs; j++)
-			this.btnPasserJoueur[j].addActionListener(this);
+		this.btnQuitter = new JButton("Quitter");
+		this.btnQuitter.setFont(normal12);
+		this.btnQuitter.setAlignmentX(Component.CENTER_ALIGNMENT);
+		this.btnQuitter.setMaximumSize(new Dimension(180, 28));
 		this.btnQuitter.addActionListener(this);
+		this.add(this.btnQuitter);
 
 		rafraichir();
 	}

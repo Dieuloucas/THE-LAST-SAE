@@ -8,9 +8,7 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.*;
-
 import javax.swing.*;
-
 import plateau.Controleur;
 
 // Panneau de l'écran d'accueil du jeu contenant les boutons principaux et une image de fond
@@ -39,12 +37,12 @@ public class PanelAccueil extends JPanel implements ActionListener
         /*-------------------------*/
         /* Création des composants */
         /*-------------------------*/
-        this.btnJouer  	= new JButton("Jouer");
-        this.btnRegles 	= new JButton("Règles");
+        this.btnJouer  = new JButton("Jouer");
+        this.btnRegles = new JButton("Règles");
 
-        Font fontBtn 	= new Font("Arial", Font.BOLD, 16);
-        this.btnJouer 	.setFont(fontBtn);
-        this.btnRegles	.setFont(fontBtn);
+        Font fontBtn = new Font("Arial", Font.BOLD, 16);
+        this.btnJouer .setFont(fontBtn);
+        this.btnRegles.setFont(fontBtn);
 
         /*-------------------------------*/
         /* Positionnement des composants */
@@ -81,12 +79,16 @@ public class PanelAccueil extends JPanel implements ActionListener
         {
             try
             {
-                String[] cheminRegle = {"../Règle les Cartographes du Métro.pdf"};
+                String[] cheminRegles = {
+                    "Règle les Cartographes du Métro.pdf",
+                    "../Règle les Cartographes du Métro.pdf",
+                    "../Appli Conception/Règle les Cartographes du Métro.pdf"
+                };
 
                 java.io.File fichierPdf = null;
-                for (int i = 0; i < cheminRegle.length; i++)
+                for (int i = 0; i < cheminRegles.length; i++)
                 {
-                    java.io.File testFichier = new java.io.File(cheminRegle[i]);
+                    java.io.File testFichier = new java.io.File(cheminRegles[i]);
                     if (testFichier.exists())
                     {
                         fichierPdf = testFichier;

@@ -13,6 +13,7 @@ import java.awt.Toolkit;
 import java.io.File;
 import java.util.ArrayList;
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 
 // Contrôleur du jeu : fait le lien entre l'IHM et la partie en cours.
 public class Controleur
@@ -178,15 +179,17 @@ public class Controleur
 				if (this.framesJoueurs[i] != null) this.framesJoueurs[i].rafraichir();
 	}
 
-	// Affiche dans la console le score de la manche qui vient de se terminer.
+	// Affiche le score de la manche qui vient de se terminer.
 	private void afficherScoresManche()
 	{
 		int      m  = this.partie.getNumeroManche();
 		Joueur[] js = this.partie.getJoueurs();
 
-		System.out.println("Manche " + m + " terminée");
+		String texte = "Manche " + m + " terminée\n\n";
 		for (int i = 0; i < js.length; i++)
-			System.out.println("Joueur " + (i + 1) + " : " + js[i].getScoreManche(m - 1) + " points");
+			texte += "Joueur " + (i + 1) + " : " + js[i].getScoreManche(m - 1) + " points\n";
+
+		JOptionPane.showMessageDialog(null, texte);
 	}
 
 	/*-------------------------------------*/

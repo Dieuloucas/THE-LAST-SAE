@@ -1,90 +1,115 @@
 package plateau.ihm;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.event.*;
-import java.util.ArrayList;
-import javax.swing.*;
 import plateau.Controleur;
 import plateau.metier.Joueur;
 
-// Écran final : tableau des scores manche par manche, total, et désignation du ou des gagnant(s).
+import java.awt.*;
+import java.awt.event.*;
+import java.util.ArrayList;
+import javax.swing.*;
+
+// Tableau des scores (par manche + total) et annonce du/des gagnant(s).
 public class PanelResultats extends JPanel implements ActionListener
 {
-    private Controleur 	ctrl;
-    private JButton 	btnQuitter;
+	private Controleur ctrl;
+	private JButton    btnQuitter;
 
-    public PanelResultats(Controleur ctrl)
-    {
-        this.ctrl = ctrl;
+	public PanelResultats(Controleur ctrl)
+	{
+		this.ctrl = ctrl;
 
-        Joueur[] joueurs 	= ctrl.getJoueurs();
-        int nbManches 		= ctrl.getNbManches();
+		this.setBackground(Color.WHITE);
+		this.setLayout(new BorderLayout(10, 10));
+		this.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        /*-------------------------*/
-        /* Création des composants */
-        /*-------------------------*/
-        // Titre en haut de l'écran
-        JLabel titre = new JLabel("Résultats", SwingConstants.CENTER);
-        titre.setFont(new Font("Arial", Font.BOLD, 20));
+		Joueur[] js        = ctrl.getJoueurs();
+		int      nbManches = ctrl.getNbManches();
 
-        // Tableau des scores : une ligne par joueur, une colonne par manche puis le total
-        JPanel grille = new JPanel(new GridLayout(joueurs.length + 1, nbManches + 2));
+		JLabel lblTitre = new JLabel("Résultats", SwingConstants.CENTER);
+		lblTitre.setFont(new Font("Arial", Font.BOLD, 20));
+		this.add(lblTitre, BorderLayout.NORTH);
 
-        grille.add(new JLabel("Joueur", SwingConstants.CENTER));
-        for (int m = 1; m <= nbManches; m++)
-            grille.add(new JLabel("M" + m, SwingConstants.CENTER));
-        grille.add(new JLabel("Total", SwingConstants.CENTER));
+		/*-------------------------------------*/
+		/* Tableau des scores                  */
+		/*-------------------------------------*/
+		Font gras   = new Font("Arial", Font.BOLD, 13);
+		Font normal = new Font("Arial", Font.PLAIN, 13);
 
-        for (int i = 0; i < joueurs.length; i++)
-        {
-            grille.add(new JLabel("Joueur " + (i + 1), SwingConstants.CENTER));
+		JPanel grille = new JPanel(new GridLayout(js.length + 1, nbManches + 2, 8, 6));
+		grille.setBackground(Color.WHITE);
 
-            for (int m = 0; m < nbManches; m++)
-                grille.add(new JLabel("" + joueurs[i].getScoreManche(m), SwingConstants.CENTER));
+		// Ligne d'entête : Joueur | M1 | M2 | ... | Total
+		grille.add(entete("Joueur", gras));
+		for (int m = 1; m <= nbManches; m++) grille.add(entete("M" + m, gras));
+		grille.add(entete("Total", gras));
 
-            grille.add(new JLabel("" + joueurs[i].getScoreTotal(), SwingConstants.CENTER));
-        }
+		// Une ligne par joueur
+		for (int i = 0; i < js.length; i++)
+		{
+			grille.add(cellule("Joueur " + (i + 1), gras));
+			for (int m = 0; m < nbManches; m++)
+				grille.add(cellule("" + js[i].getScoreManche(m), normal));
+			grille.add(cellule("" + js[i].getScoreTotal(), gras));
+		}
 
-        // Libellé du ou des gagnant(s)
-        String texte = "Gagnant : ";
-        ArrayList<Integer> gagnants = ctrl.getGagnants();
-        for (int i = 0; i < gagnants.size(); i++)
-        {
-            if (i > 0) texte += ", ";
-            texte += "Joueur " + gagnants.get(i);
-        }
-        JLabel lblGagnant = new JLabel(texte, SwingConstants.CENTER);
+		this.add(grille, BorderLayout.CENTER);
 
-        // Bouton de fermeture
-        btnQuitter = new JButton("Quitter");
+		/*-------------------------------------*/
+		/* Gagnant(s) + bouton Quitter         */
+		/*-------------------------------------*/
+		ArrayList<Integer> gagnants = ctrl.getGagnants();
+		String texte;
+		if (gagnants.size() == 1)
+		{
+			texte = "Gagnant : Joueur " + gagnants.get(0);
+		}
+		else
+		{
+			StringBuilder sb = new StringBuilder("Égalité, victoire partagée : ");
+			for (int k = 0; k < gagnants.size(); k++)
+			{
+				if (k > 0) sb.append(", ");
+				sb.append("Joueur " + gagnants.get(k));
+			}
+			texte = sb.toString();
+		}
 
-        /*-------------------------------*/
-        /* Positionnement des composants */
-        /*-------------------------------*/
-        setLayout(new BorderLayout());
-        setBackground(Color.WHITE);
+		JLabel lblGagnant = new JLabel(texte, SwingConstants.CENTER);
+		lblGagnant.setFont(new Font("Arial", Font.BOLD, 16));
 
-        add(titre, BorderLayout.NORTH);
-        add(grille, BorderLayout.CENTER);
+		this.btnQuitter = new JButton("Quitter");
+		this.btnQuitter.addActionListener(this);
 
-        // Gagnant(s) et bouton "Quitter" regroupés en bas de l'écran
-        JPanel bas = new JPanel(new BorderLayout());
-        bas.add(lblGagnant, BorderLayout.CENTER);
-        bas.add(btnQuitter, BorderLayout.SOUTH);
-        add(bas, BorderLayout.SOUTH);
+		JPanel pBouton = new JPanel();
+		pBouton.setBackground(Color.WHITE);
+		pBouton.add(this.btnQuitter);
 
-        /*---------------------------*/
-        /* Activation des composants */
-        /*---------------------------*/
-        btnQuitter.addActionListener(this);
-    }
+		JPanel bas = new JPanel(new BorderLayout(10, 10));
+		bas.setBackground(Color.WHITE);
+		bas.add(lblGagnant, BorderLayout.CENTER);
+		bas.add(pBouton, BorderLayout.SOUTH);
 
-    public void actionPerformed(ActionEvent e)
-    {
-        if (e.getSource() == btnQuitter)
-            System.exit(0);
-    }
+		this.add(bas, BorderLayout.SOUTH);
+	}
+
+	private JLabel entete(String t, Font f)
+	{
+		JLabel l = new JLabel(t, SwingConstants.CENTER);
+		l.setFont(f);
+		l.setOpaque(true);
+		l.setBackground(new Color(230, 230, 230));
+		return l;
+	}
+
+	private JLabel cellule(String t, Font f)
+	{
+		JLabel l = new JLabel(t, SwingConstants.CENTER);
+		l.setFont(f);
+		return l;
+	}
+
+	public void actionPerformed(ActionEvent e)
+	{
+		if (e.getSource() == this.btnQuitter) System.exit(0);
+	}
 }

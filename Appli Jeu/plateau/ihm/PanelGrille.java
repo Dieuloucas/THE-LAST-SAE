@@ -1,13 +1,11 @@
 package plateau.ihm;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Image;
+import plateau.Controleur;
+
+import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import javax.swing.*;
-import plateau.Controleur;
 
 // Plateau d'UN joueur. Affichage simple et lisible :
 // fond clair uni, stations, départs, et UNIQUEMENT le réseau de CE joueur (sa couleur).
@@ -63,7 +61,6 @@ public class PanelGrille extends JPanel implements MouseListener
 		this.repaint();
 	}
 
-    @Override
 	protected void paintComponent(Graphics g)
 	{
 		super.paintComponent(g);
@@ -78,11 +75,11 @@ public class PanelGrille extends JPanel implements MouseListener
 		int cellH  = h / hauteur;
 		int taille = largeur * hauteur;
 
-		// Fond clair uni sur toute la grille
+		// --- 1. Fond clair uni ---
 		g.setColor(new Color(245, 245, 245));
 		g.fillRect(0, 0, w, h);
 
-		// On colorie d'abord les zones d'arrondissement, en arrière-plan
+		// --- 2. Zones d'arrondissement en arrière-plan ---
 		Color[] tabCouleurs = plateau.metier.UtilitaireJeu.getCouleurs();
 		for (int i = 0; i < taille; i++)
 		{
@@ -97,12 +94,12 @@ public class PanelGrille extends JPanel implements MouseListener
 			}
 		}
 
-		// Le tracé prend la couleur de ce joueur pour la manche en cours
-		// (les couleurs tournent entre les joueurs d'une manche à l'autre)
+		// Couleur du tracé = couleur de CE joueur pour la manche en cours
+		// (les couleurs tournent entre les joueurs à chaque manche)
 		Color couleur = this.ctrl.getCouleurJoueur(this.numeroJoueur);
 
-		// On relie les stations du réseau dans leur ordre de pose.
-		// Le fond des cases n'est pas coloré : seule la ligne matérialise le réseau.
+		// --- 3. Ligne du réseau de CE joueur (dans l'ordre de pose) ---
+		// On ne colore PAS le fond des cases du réseau : seul le tracé matérialise la ligne.
 		g.setColor(couleur);
 
 		ArrayList<Integer> chemin = this.ctrl.getCheminJoueur(this.numeroJoueur);
@@ -117,7 +114,7 @@ public class PanelGrille extends JPanel implements MouseListener
 			g.drawLine(x1, y1, x2, y2);
 		}
 
-		// Stations du plateau, et mise en surbrillance des cases jouables ce tour
+		// --- 4. Stations et surbrillance des coups valides ---
 		ArrayList<Integer> valides = this.ctrl.getCasesValides(this.numeroJoueur);
 
 		for (int i = 0; i < taille; i++)
@@ -140,7 +137,7 @@ public class PanelGrille extends JPanel implements MouseListener
 			}
 		}
 
-		// Enfin, on marque uniquement le départ de ce joueur, par un rond de sa couleur
+		// --- 5. MON départ uniquement (un rond de ma couleur) ---
 		int caseDepart = this.ctrl.getCaseDepart(this.numeroJoueur);
 		if (caseDepart >= 0)
 		{

@@ -48,6 +48,8 @@ public class Pioche
 	}
 
 	// La manche se termine quand toutes les cartes foncées ont été tirées
-	public boolean estTerminee()           { return this.nbFonceesRestantes <= 0; }
+	public boolean estTerminee()        { return this.nbFonceesRestantes <= 0; }
+	public boolean estVide()            { return this.cartes.isEmpty(); }
+	public int     getNbCartes()        { return this.cartes.size(); }
 	public int     getNbFonceesRestantes() { return this.nbFonceesRestantes; }
 }

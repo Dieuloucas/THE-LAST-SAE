@@ -1,14 +1,8 @@
 package plateau.ihm;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.GridLayout;
-import java.awt.Image;
 import plateau.Controleur;
 
+import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import javax.swing.*;
@@ -30,6 +24,7 @@ public class PanelChargement extends JPanel implements ActionListener
 
     private JButton             btnCharger;
     private JButton             btnRetour;
+    private JLabel              lblStatut;
 
     public PanelChargement(FrameChargement frmChargement, Controleur ctrl)
     {
@@ -97,6 +92,10 @@ public class PanelChargement extends JPanel implements ActionListener
         this.txtManches = new JTextField("1", 3);
         this.txtManches.setFont(labelFont);
 
+        this.lblStatut = new JLabel(" ");
+        this.lblStatut.setForeground(new Color(255, 100, 100));
+        this.lblStatut.setFont(labelFont);
+
         this.btnCharger = new JButton("Charger");
         this.btnRetour  = new JButton("Retour");
         this.btnCharger.setFont(labelFont);
@@ -124,14 +123,15 @@ public class PanelChargement extends JPanel implements ActionListener
         panelBoutons.add(this.btnRetour);
         panelBoutons.add(this.btnCharger);
 
-        // Formulaire vertical : plateau, mode, nb de manches, boutons
-        JPanel panelFormulaire = new JPanel(new GridLayout(6, 1, 10, 10));
+        // Formulaire vertical : plateau, mode, nb de manches, statut, boutons
+        JPanel panelFormulaire = new JPanel(new GridLayout(7, 1, 10, 10));
         panelFormulaire.setOpaque(false);
         panelFormulaire.add(lblTitre);
         panelFormulaire.add(this.comboFichiers);
         panelFormulaire.add(lblMode);
         panelFormulaire.add(panelModes);
         panelFormulaire.add(panelManches);
+        panelFormulaire.add(this.lblStatut);
         panelFormulaire.add(panelBoutons);
 
         this.add(panelFormulaire, BorderLayout.CENTER);
@@ -156,14 +156,15 @@ public class PanelChargement extends JPanel implements ActionListener
                     // Vérifier que le plateau possède bien des joueurs et des stations
                     if (!this.ctrl.plateauEstJouable())
                     {
-                        System.out.println("Plateau non finalisé (pas de départ ou de station).");
+                        this.lblStatut.setText("Plateau non finalisé (pas de départ ou de station).");
                         return;
                     }
 
                     // Récupérer le mode coché sur la fenêtre
                     if (this.rbMulti.isSelected())
                     {
-                        System.out.println("Mode multijoueur (réseau) à venir.");
+                        this.lblStatut.setForeground(new Color(255, 180, 80));
+                        this.lblStatut.setText("Mode multijoueur (réseau) à venir.");
                         // TODO : lancer la partie en multijoueur via le réseau (étape ultérieure)
                     }
                     else
@@ -172,16 +173,18 @@ public class PanelChargement extends JPanel implements ActionListener
                         int nbManches;
                         try
                         {
-                            nbManches = Integer.parseInt(this.txtManches.getText());
+                            nbManches = Integer.parseInt(this.txtManches.getText().trim());
                         }
                         catch (NumberFormatException ex)
                         {
-                            System.out.println("Nombre de manches invalide.");
+                            this.lblStatut.setForeground(new Color(255, 100, 100));
+                            this.lblStatut.setText("Nombre de manches invalide.");
                             return;
                         }
                         if (nbManches < 1)
                         {
-                            System.out.println("Le nombre de manches doit être au moins 1.");
+                            this.lblStatut.setForeground(new Color(255, 100, 100));
+                            this.lblStatut.setText("Le nombre de manches doit être au moins 1.");
                             return;
                         }
 
@@ -192,7 +195,7 @@ public class PanelChargement extends JPanel implements ActionListener
                 }
                 else
                 {
-                    System.out.println("Erreur : fichier invalide ou corrompu.");
+                    this.lblStatut.setText("Erreur : fichier invalide ou corrompu.");
                 }
             }
         }
@@ -205,7 +208,6 @@ public class PanelChargement extends JPanel implements ActionListener
     }
 
     // Dessin : Affiche l'image de fond et applique un filtre noir translucide pour la lisibilité
-    @Override
     protected void paintComponent(Graphics g)
     {
         super.paintComponent(g);
@@ -213,7 +215,7 @@ public class PanelChargement extends JPanel implements ActionListener
         {
             g.drawImage(this.imgBackground, 0, 0, getWidth(), getHeight(), this);
         }
-        g.setColor(new Color(0, 0, 0, 130));
+        g.setColor(new Color(0, 0, 0, 130)); // 130 = opacité (semi-transparent)
         g.fillRect(0, 0, getWidth(), getHeight());
     }
 }

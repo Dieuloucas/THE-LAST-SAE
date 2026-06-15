@@ -2,7 +2,7 @@ package plateau.metier;
 
 import java.util.ArrayList;
 
-// Partie en mode LOCAL, en plusieurs manches.
+// plusieurs manches 
 // Pioche COMMUNE : une seule carte est révélée à la fois, la même pour tous les joueurs.
 // Ordre de tour : J1 puis J2... ; quand tous ont joué la carte commune, on révèle la suivante.
 // Une manche se termine quand toutes les cartes FONCÉES ont été tirées : on calcule alors le score.
@@ -25,7 +25,7 @@ public class Partie
 	private boolean  entreManche;   // true quand une manche vient de finir (en attente de continuer)
 	private boolean  partieTerminee;
 
-	public Partie(Plateau plateau, int nbManches)
+	public Partie(Plateau plateau, int nbManches) 
 	{
 		this.plateau        = plateau;
 		this.nbManches      = Math.max(1, nbManches);
@@ -39,19 +39,19 @@ public class Partie
 		int maxStation = 0;
 		for (int i = 0; i < taille; i++)
 		{
-			if (plateau.getDepart(i)  > maxDepart)  maxDepart  = plateau.getDepart(i);
+			if (plateau.getDepart(i)  > maxDepart)  maxDepart  = plateau.getDepart(i); // on défini le nombre de départ max et les stations max
 			if (plateau.getStation(i) > maxStation) maxStation = plateau.getStation(i);
 		}
-		this.nbJoueurs  = maxDepart;
+		this.nbJoueurs  = maxDepart; // il ya autant de joueurs que de departs
 		this.nbStations = maxStation;
 
 		// Repérer la case de chaque départ (départ numéro n -> casesDepart[n-1])
-		this.casesDepart = new int[this.nbJoueurs];
-		for (int n = 1; n <= this.nbJoueurs; n++)
+		this.casesDepart = new int[this.nbJoueurs]; //tableau de n cases de depart 
+		for (int n = 1; n <= this.nbJoueurs; n++)  // on parcours le nombre de joueurs 
 		{
 			for (int i = 0; i < taille; i++)
 			{
-				if (plateau.getDepart(i) == n) { this.casesDepart[n - 1] = i; break; }
+				if (plateau.getDepart(i) == n) { this.casesDepart[n - 1] = i; break; } 
 			}
 		}
 
@@ -188,6 +188,12 @@ public class Partie
 		return ValidateurMouvement.getCasesValides(joueur, this.carteCourante, this.plateau);
 	}
 
+	public boolean estDansReseau(int numeroJoueur, int numCase)
+	{
+		if (numeroJoueur < 1 || numeroJoueur > this.joueurs.length) return false;
+		return this.joueurs[numeroJoueur - 1].getReseau().contient(numCase);
+	}
+
 	public ArrayList<Integer> getCheminJoueur(int numeroJoueur)
 	{
 		if (numeroJoueur < 1 || numeroJoueur > this.joueurs.length) return new ArrayList<Integer>();
@@ -200,14 +206,16 @@ public class Partie
 		return this.joueurs[numeroJoueur - 1].aJoue();
 	}
 
-	// Getters
-	public Joueur[] getJoueurs()            { return this.joueurs; }
-	public int      getNbJoueurs()          { return this.nbJoueurs; }
-	public int      getNbManches()          { return this.nbManches; }
-	public int      getNumeroManche()       { return this.numeroManche; }
-	public Carte    getCarteCourante()      { return this.carteCourante; }
-	public boolean  isEntreManche()         { return this.entreManche; }
-	public boolean  isPartieTerminee()      { return this.partieTerminee; }
-	public int      getJoueurCourant()      { return this.joueurCourant; }
-	public int      getNbFonceesRestantes() { return this.pioche.getNbFonceesRestantes(); }
+	// --- Getters ---
+	public Plateau  getPlateau()           { return this.plateau; }
+	public Joueur[] getJoueurs()           { return this.joueurs; }
+	public int      getNbJoueurs()         { return this.nbJoueurs; }
+	public int      getNbManches()         { return this.nbManches; }
+	public int      getNumeroManche()      { return this.numeroManche; }
+	public Carte    getCarteCourante()     { return this.carteCourante; }
+	public boolean  isEntreManche()        { return this.entreManche; }
+	public boolean  isPartieTerminee()     { return this.partieTerminee; }
+	public int      getJoueurCourant()     { return this.joueurCourant; }
+	public int      getNbCartesRestantes() { return this.pioche.getNbCartes(); }
+	public int      getNbFonceesRestantes(){ return this.pioche.getNbFonceesRestantes(); }
 }
