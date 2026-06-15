@@ -61,6 +61,7 @@
   <button class="tab" data-t="s6" role="tab">Format fichier</button>
   <button class="tab" data-t="s7" role="tab">Mode debug</button>
   <button class="tab" data-t="s8" role="tab">Oral : FAQ &amp; scénarios</button>
+  <button class="tab" data-t="s9" role="tab">Choix &amp; performance</button>
 </div>
 
 <section class="sec" id="s1">
@@ -223,10 +224,96 @@ java plateau.Controleur debug    (mode démonstration)</div>
   <p class="muted">Dans <span class="mono">CalculateurScore.calculer()</span>, en fin de manche : stations par arrondissement, puis (nb de zones) × (max dans une zone).</p>
 
   <h3>Scénarios de démonstration</h3>
-  <div class="card"><span class="lbl">Scénario 1 — le graphe et le plateau</span><br><span class="muted">Lancer en debug, charger un plateau, montrer les arêtes grises + numéros de case → expliquer le graphe.</span></div>
-  <div class="card"><span class="lbl">Scénario 2 — la validation des coups</span><br><span class="muted">Jouer un coup valide (ACCEPTE), puis cliquer une case interdite → montrer la raison dans la console (les 4 règles).</span></div>
-  <div class="card"><span class="lbl">Scénario 3 — la pioche et le score</span><br><span class="muted">Forcer quelques cartes (dont un joker), puis « sauter la manche » → montrer le détail du calcul du score.</span></div>
-  <div class="card"><span class="lbl">Scénario 4 — les manches</span><br><span class="muted">Lancer une partie en 2-3 manches → montrer la rotation des départs/couleurs et le tableau de résultats final.</span></div>
+  <div class="pre">cd "Appli Jeu Debug"
+javac @compile.list
+java plateau.Controleur debug
+→ Jouer → plateau_profamphi.txt → choisir le nb de manches → Charger</div>
+  <p class="muted">Plateau conseillé : <span class="mono">plateau_profamphi.txt</span> (7×7, 4 joueurs, 28 stations de types 1 à 4). Garde le terminal visible à côté des fenêtres : les logs s'y affichent.</p>
+
+  <div class="card">
+    <div class="q" style="margin-top:0">Scénario 1 — le graphe &amp; le plateau (1 manche)</div>
+    <p class="muted">Objectif : montrer la théorie des graphes.</p>
+    <div class="step"><div class="num">1</div><div>Lance la partie : 4 fenêtres joueurs + la bande centrale s'ouvrent.</div></div>
+    <div class="step"><div class="num">2</div><div>Montre une grille : lignes grises = arêtes du graphe, numéros = index des cases, zones colorées = arrondissements, rond = ton départ.</div></div>
+    <div class="step"><div class="num">3</div><div>Montre le terminal : <span class="mono">Joueurs : 4 | Stations : 28 | Aretes : 76</span>.</div></div>
+    <div class="ret"><span class="lbl">À dire :</span> « Chaque station est un sommet, chaque ligne grise une arête de notre graphe non orienté, stocké dans une matrice d'adjacence. Les 76 liaisons sont générées automatiquement ou lues dans le fichier. »</div>
+  </div>
+
+  <div class="card">
+    <div class="q" style="margin-top:0">Scénario 2 — la validation d'un coup (1 manche)</div>
+    <p class="muted">Objectif : prouver les 4 règles de <span class="mono">ValidateurMouvement</span>. Joue sur le plateau du joueur dont c'est le tour.</p>
+    <div class="step"><div class="num">1</div><div>Clique une <span class="lbl">case jaune</span> → <span class="mono">ACCEPTE</span>, la station se pose.</div></div>
+    <div class="step"><div class="num">2</div><div>Clique une <span class="lbl">case vide</span> → <span class="mono">REFUSE : aucune station</span> (règle 1).</div></div>
+    <div class="step"><div class="num">3</div><div>Force une carte (ex. Station 2), clique une station d'un <span class="lbl">autre type</span> → <span class="mono">REFUSE : … type</span> (règle 2).</div></div>
+    <div class="step"><div class="num">4</div><div>Clique une station <span class="lbl">déjà dans ton tracé</span> → <span class="mono">REFUSE : deja dans le reseau</span> (règle 3).</div></div>
+    <div class="step"><div class="num">5</div><div>Clique une station <span class="lbl">éloignée</span> de tes 2 bouts → <span class="mono">REFUSE : non reliee a une extremite</span> (règle 4).</div></div>
+    <div class="ret"><span class="lbl">À dire :</span> « Avant de poser, on vérifie 4 choses dans l'ordre : une station existe ? du bon type (ou joker) ? pas déjà prise ? reliée à une de mes deux extrémités ? »</div>
+  </div>
+
+  <div class="card">
+    <div class="q" style="margin-top:0">Scénario 3 — la pioche &amp; le score (1 manche)</div>
+    <p class="muted">Objectif : montrer la pioche forcée et le calcul du score.</p>
+    <div class="step"><div class="num">1</div><div>Bloc DEBUG : choisis <span class="lbl">Station 1</span> → Forcer la carte : l'image de la carte change.</div></div>
+    <div class="step"><div class="num">2</div><div>Fais poser ce type, puis force un <span class="lbl">Joker</span> → on peut poser n'importe quel type.</div></div>
+    <div class="step"><div class="num">3</div><div>Clique <span class="lbl">Sauter la manche</span> → scores + détail console : <span class="mono">zone 5 : 4 =&gt; 3 x 4 = 12 points</span>.</div></div>
+    <div class="ret"><span class="lbl">À dire :</span> « La pioche est commune ; en debug je force la carte pour la démo. Le joker accepte tous les types. Score = zones traversées × le plus gros paquet de stations dans une zone. »</div>
+  </div>
+
+  <div class="card">
+    <div class="q" style="margin-top:0">Scénario 4 — les manches (2-3 manches)</div>
+    <p class="muted">Objectif : multi-manches, rotation, écran final.</p>
+    <div class="step"><div class="num">1</div><div>Saute la manche 1 → fenêtre « Manche 1 terminée » avec les scores.</div></div>
+    <div class="step"><div class="num">2</div><div>Manche 2 : montre que les <span class="lbl">couleurs ont changé</span> et que les <span class="lbl">départs ont tourné</span>.</div></div>
+    <div class="step"><div class="num">3</div><div>Saute jusqu'au bout → <span class="lbl">écran de résultats</span> (M1, M2… + Total + gagnant).</div></div>
+    <div class="ret"><span class="lbl">À dire :</span> « À chaque manche, départs et couleurs tournent pour l'équité. Le gagnant a le meilleur total ; égalité départagée par la meilleure manche. »</div>
+  </div>
+
+  <p class="muted">Ordre conseillé le jour J : 1 → 2 → 3 → 4.</p>
+</section>
+
+<section class="sec" id="s9">
+  <h2>Choix techniques &amp; performance</h2>
+
+  <h3>La matrice d'adjacence : pourquoi ce choix ?</h3>
+  <p class="muted">Un graphe se stocke de deux façons. On a choisi la <span class="lbl">matrice d'adjacence</span> : un tableau à double entrée <span class="mono">boolean[][]</span> où <span class="mono">matrice[i][j] == true</span> signifie « les cases i et j sont reliées ». Comme le graphe est non orienté, on remplit toujours <span class="mono">[i][j]</span> ET <span class="mono">[j][i]</span>.</p>
+  <div class="card">
+    <span class="lbl">Avantage clé : tester une arête en O(1)</span><br>
+    <span class="muted"><span class="mono">aArete(i, j)</span> = un simple accès <span class="mono">matrice[i][j]</span> : instantané, quelle que soit la taille du plateau. Or on teste l'adjacence en permanence (à chaque coup, <span class="mono">getCasesValides</span> teste toutes les cases). Ce O(1) est donc précieux.</span>
+  </div>
+  <div class="card">
+    <span class="lbl">Le coût : la mémoire en O(n²)</span><br>
+    <span class="muted">n cases → n×n booléens. Pour 10×10 = 100 cases → 10 000 booléens ≈ 10 Ko. Totalement négligeable. La matrice est idéale pour un petit graphe — exactement notre cas.</span>
+  </div>
+
+  <h3>Pourquoi un tableau à double entrée et pas un ArrayList ?</h3>
+  <p class="muted">L'alternative est la <span class="lbl">liste d'adjacence</span> (pour chaque sommet, la liste de ses voisins), typiquement un <span class="mono">ArrayList&lt;ArrayList&lt;Integer&gt;&gt;</span>.</p>
+  <table style="width:100%;border-collapse:collapse;font-size:14px;margin:8px 0">
+    <tr style="background:var(--bg2)"><th style="text-align:left;padding:8px;border:1px solid var(--bd)"></th><th style="text-align:left;padding:8px;border:1px solid var(--bd)">boolean[][] (notre choix)</th><th style="text-align:left;padding:8px;border:1px solid var(--bd)">ArrayList de voisins</th></tr>
+    <tr><td style="padding:8px;border:1px solid var(--bd)">Tester une arête</td><td style="padding:8px;border:1px solid var(--bd)"><span class="lbl">O(1)</span> accès direct</td><td style="padding:8px;border:1px solid var(--bd)">O(degré) : il faut parcourir</td></tr>
+    <tr><td style="padding:8px;border:1px solid var(--bd)">Mémoire</td><td style="padding:8px;border:1px solid var(--bd)">O(n²)</td><td style="padding:8px;border:1px solid var(--bd)">O(arêtes) — mieux si graphe creux</td></tr>
+    <tr><td style="padding:8px;border:1px solid var(--bd)">Code</td><td style="padding:8px;border:1px solid var(--bd)"><span class="lbl">très simple</span></td><td style="padding:8px;border:1px solid var(--bd)">imbriqué + autoboxing des Integer</td></tr>
+  </table>
+  <p class="muted">Sur un petit graphe avec des tests d'arête très fréquents, le tableau gagne sur la vitesse <span class="lbl">et</span> la simplicité ; la mémoire n'est pas un souci. Un <span class="mono">ArrayList</span> ne se justifierait que sur un très gros graphe creux.</p>
+
+  <h3>Tableau OU ArrayList : on choisit selon le besoin</h3>
+  <div class="row">
+    <div class="card"><span class="lbl">Tableau (taille fixe)</span><br><span class="muted">accès direct O(1), compact. → la matrice du graphe, les 3 tableaux du plateau, le cache d'images.</span></div>
+    <div class="card"><span class="lbl">ArrayList (taille variable)</span><br><span class="muted">grandit/rétrécit à volonté. → le réseau d'un joueur (s'allonge coup par coup), la pioche (on retire les cartes).</span></div>
+  </div>
+  <p class="muted">Le réseau est un <span class="mono">ArrayList&lt;Integer&gt;</span> car on ne connaît pas sa taille d'avance et on l'étend par les deux bouts (<span class="mono">add(0,x)</span> en tête, <span class="mono">add(x)</span> en queue). L'ajout en tête est O(n) mais n ≤ nb de stations → négligeable.</p>
+
+  <h3>Le cache d'images</h3>
+  <p class="muted">Lire une image sur le disque est lent ; la recharger à chaque <span class="mono">repaint</span> rendrait l'affichage saccadé. On la charge donc <span class="lbl">une seule fois</span> et on la garde dans un tableau (<span class="mono">Image[][]</span> pour les cartes, <span class="mono">Image[]</span> pour les stations) → accès O(1) ensuite.</p>
+
+  <h3>Récap des complexités</h3>
+  <table style="width:100%;border-collapse:collapse;font-size:14px;margin:8px 0">
+    <tr style="background:var(--bg2)"><th style="text-align:left;padding:8px;border:1px solid var(--bd)">Opération</th><th style="text-align:left;padding:8px;border:1px solid var(--bd)">Coût</th><th style="text-align:left;padding:8px;border:1px solid var(--bd)">Pourquoi</th></tr>
+    <tr><td style="padding:8px;border:1px solid var(--bd)">Tester une arête</td><td style="padding:8px;border:1px solid var(--bd)">O(1)</td><td style="padding:8px;border:1px solid var(--bd)">accès direct dans la matrice</td></tr>
+    <tr><td style="padding:8px;border:1px solid var(--bd)">Lister les coups valides</td><td style="padding:8px;border:1px solid var(--bd)">O(n)</td><td style="padding:8px;border:1px solid var(--bd)">n cases, chacune testée en O(1)</td></tr>
+    <tr><td style="padding:8px;border:1px solid var(--bd)">Générer les arêtes auto</td><td style="padding:8px;border:1px solid var(--bd)">≈ O(n·largeur)</td><td style="padding:8px;border:1px solid var(--bd)">chaque station balaye 4 rayons</td></tr>
+    <tr><td style="padding:8px;border:1px solid var(--bd)">Calculer un score</td><td style="padding:8px;border:1px solid var(--bd)">O(n)</td><td style="padding:8px;border:1px solid var(--bd)">parcours des stations + 20 zones</td></tr>
+  </table>
+  <p class="muted">n = nombre de cases du plateau (ex. 49 pour une grille 7×7).</p>
 </section>
 
 <footer>Les Cartographes du Métro — document de révision généré pour l'oral. Ouvrir ce fichier dans un navigateur ; navigation par les onglets ci-dessus.</footer>
