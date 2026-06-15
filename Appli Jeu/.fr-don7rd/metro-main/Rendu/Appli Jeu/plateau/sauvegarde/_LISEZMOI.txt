@@ -1,1 +1,0 @@
-Les plateaux jouables sont charges depuis ../Appli Conception/plateau/sauvegarde
