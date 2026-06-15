@@ -2,20 +2,9 @@ package plateau.metier;
 
 import java.io.File;
 
+// Données et chemins d'images partagés par le jeu (couleurs des arrondissements, fichiers des cartes et stations).
 public class UtilitaireJeu
 {
-	public static String[] getNomsStations()
-	{
-		return new String[]{
-			"Tour Eiffel",
-			"Moulin Rouge",
-			"Louvre",
-			"Restaurant",
-			"Gare",
-			"Aéroport"
-		};
-	}
-
 	public static java.awt.Color[] getCouleurs()
 	{
 		return new java.awt.Color[]{

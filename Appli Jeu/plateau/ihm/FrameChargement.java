@@ -5,6 +5,7 @@ import plateau.Controleur;
 import java.awt.FlowLayout;
 import javax.swing.*;
 
+// Fenêtre de chargement : choix du plateau, du mode et du nombre de manches avant de lancer une partie.
 public class FrameChargement extends JFrame
 {
 	public FrameChargement(Controleur ctrl)

@@ -2,7 +2,7 @@ package plateau.ihm;
 
 import plateau.Controleur;
 
-import java.awt.*;
+import java.awt.BorderLayout;
 import javax.swing.*;
 
 // Fenêtre d'un joueur : uniquement le plateau (la grille).

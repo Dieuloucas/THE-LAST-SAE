@@ -3,7 +3,11 @@ package plateau.ihm;
 import plateau.Controleur;
 import plateau.metier.Joueur;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.BorderLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
+
 import java.awt.event.*;
 import java.util.ArrayList;
 import javax.swing.*;
@@ -18,23 +22,20 @@ public class PanelResultats extends JPanel implements ActionListener
 	{
 		this.ctrl = ctrl;
 
-		this.setBackground(Color.WHITE);
-		this.setLayout(new BorderLayout(10, 10));
-		this.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-
 		Joueur[] js        = ctrl.getJoueurs();
 		int      nbManches = ctrl.getNbManches();
 
-		JLabel lblTitre = new JLabel("Résultats", SwingConstants.CENTER);
-		lblTitre.setFont(new Font("Arial", Font.BOLD, 20));
-		this.add(lblTitre, BorderLayout.NORTH);
-
-		/*-------------------------------------*/
-		/* Tableau des scores                  */
-		/*-------------------------------------*/
+		/*-------------------------*/
+		/* Création des composants */
+		/*-------------------------*/
 		Font gras   = new Font("Arial", Font.BOLD, 13);
 		Font normal = new Font("Arial", Font.PLAIN, 13);
 
+		// Titre en haut de l'écran
+		JLabel lblTitre = new JLabel("Résultats", SwingConstants.CENTER);
+		lblTitre.setFont(new Font("Arial", Font.BOLD, 20));
+
+		// Tableau des scores : une ligne par joueur, une colonne par manche puis le total
 		JPanel grille = new JPanel(new GridLayout(js.length + 1, nbManches + 2, 8, 6));
 		grille.setBackground(Color.WHITE);
 
@@ -52,11 +53,7 @@ public class PanelResultats extends JPanel implements ActionListener
 			grille.add(cellule("" + js[i].getScoreTotal(), gras));
 		}
 
-		this.add(grille, BorderLayout.CENTER);
-
-		/*-------------------------------------*/
-		/* Gagnant(s) + bouton Quitter         */
-		/*-------------------------------------*/
+		// Texte du ou des gagnant(s) : un seul gagnant, ou une victoire partagée
 		ArrayList<Integer> gagnants = ctrl.getGagnants();
 		String texte;
 		if (gagnants.size() == 1)
@@ -78,8 +75,18 @@ public class PanelResultats extends JPanel implements ActionListener
 		lblGagnant.setFont(new Font("Arial", Font.BOLD, 16));
 
 		this.btnQuitter = new JButton("Quitter");
-		this.btnQuitter.addActionListener(this);
 
+		/*-------------------------------*/
+		/* Positionnement des composants */
+		/*-------------------------------*/
+		this.setBackground(Color.WHITE);
+		this.setLayout(new BorderLayout(10, 10));
+		this.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+		this.add(lblTitre, BorderLayout.NORTH);
+		this.add(grille, BorderLayout.CENTER);
+
+		// Gagnant(s) au-dessus du bouton "Quitter", regroupés en bas de l'écran
 		JPanel pBouton = new JPanel();
 		pBouton.setBackground(Color.WHITE);
 		pBouton.add(this.btnQuitter);
@@ -90,6 +97,11 @@ public class PanelResultats extends JPanel implements ActionListener
 		bas.add(pBouton, BorderLayout.SOUTH);
 
 		this.add(bas, BorderLayout.SOUTH);
+
+		/*---------------------------*/
+		/* Activation des composants */
+		/*---------------------------*/
+		this.btnQuitter.addActionListener(this);
 	}
 
 	private JLabel entete(String t, Font f)

@@ -188,12 +188,6 @@ public class Partie
 		return ValidateurMouvement.getCasesValides(joueur, this.carteCourante, this.plateau);
 	}
 
-	public boolean estDansReseau(int numeroJoueur, int numCase)
-	{
-		if (numeroJoueur < 1 || numeroJoueur > this.joueurs.length) return false;
-		return this.joueurs[numeroJoueur - 1].getReseau().contient(numCase);
-	}
-
 	public ArrayList<Integer> getCheminJoueur(int numeroJoueur)
 	{
 		if (numeroJoueur < 1 || numeroJoueur > this.joueurs.length) return new ArrayList<Integer>();
@@ -206,16 +200,14 @@ public class Partie
 		return this.joueurs[numeroJoueur - 1].aJoue();
 	}
 
-	// --- Getters ---
-	public Plateau  getPlateau()           { return this.plateau; }
-	public Joueur[] getJoueurs()           { return this.joueurs; }
-	public int      getNbJoueurs()         { return this.nbJoueurs; }
-	public int      getNbManches()         { return this.nbManches; }
-	public int      getNumeroManche()      { return this.numeroManche; }
-	public Carte    getCarteCourante()     { return this.carteCourante; }
-	public boolean  isEntreManche()        { return this.entreManche; }
-	public boolean  isPartieTerminee()     { return this.partieTerminee; }
-	public int      getJoueurCourant()     { return this.joueurCourant; }
-	public int      getNbCartesRestantes() { return this.pioche.getNbCartes(); }
-	public int      getNbFonceesRestantes(){ return this.pioche.getNbFonceesRestantes(); }
+	// Getters
+	public Joueur[] getJoueurs()            { return this.joueurs; }
+	public int      getNbJoueurs()          { return this.nbJoueurs; }
+	public int      getNbManches()          { return this.nbManches; }
+	public int      getNumeroManche()       { return this.numeroManche; }
+	public Carte    getCarteCourante()      { return this.carteCourante; }
+	public boolean  isEntreManche()         { return this.entreManche; }
+	public boolean  isPartieTerminee()      { return this.partieTerminee; }
+	public int      getJoueurCourant()      { return this.joueurCourant; }
+	public int      getNbFonceesRestantes() { return this.pioche.getNbFonceesRestantes(); }
 }
