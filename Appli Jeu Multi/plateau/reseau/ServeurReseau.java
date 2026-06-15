@@ -17,8 +17,14 @@ public class ServeurReseau extends Thread
 	private int nbJoueursAttendus;
 	private boolean partieLancee;
 	
+<<<<<<< HEAD
 	private String nomPlateau;
 
+=======
+	private String nomPlateau; // AJOUT : Nom du fichier choisi par l'hôte
+
+	// AJOUT : Le constructeur prend désormais le nom du plateau
+>>>>>>> 593288d (Amélioration)
 	public ServeurReseau(int port, Plateau plateau, int nbManches, String nomPlateau)
 	{
 		this.port = port;
@@ -57,14 +63,22 @@ public class ServeurReseau extends Thread
 
 				client.envoyer("ACCEPT_ID;" + idJoueur + ";" + this.nbJoueursAttendus);
 				
+<<<<<<< HEAD
 				// Informer tout le monde de l'avancée du Lobby
+=======
+				// --- AJOUT : Informer tout le monde de l'avancée du Lobby ---
+>>>>>>> 593288d (Amélioration)
 				int restants = this.nbJoueursAttendus - this.clients.size();
 				this.diffuser("LOBBY_MAJ;" + restants + ";" + this.nomPlateau);
 
 				if (this.clients.size() == this.nbJoueursAttendus)
 				{
 					this.partieLancee = true;
+<<<<<<< HEAD
 					// On envoie aussi le nom du fichier pour que les invités le chargent
+=======
+					// AJOUT : On envoie aussi le nom du fichier pour que les invités le chargent
+>>>>>>> 593288d (Amélioration)
 					this.diffuser("START_GAME;" + this.nbManches + ";" + this.nomPlateau);
 				}
 			}
@@ -112,4 +126,8 @@ public class ServeurReseau extends Thread
 
 	public synchronized void deconnecter(ConnexionClient client) { this.clients.remove(client); }
 	public int getPort() { return this.port; }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 593288d (Amélioration)

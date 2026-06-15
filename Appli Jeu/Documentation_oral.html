@@ -61,7 +61,10 @@
   <button class="tab" data-t="s6" role="tab">Format fichier</button>
   <button class="tab" data-t="s7" role="tab">Mode debug</button>
   <button class="tab" data-t="s8" role="tab">Oral : FAQ &amp; scénarios</button>
+<<<<<<< HEAD
   <button class="tab" data-t="s9" role="tab">Choix &amp; performance</button>
+=======
+>>>>>>> 593288d (Amélioration)
 </div>
 
 <section class="sec" id="s1">
@@ -224,6 +227,7 @@ java plateau.Controleur debug    (mode démonstration)</div>
   <p class="muted">Dans <span class="mono">CalculateurScore.calculer()</span>, en fin de manche : stations par arrondissement, puis (nb de zones) × (max dans une zone).</p>
 
   <h3>Scénarios de démonstration</h3>
+<<<<<<< HEAD
   <div class="pre">cd "Appli Jeu Debug"
 javac @compile.list
 java plateau.Controleur debug
@@ -314,6 +318,12 @@ java plateau.Controleur debug
     <tr><td style="padding:8px;border:1px solid var(--bd)">Calculer un score</td><td style="padding:8px;border:1px solid var(--bd)">O(n)</td><td style="padding:8px;border:1px solid var(--bd)">parcours des stations + 20 zones</td></tr>
   </table>
   <p class="muted">n = nombre de cases du plateau (ex. 49 pour une grille 7×7).</p>
+=======
+  <div class="card"><span class="lbl">Scénario 1 — le graphe et le plateau</span><br><span class="muted">Lancer en debug, charger un plateau, montrer les arêtes grises + numéros de case → expliquer le graphe.</span></div>
+  <div class="card"><span class="lbl">Scénario 2 — la validation des coups</span><br><span class="muted">Jouer un coup valide (ACCEPTE), puis cliquer une case interdite → montrer la raison dans la console (les 4 règles).</span></div>
+  <div class="card"><span class="lbl">Scénario 3 — la pioche et le score</span><br><span class="muted">Forcer quelques cartes (dont un joker), puis « sauter la manche » → montrer le détail du calcul du score.</span></div>
+  <div class="card"><span class="lbl">Scénario 4 — les manches</span><br><span class="muted">Lancer une partie en 2-3 manches → montrer la rotation des départs/couleurs et le tableau de résultats final.</span></div>
+>>>>>>> 593288d (Amélioration)
 </section>
 
 <footer>Les Cartographes du Métro — document de révision généré pour l'oral. Ouvrir ce fichier dans un navigateur ; navigation par les onglets ci-dessus.</footer>

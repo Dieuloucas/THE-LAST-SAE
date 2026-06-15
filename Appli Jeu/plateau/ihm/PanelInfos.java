@@ -30,17 +30,13 @@ public class PanelInfos extends JPanel implements ActionListener
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		this.setBorder(BorderFactory.createEmptyBorder(14, 14, 14, 14));
 
-		Font gras16 = new Font("Arial", Font.BOLD, 16);
-		Font gras12 = new Font("Arial", Font.BOLD, 12);
-		Font normal12 = new Font("Arial", Font.PLAIN, 12);
-
 		/*-------------------------*/
 		/* Titre + carte + pioche  */
 		/*-------------------------*/
-		JLabel lblTitre = new JLabel("Infos de jeu");
-		lblTitre.setFont(gras16);
-		lblTitre.setAlignmentX(Component.CENTER_ALIGNMENT);
+		JLabel lblTitre 		= new JLabel("Infos de jeu");
+		lblTitre				.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+<<<<<<< HEAD
 		this.lblManche = new JLabel("Manche — / —");
 		this.lblManche.setFont(gras12);
 		this.lblManche.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -48,14 +44,20 @@ public class PanelInfos extends JPanel implements ActionListener
 		JLabel lblCarteTitre = new JLabel("Carte commune");
 		lblCarteTitre.setFont(gras12);
 		lblCarteTitre.setAlignmentX(Component.CENTER_ALIGNMENT);
+=======
+		this.lblManche 			= new JLabel("Manche — / —");
+		this.lblManche			.setAlignmentX(Component.CENTER_ALIGNMENT);
+>>>>>>> 593288d (Amélioration)
 
-		this.panelCarte = new PanelCarte(ctrl);
-		this.panelCarte.setAlignmentX(Component.CENTER_ALIGNMENT);
-		this.panelCarte.setMaximumSize(new Dimension(120, 160));
+		JLabel lblCarteTitre 	= new JLabel("Carte commune");
+		lblCarteTitre			.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-		this.lblPioche = new JLabel("— foncée(s) restante(s)");
-		this.lblPioche.setFont(normal12);
-		this.lblPioche.setAlignmentX(Component.CENTER_ALIGNMENT);
+		this.panelCarte 		= new PanelCarte(ctrl);
+		this.panelCarte			.setAlignmentX(Component.CENTER_ALIGNMENT);
+		this.panelCarte			.setMaximumSize(new Dimension(120, 160));
+
+		this.lblPioche 			= new JLabel("— foncée(s) restante(s)");
+		this.lblPioche			.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		this.add(lblTitre);
 		this.add(Box.createVerticalStrut(6));
@@ -73,34 +75,31 @@ public class PanelInfos extends JPanel implements ActionListener
 		/*-------------------------*/
 		/* Statut des joueurs      */
 		/*-------------------------*/
-		JLabel lblJoueurs = new JLabel("Joueurs");
-		lblJoueurs.setFont(gras12);
+		JLabel lblJoueurs 		= new JLabel("Joueurs");
 		lblJoueurs.setAlignmentX(Component.CENTER_ALIGNMENT);
 		this.add(lblJoueurs);
 		this.add(Box.createVerticalStrut(8));
 
-		this.lblStatutJoueur = new JLabel[this.nbJoueurs];
-		this.btnPasserJoueur = new JButton[this.nbJoueurs];
+		this.lblStatutJoueur 	= new JLabel[this.nbJoueurs];
+		this.btnPasserJoueur 	= new JButton[this.nbJoueurs];
 
 		for (int j = 1; j <= this.nbJoueurs; j++)
 		{
-			JLabel statut = new JLabel("Joueur " + j + " : à jouer");
-			statut.setFont(normal12);
+			JLabel statut 		= new JLabel("Joueur " + j + " : à jouer");
 			statut.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-			JButton pass = new JButton("Passer (Joueur " + j + ")");
-			pass.setFont(normal12);
-			pass.setAlignmentX(Component.CENTER_ALIGNMENT);
-			pass.setMaximumSize(new Dimension(180, 26));
-			pass.setActionCommand("PASSER_" + j);
-			pass.addActionListener(this);
+			JButton passer 		= new JButton("Passer (Joueur " + j + ")");
+			passer.setAlignmentX(Component.CENTER_ALIGNMENT);
+			passer.setMaximumSize(new Dimension(180, 26));
+			passer.setActionCommand("PASSER_" + j);
+			passer.addActionListener(this);
 
 			this.lblStatutJoueur[j - 1] = statut;
-			this.btnPasserJoueur[j - 1] = pass;
+			this.btnPasserJoueur[j - 1] = passer;
 
 			this.add(statut);
 			this.add(Box.createVerticalStrut(3));
-			this.add(pass);
+			this.add(passer);
 			this.add(Box.createVerticalStrut(10));
 		}
 
@@ -109,7 +108,6 @@ public class PanelInfos extends JPanel implements ActionListener
 		/*-------------------------*/
 		this.add(Box.createVerticalGlue());
 		this.btnQuitter = new JButton("Quitter");
-		this.btnQuitter.setFont(normal12);
 		this.btnQuitter.setAlignmentX(Component.CENTER_ALIGNMENT);
 		this.btnQuitter.setMaximumSize(new Dimension(180, 28));
 		this.btnQuitter.addActionListener(this);

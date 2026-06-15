@@ -364,7 +364,11 @@ public class Controleur
 		{
 			this.idJoueurReseauLocal = Integer.parseInt(segments[1]);
 		}
+<<<<<<< HEAD
 		else if (ordre.equals("LOBBY_MAJ"))
+=======
+		else if (ordre.equals("LOBBY_MAJ")) // --- AJOUT DU COMPTEUR DYNAMIQUE ---
+>>>>>>> 593288d (Amélioration)
 		{
 			int restants = Integer.parseInt(segments[1]);
 			String nomPlateau = segments[2];
@@ -389,7 +393,11 @@ public class Controleur
 			int nbManches = Integer.parseInt(segments[1]);
 			String nomPlateau = segments[2];
 
+<<<<<<< HEAD
 			// Si je suis Invité, je n'ai pas encore chargé le plateau. Je le cherche dans ma liste
+=======
+			// Si je suis Invité, je n'ai pas encore chargé le plateau. Je le cherche dans ma liste !
+>>>>>>> 593288d (Amélioration)
 			if (this.serveurReseau == null) 
 			{
 				File[] dossiers = this.getSauvegardes();
