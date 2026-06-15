@@ -17,9 +17,8 @@ public class ServeurReseau extends Thread
 	private int nbJoueursAttendus;
 	private boolean partieLancee;
 	
-	private String nomPlateau; // AJOUT : Nom du fichier choisi par l'hôte
+	private String nomPlateau;
 
-	// AJOUT : Le constructeur prend désormais le nom du plateau
 	public ServeurReseau(int port, Plateau plateau, int nbManches, String nomPlateau)
 	{
 		this.port = port;
@@ -58,14 +57,14 @@ public class ServeurReseau extends Thread
 
 				client.envoyer("ACCEPT_ID;" + idJoueur + ";" + this.nbJoueursAttendus);
 				
-				// --- AJOUT : Informer tout le monde de l'avancée du Lobby ---
+				// Informer tout le monde de l'avancée du Lobby
 				int restants = this.nbJoueursAttendus - this.clients.size();
 				this.diffuser("LOBBY_MAJ;" + restants + ";" + this.nomPlateau);
 
 				if (this.clients.size() == this.nbJoueursAttendus)
 				{
 					this.partieLancee = true;
-					// AJOUT : On envoie aussi le nom du fichier pour que les invités le chargent
+					// On envoie aussi le nom du fichier pour que les invités le chargent
 					this.diffuser("START_GAME;" + this.nbManches + ";" + this.nomPlateau);
 				}
 			}
