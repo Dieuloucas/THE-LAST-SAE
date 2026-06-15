@@ -1,11 +1,13 @@
 package plateau.ihm;
 
-import plateau.Controleur;
-
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.event.*;
 import java.util.ArrayList;
 import javax.swing.*;
+import plateau.Controleur;
 
 // Plateau d'UN joueur. Affichage simple et lisible :
 // fond clair uni, stations, départs, et UNIQUEMENT le réseau de CE joueur (sa couleur).
@@ -61,6 +63,7 @@ public class PanelGrille extends JPanel implements MouseListener
 		this.repaint();
 	}
 
+    @Override
 	protected void paintComponent(Graphics g)
 	{
 		super.paintComponent(g);

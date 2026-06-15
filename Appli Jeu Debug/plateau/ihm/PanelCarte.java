@@ -1,12 +1,11 @@
 package plateau.ihm;
 
-import plateau.Controleur;
-import plateau.metier.Carte;
-
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import javax.swing.JPanel;
+import plateau.Controleur;
+import plateau.metier.Carte;
 
 // Affiche la carte COMMUNE courante sous forme d'image (ex: "3_claire.png", "7_fonce.png" pour le joker).
 public class PanelCarte extends JPanel

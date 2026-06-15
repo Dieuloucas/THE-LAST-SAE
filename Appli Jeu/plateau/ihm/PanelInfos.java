@@ -1,10 +1,11 @@
 package plateau.ihm;
 
-import plateau.Controleur;
-
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.*;
 import javax.swing.*;
+import plateau.Controleur;
 
 // Longue bande verticale centrale : carte commune (pioche) + statut de chaque joueur + boutons.
 // Design simple : fond clair, texte noir lisible.
@@ -36,18 +37,8 @@ public class PanelInfos extends JPanel implements ActionListener
 		JLabel lblTitre 		= new JLabel("Infos de jeu");
 		lblTitre				.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-<<<<<<< HEAD
-		this.lblManche = new JLabel("Manche — / —");
-		this.lblManche.setFont(gras12);
-		this.lblManche.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-		JLabel lblCarteTitre = new JLabel("Carte commune");
-		lblCarteTitre.setFont(gras12);
-		lblCarteTitre.setAlignmentX(Component.CENTER_ALIGNMENT);
-=======
 		this.lblManche 			= new JLabel("Manche — / —");
 		this.lblManche			.setAlignmentX(Component.CENTER_ALIGNMENT);
->>>>>>> 593288d (Amélioration)
 
 		JLabel lblCarteTitre 	= new JLabel("Carte commune");
 		lblCarteTitre			.setAlignmentX(Component.CENTER_ALIGNMENT);

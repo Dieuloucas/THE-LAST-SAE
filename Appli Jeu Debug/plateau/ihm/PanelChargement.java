@@ -1,8 +1,14 @@
 package plateau.ihm;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.GridLayout;
+import java.awt.Image;
 import plateau.Controleur;
 
-import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import javax.swing.*;

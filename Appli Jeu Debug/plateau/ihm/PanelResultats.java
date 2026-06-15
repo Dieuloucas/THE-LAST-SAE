@@ -1,12 +1,14 @@
 package plateau.ihm;
 
-import plateau.Controleur;
-import plateau.metier.Joueur;
-
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.event.*;
 import java.util.ArrayList;
 import javax.swing.*;
+import plateau.Controleur;
+import plateau.metier.Joueur;
 
 // Tableau des scores (par manche + total) et annonce du/des gagnant(s).
 public class PanelResultats extends JPanel implements ActionListener

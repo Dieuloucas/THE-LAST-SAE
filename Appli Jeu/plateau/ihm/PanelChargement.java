@@ -1,8 +1,14 @@
 package plateau.ihm;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.GridLayout;
+import java.awt.Image;
 import plateau.Controleur;
 
-import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import javax.swing.*;
@@ -208,6 +214,7 @@ public class PanelChargement extends JPanel implements ActionListener
     }
 
     // Dessin : Affiche l'image de fond et applique un filtre noir translucide pour la lisibilité
+    @Override
     protected void paintComponent(Graphics g)
     {
         super.paintComponent(g);
