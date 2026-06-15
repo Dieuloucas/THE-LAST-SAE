@@ -173,7 +173,7 @@ public class PanelChargement extends JPanel implements ActionListener
                         int nbManches;
                         try
                         {
-                            nbManches = Integer.parseInt(this.txtManches.getText().trim());
+                            nbManches = Integer.parseInt(this.txtManches.getText());
                         }
                         catch (NumberFormatException ex)
                         {
@@ -215,7 +215,6 @@ public class PanelChargement extends JPanel implements ActionListener
         {
             g.drawImage(this.imgBackground, 0, 0, getWidth(), getHeight(), this);
         }
-        g.setColor(new Color(0, 0, 0, 130)); // 130 = opacité (semi-transparent)
         g.fillRect(0, 0, getWidth(), getHeight());
     }
 }
