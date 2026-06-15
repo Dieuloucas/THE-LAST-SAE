@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fiche d'oral — Les Cartographes du Métro</title>
+<style>
+    :root{
+        --bleu:#0055a4;        /* bleu métro / drapeau */
+        --rouge:#ce1126;
+        --vert:#009639;
+        --orange:#f08c00;
+        --fond:#f5f6f8;
+        --carte:#ffffff;
+        --texte:#1d2733;
+        --gris:#62707f;
+        --bord:#e2e6eb;
+        --code-bg:#1e2530;
+        --code-fg:#e8ecf1;
+    }
+    *{box-sizing:border-box;}
+    html{scroll-behavior:smooth;}
+    body{
+        margin:0;
+        font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+        background:var(--fond);
+        color:var(--texte);
+        line-height:1.6;
+    }
+    /* ---------- En-tête ---------- */
+    header.hero{
+        background:linear-gradient(135deg,#0a2540 0%,#0055a4 60%,#1672c4 100%);
+        color:#fff;
+        padding:48px 24px 40px;
+        text-align:center;
+        position:relative;
+        overflow:hidden;
+    }
+    header.hero h1{margin:0 0 8px;font-size:2.3rem;letter-spacing:.5px;}
+    header.hero .sub{font-size:1.1rem;opacity:.9;font-style:italic;}
+    header.hero .meta{margin-top:18px;font-size:.9rem;opacity:.85;}
+    .pastilles{display:flex;gap:8px;justify-content:center;margin-top:20px;flex-wrap:wrap;}
+    .pastille{width:16px;height:16px;border-radius:50%;display:inline-block;}
+    /* ---------- Mise en page ---------- */
+    .wrap{display:flex;max-width:1280px;margin:0 auto;gap:28px;padding:28px 18px;}
+    nav.toc{
+        position:sticky;top:18px;align-self:flex-start;
+        width:280px;min-width:280px;
+        background:var(--carte);border:1px solid var(--bord);border-radius:12px;
+        padding:18px;max-height:calc(100vh - 36px);overflow-y:auto;
+        font-size:.9rem;
+    }
+    nav.toc h2{font-size:.8rem;text-transform:uppercase;letter-spacing:1px;color:var(--gris);margin:0 0 10px;}
+    nav.toc a{display:block;color:var(--texte);text-decoration:none;padding:5px 8px;border-radius:6px;border-left:3px solid transparent;}
+    nav.toc a:hover{background:#eef3fb;border-left-color:var(--bleu);}
+    nav.toc a.sub{padding-left:22px;font-size:.85rem;color:var(--gris);}
+    main{flex:1;min-width:0;}
+    section{
+        background:var(--carte);border:1px solid var(--bord);border-radius:14px;
+        padding:26px 30px;margin-bottom:26px;scroll-margin-top:18px;
+        box-shadow:0 1px 3px rgba(0,0,0,.04);
+    }
+    section>h2{
+        margin-top:0;font-size:1.6rem;color:var(--bleu);
+        border-bottom:3px solid var(--bleu);padding-bottom:10px;display:flex;align-items:center;gap:10px;
+    }
+    h3{font-size:1.2rem;color:#0a2540;margin-top:28px;border-left:5px solid var(--orange);padding-left:12px;}
+    h4{font-size:1.02rem;margin:18px 0 6px;color:#0a2540;}
+    p{margin:10px 0;}
+    code.inl{background:#eef1f5;color:#b5179e;padding:2px 6px;border-radius:5px;font-family:Consolas,Monaco,monospace;font-size:.88em;}
+    pre{
+        background:var(--code-bg);color:var(--code-fg);padding:16px 18px;border-radius:10px;
+        overflow-x:auto;font-family:Consolas,Monaco,"Courier New",monospace;font-size:.85rem;line-height:1.55;
+        border:1px solid #0d1117;
+    }
+    pre .cm{color:#7c8794;font-style:italic;}      /* commentaire */
+    pre .kw{color:#ff7b72;}                          /* mot-clé */
+    pre .ty{color:#79c0ff;}                          /* type */
+    pre .st{color:#a5d6ff;}                          /* string */
+    pre .nb{color:#f2cc60;}                          /* nombre */
+    pre .fn{color:#d2a8ff;}                          /* fonction */
+    /* ---------- Encadrés ---------- */
+    .box{border-radius:10px;padding:14px 16px 14px 46px;margin:14px 0;position:relative;font-size:.96rem;}
+    .box::before{position:absolute;left:14px;top:13px;font-size:1.1rem;}
+    .comment{background:#eef6ff;border-left:4px solid var(--bleu);}
+    .comment::before{content:"⚙️";}
+    .pourquoi{background:#fff7e9;border-left:4px solid var(--orange);}
+    .pourquoi::before{content:"🎯";}
+    .usage{background:#edf9f0;border-left:4px solid var(--vert);}
+    .usage::before{content:"🔧";}
+    .jury{background:#fdeef0;border-left:4px solid var(--rouge);}
+    .jury::before{content:"🎤";}
+    .attention{background:#fff4e5;border-left:4px solid #e8590c;}
+    .attention::before{content:"⚠️";}
+    .astuce{background:#f3eefe;border-left:4px solid #7048e8;}
+    .astuce::before{content:"💡";}
+    .box b.lbl{display:block;font-size:.78rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;}
+    .comment b.lbl{color:var(--bleu);}
+    .pourquoi b.lbl{color:#c46a00;}
+    .usage b.lbl{color:var(--vert);}
+    .jury b.lbl{color:var(--rouge);}
+    /* ---------- Carte méthode ---------- */
+    .methode{border:1px solid var(--bord);border-radius:12px;padding:4px 20px 16px;margin:20px 0;background:#fbfcfd;}
+    .methode>h4{font-family:Consolas,monospace;color:#b5179e;font-size:1rem;background:#f3e8f6;display:inline-block;padding:4px 10px;border-radius:6px;margin-top:16px;}
+    /* ---------- Tables ---------- */
+    table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.9rem;}
+    th,td{border:1px solid var(--bord);padding:9px 11px;text-align:left;vertical-align:top;}
+    th{background:#0a2540;color:#fff;font-weight:600;}
+    tr:nth-child(even) td{background:#f7f9fb;}
+    .tag{display:inline-block;padding:2px 8px;border-radius:20px;font-size:.75rem;font-weight:600;color:#fff;}
+    .t-metier{background:var(--vert);}
+    .t-ihm{background:var(--bleu);}
+    .t-ctrl{background:var(--orange);}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+    .schema{background:#0a2540;color:#dfe7f0;border-radius:12px;padding:20px;font-family:Consolas,monospace;font-size:.82rem;line-height:1.5;overflow-x:auto;}
+    .schema .b{color:#79c0ff;font-weight:bold;}
+    .schema .o{color:#f2cc60;}
+    .schema .g{color:#7ee787;}
+    ul.clean{margin:10px 0;padding-left:22px;}
+    ul.clean li{margin:5px 0;}
+    .pill{display:inline-block;background:#eef3fb;color:var(--bleu);border:1px solid #cfe0f5;border-radius:20px;padding:2px 10px;font-size:.8rem;margin:2px;}
+    footer{text-align:center;color:var(--gris);font-size:.85rem;padding:30px;}
+    .num{display:inline-flex;width:26px;height:26px;background:var(--bleu);color:#fff;border-radius:50%;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;margin-right:8px;flex:none;}
+    @media(max-width:980px){
+        .wrap{flex-direction:column;}
+        nav.toc{position:relative;width:100%;max-height:none;top:0;}
+        .grid2{grid-template-columns:1fr;}
+    }
+</style>
+</head>
+<body>
+
+<header class="hero">
+    <h1>🚇 Les Cartographes du Métro</h1>
+    <div class="sub">Fiche de préparation à l'oral — justifier les choix de conception</div>
+    <div class="meta">Projet Java / Swing · Architecture MVC · SAE 2.01 – 2.02 – 2.05 · Groupe 9 · Oral du vendredi 16/06</div>
+    <div class="pastilles">
+        <span class="pastille" style="background:#009639"></span>
+        <span class="pastille" style="background:#ce1126"></span>
+        <span class="pastille" style="background:#111"></span>
+        <span class="pastille" style="background:#0055a4"></span>
+    </div>
+</header>
+
+<div class="wrap">
+<nav class="toc">
+    <h2>Sommaire</h2>
+    <a href="#vue">0 · Vue d'ensemble & le jeu</a>
+    <a href="#archi">1 · Architecture (MVC)</a>
+    <a href="#classes">2 · Découpage en classes & héritages</a>
+    <a href="#metier">3 · Côté MÉTIER, méthode par méthode</a>
+    <a href="#m-plateau" class="sub">Plateau</a>
+    <a href="#m-graphe" class="sub">GraphePlateau</a>
+    <a href="#m-chargeur" class="sub">ChargeurPlateau</a>
+    <a href="#m-enregistreur" class="sub">EnregistreurPlateau</a>
+    <a href="#m-validateur" class="sub">ValidateurPlateau</a>
+    <a href="#m-config" class="sub">ConfigurationPlateau</a>
+    <a href="#m-placement" class="sub">GestionnairePlacement</a>
+    <a href="#m-utilitaire" class="sub">UtilitaireJeu</a>
+    <a href="#m-controleur" class="sub">Controleur</a>
+    <a href="#aretes">4 · ⭐ Sélection des arêtes</a>
+    <a href="#verif">5 · Vérifications & contraintes</a>
+    <a href="#ihm">6 · Côté IHM (Swing)</a>
+    <a href="#technique">7 · Choix techniques (synthèse)</a>
+    <a href="#donnees">8 · Données affichées</a>
+    <a href="#jury">9 · Questions probables du jury</a>
+    <a href="#ameliorations">10 · Limites & améliorations</a>
+    <a href="#glossaire">11 · Glossaire</a>
+</nav>
+
+<main>
+
+<!-- ============================ 0 ============================ -->
+<section id="vue">
+    <h2>0 · Vue d'ensemble & le jeu</h2>
+
+    <p><b>« Les Cartographes du Métro »</b> est un jeu de plateau (1 à 4 joueurs) où l'on relie des stations de
+    métro à travers les arrondissements de Paris. Le logiciel que nous avons développé n'est <b>pas le jeu complet</b> :
+    c'est l'<b>éditeur de plateau</b> (la partie « création et caractéristiques » décrite dans les règles). Il permet de :</p>
+    <ul class="clean">
+        <li><b>Configurer</b> une partie : largeur, hauteur, nombre de joueurs, nombre de types de stations, nombre d'arrondissements, taille des cases.</li>
+        <li><b>Dessiner</b> le plateau : colorier chaque case avec un arrondissement (au pinceau, à la souris).</li>
+        <li><b>Placer</b> les stations (types de métro) et les départs des joueurs.</li>
+        <li><b>Générer automatiquement</b> le réseau : les <b>arêtes</b> (lignes de métro) qui relient les stations.</li>
+        <li><b>Sauvegarder / charger</b> un plateau dans un fichier texte, avec contrôle d'intégrité.</li>
+    </ul>
+
+    <div class="box pourquoi">
+        <b class="lbl">L'idée clé à faire passer à l'oral</b>
+        Le plateau est un <b>graphe</b> : chaque <b>station</b> est un <b>sommet</b>, chaque <b>ligne de métro</b> est une
+        <b>arête</b>. Le cœur « intelligent » du projet, c'est l'algorithme qui transforme un simple placement de stations
+        en un graphe de connexions cohérent. Tout le reste (IHM, fichiers, validation) gravite autour de cette structure.
+    </div>
+
+    <h3>Les 3 « couleurs » de données stockées par case</h3>
+    <table>
+        <tr><th>Donnée</th><th>Signification</th><th>Plage de valeurs</th><th>0 signifie</th></tr>
+        <tr><td><b>Arrondissement</b></td><td>La « couleur » de la case (zone de Paris)</td><td>0 à 20</td><td>Case vide (non coloriée)</td></tr>
+        <tr><td><b>Station</b></td><td>Type de métro posé sur la case (= un sommet du graphe)</td><td>0 à 10 (6 utilisés)</td><td>Pas de station</td></tr>
+        <tr><td><b>Départ</b></td><td>Base de départ d'un joueur</td><td>0 à 4</td><td>Pas de départ</td></tr>
+    </table>
+    <p>Une case peut cumuler les trois : par exemple « 18ᵉ arrondissement + station Moulin Rouge + départ du joueur 1 ».</p>
+</section>
+
+<!-- ============================ 1 ============================ -->
+<section id="archi">
+    <h2>1 · Architecture générale — le patron MVC</h2>
+
+    <p>Le projet suit le patron <b>MVC (Modèle – Vue – Contrôleur)</b>, matérialisé par trois paquets&nbsp;:</p>
+    <div class="schema">
+<span class="o">┌──────────────────────────────────────────────────────────────┐</span>
+<span class="o">│</span>                     <span class="b">plateau.ihm</span>  (la VUE)                       <span class="o">│</span>
+<span class="o">│</span>  Frames + Panels Swing : Accueil, Configuration, Création,    <span class="o">│</span>
+<span class="o">│</span>  Jeu, CasePanel, PanelErreur, ListenerJeu                     <span class="o">│</span>
+<span class="o">└───────────────────────────────┬──────────────────────────────┘</span>
+                                │  appelle uniquement…
+<span class="o">┌───────────────────────────────▼──────────────────────────────┐</span>
+<span class="o">│</span>                    <span class="g">plateau.Controleur</span>  (le CHEF D'ORCHESTRE)     <span class="o">│</span>
+<span class="o">│</span>  Façade : seul point de passage entre la Vue et le Modèle     <span class="o">│</span>
+<span class="o">└───────────────────────────────┬──────────────────────────────┘</span>
+                                │  pilote…
+<span class="o">┌───────────────────────────────▼──────────────────────────────┐</span>
+<span class="o">│</span>                    <span class="b">plateau.metier</span>  (le MODÈLE)                  <span class="o">│</span>
+<span class="o">│</span>  Plateau, GraphePlateau, Chargeur, Enregistreur, Validateur,  <span class="o">│</span>
+<span class="o">│</span>  ConfigurationPlateau, GestionnairePlacement, UtilitaireJeu   <span class="o">│</span>
+<span class="o">└──────────────────────────────────────────────────────────────┘</span>
+    </div>
+
+    <div class="box pourquoi">
+        <b class="lbl">Pourquoi cette séparation ?</b>
+        <ul class="clean" style="margin:4px 0 0">
+            <li><b>Découplage</b> : la Vue ne connaît jamais la classe <code class="inl">Plateau</code>. Elle ne parle qu'au <code class="inl">Controleur</code>. On pourrait remplacer toute l'interface Swing (par une version web, console…) sans toucher au métier.</li>
+            <li><b>Responsabilité unique</b> : le métier calcule, la vue affiche, le contrôleur fait le lien. Chaque bug se cherche au bon endroit.</li>
+            <li><b>Testabilité</b> : la logique du graphe peut être testée sans lancer la moindre fenêtre.</li>
+        </ul>
+    </div>
+
+    <div class="box comment">
+        <b class="lbl">Le sens de circulation (à savoir réciter)</b>
+        L'utilisateur clique sur une case → <code class="inl">CasePanel</code> prévient <code class="inl">PanelJeu.caseCliquee()</code>
+        → qui appelle <code class="inl">GestionnairePlacement.gererClic()</code> via le <code class="inl">Controleur</code>
+        → le <code class="inl">Controleur</code> modifie le <code class="inl">Plateau</code>
+        → puis <code class="inl">genererAretesAuto()</code> recalcule le graphe
+        → enfin <code class="inl">repaint()</code> redessine l'écran. <b>La Vue ne décide rien, elle déclenche et affiche.</b>
+    </div>
+</section>
+
+<!-- ============================ 2 ============================ -->
+<section id="classes">
+    <h2>2 · Le découpage en classes & les héritages</h2>
+
+    <p>Le projet compte 19 classes. Voici la cartographie complète et, pour chacune, <b>de qui elle hérite</b> et <b>pourquoi</b>.</p>
+
+    <table>
+        <tr><th>Classe</th><th>Couche</th><th>Hérite de / implémente</th><th>Rôle</th></tr>
+        <tr><td><b>Controleur</b></td><td><span class="tag t-ctrl">Contrôle</span></td><td>—</td><td>Façade Vue ↔ Modèle, contient le <code class="inl">main</code></td></tr>
+        <tr><td>Plateau</td><td><span class="tag t-metier">Métier</span></td><td>—</td><td>Modèle de données (les 3 tableaux + le graphe)</td></tr>
+        <tr><td>GraphePlateau</td><td><span class="tag t-metier">Métier</span></td><td>—</td><td>Matrice d'adjacence + génération des arêtes</td></tr>
+        <tr><td>ChargeurPlateau</td><td><span class="tag t-metier">Métier</span></td><td>— <i>(statique)</i></td><td>Lecture & validation d'un fichier</td></tr>
+        <tr><td>EnregistreurPlateau</td><td><span class="tag t-metier">Métier</span></td><td>— <i>(statique)</i></td><td>Écriture d'un fichier</td></tr>
+        <tr><td>ValidateurPlateau</td><td><span class="tag t-metier">Métier</span></td><td>— <i>(statique)</i></td><td>Vérifie les règles (départs)</td></tr>
+        <tr><td>ConfigurationPlateau</td><td><span class="tag t-metier">Métier</span></td><td>— <i>(statique)</i></td><td>Détecte la config depuis un plateau chargé</td></tr>
+        <tr><td>GestionnairePlacement</td><td><span class="tag t-metier">Métier</span></td><td>— <i>(statique)</i></td><td>Logique de pose station/départ</td></tr>
+        <tr><td>UtilitaireJeu</td><td><span class="tag t-metier">Métier</span></td><td>— <i>(statique)</i></td><td>Constantes : noms, couleurs, chemins d'images</td></tr>
+        <tr><td>FrameAccueil / Configuration / Création / Jeu</td><td><span class="tag t-ihm">IHM</span></td><td><code class="inl">extends JFrame</code></td><td>Les 4 fenêtres de l'application</td></tr>
+        <tr><td>PanelAccueil</td><td><span class="tag t-ihm">IHM</span></td><td><code class="inl">extends JPanel implements ActionListener</code></td><td>Écran d'accueil (2 boutons)</td></tr>
+        <tr><td>PanelConfiguration</td><td><span class="tag t-ihm">IHM</span></td><td><code class="inl">extends JPanel implements ActionListener</code></td><td>Formulaire de paramètres</td></tr>
+        <tr><td>PanelCreation</td><td><span class="tag t-ihm">IHM</span></td><td><code class="inl">extends JPanel implements MouseListener, MouseMotionListener, ActionListener</code></td><td>Coloriage du plateau au pinceau</td></tr>
+        <tr><td>PanelJeu</td><td><span class="tag t-ihm">IHM</span></td><td><code class="inl">extends JPanel</code></td><td>Écran principal : outils + aperçu du réseau</td></tr>
+        <tr><td>CasePanel</td><td><span class="tag t-ihm">IHM</span></td><td><code class="inl">extends JPanel</code></td><td>Une case dessinée individuellement</td></tr>
+        <tr><td>PanelErreur</td><td><span class="tag t-ihm">IHM</span></td><td><code class="inl">extends JPanel</code></td><td>Message « fichier corrompu »</td></tr>
+        <tr><td>ListenerJeu</td><td><span class="tag t-ihm">IHM</span></td><td><code class="inl">implements ActionListener</code></td><td>Écouteur centralisé des boutons du jeu</td></tr>
+    </table>
+
+    <h3>Bien distinguer <code class="inl">extends</code> et <code class="inl">implements</code> à l'oral</h3>
+    <div class="grid2">
+        <div class="box comment">
+            <b class="lbl">extends = héritage « EST-UN »</b>
+            <code class="inl">FrameJeu extends JFrame</code> : une FrameJeu <b>EST une</b> fenêtre. On récupère gratuitement tout
+            le comportement d'une fenêtre (taille, fermeture, titre…) et on ne rajoute que notre spécificité.
+            Java n'autorise <b>qu'un seul</b> <code class="inl">extends</code> (héritage simple).
+        </div>
+        <div class="box comment">
+            <b class="lbl">implements = contrat « SAIT-FAIRE »</b>
+            <code class="inl">implements ActionListener</code> : la classe <b>s'engage à savoir réagir</b> à un clic
+            (méthode <code class="inl">actionPerformed</code>). On peut implémenter <b>plusieurs</b> interfaces — c'est
+            justement le cas de <code class="inl">PanelCreation</code> qui écoute à la fois la souris, le déplacement de souris
+            et les boutons.
+        </div>
+    </div>
+
+    <div class="box pourquoi">
+        <b class="lbl">Pourquoi des classes « statiques » (utilitaires) au lieu d'objets ?</b>
+        Les classes <code class="inl">ChargeurPlateau</code>, <code class="inl">EnregistreurPlateau</code>,
+        <code class="inl">ValidateurPlateau</code>, <code class="inl">ConfigurationPlateau</code>,
+        <code class="inl">GestionnairePlacement</code> et <code class="inl">UtilitaireJeu</code> n'ont <b>aucun attribut</b>
+        (aucun état à retenir). Ce sont des « boîtes à outils » : on leur donne des données, elles rendent un résultat.
+        On les a donc faites <b>statiques</b> → pas besoin de créer un objet (<code class="inl">ChargeurPlateau.charger(f)</code>
+        s'appelle directement). C'est l'application du principe de <b>responsabilité unique</b> : on a sorti ces traitements
+        de la classe <code class="inl">Plateau</code> pour qu'elle ne fasse <b>que stocker des données</b>.
+    </div>
+
+    <div class="box jury">
+        <b class="lbl">Question piège fréquente</b>
+        « Pourquoi avoir séparé <code class="inl">GraphePlateau</code> de <code class="inl">Plateau</code> ? » →
+        Parce que ce sont deux responsabilités différentes : <code class="inl">Plateau</code> gère le <b>contenu des cases</b>
+        (couleurs, stations, départs), <code class="inl">GraphePlateau</code> gère les <b>connexions</b>. Si demain on change
+        la façon de stocker les arêtes (liste au lieu d'une matrice), <code class="inl">Plateau</code> n'est pas touché.
+    </div>
+</section>
+
+<!-- ============================ 3 ============================ -->
+<section id="metier">
+    <h2>3 · Côté MÉTIER — méthode par méthode</h2>
+    <p>Pour chaque méthode importante : <b>⚙️ comment ça marche</b>, <b>🎯 pourquoi ce choix</b>, <b>🔧 où / comment on l'utilise</b>.</p>
+
+    <!-- ===== Plateau ===== -->
+    <div id="m-plateau"></div>
+    <h3>Plateau — le modèle de données</h3>
+    <p>C'est le « plan » du plateau. Il ne calcule rien : il <b>retient</b>. Il contient trois tableaux d'entiers et un graphe.</p>
+<pre><span class="kw">private int</span> largeur, hauteur;
+<span class="kw">private int</span>[] tabArrondissements;   <span class="cm">// la couleur de chaque case</span>
+<span class="kw">private int</span>[] tabStations;          <span class="cm">// le type de station de chaque case</span>
+<span class="kw">private int</span>[] tabDeparts;           <span class="cm">// le départ joueur de chaque case</span>
+<span class="kw">private</span> <span class="ty">GraphePlateau</span> graphe;       <span class="cm">// les connexions entre stations</span></pre>
+
+    <div class="box pourquoi">
+        <b class="lbl">Choix n°1 : trois tableaux à UNE dimension (et pas un tableau 2D ni des objets Case)</b>
+        Le plateau est une grille 2D, mais on la stocke <b>« à plat »</b> dans des tableaux 1D. Une case (x, y) est rangée
+        à l'indice <code class="inl">i = y × largeur + x</code>. Inversement : <code class="inl">x = i % largeur</code> et
+        <code class="inl">y = i / largeur</code>. <b>Pourquoi&nbsp;?</b> (1) Un seul indice suffit pour désigner une case, ce qui
+        simplifie énormément l'IHM (chaque <code class="inl">CasePanel</code> ne retient qu'un <code class="inl">int index</code>) ;
+        (2) le format de fichier devient trivial (une ligne = un indice) ; (3) c'est exactement la même indexation que la
+        matrice du graphe. <b>Trois tableaux parallèles</b> plutôt qu'une classe <code class="inl">Case</code> : plus léger et
+        direct pour un plateau « tableur ». <span class="pill">alternative : une classe Case avec 3 attributs</span>
+    </div>
+
+    <div class="methode">
+        <h4>public Plateau(int largeur, int hauteur)</h4>
+        <div class="box comment"><b class="lbl">Comment</b> Calcule <code class="inl">taille = largeur × hauteur</code>, crée les trois tableaux de cette taille (Java les initialise à 0 = « vide ») et instancie un <code class="inl">GraphePlateau(taille)</code>.</div>
+        <div class="box pourquoi"><b class="lbl">Pourquoi</b> Tout est dimensionné une seule fois, à la construction. Le 0 par défaut de Java nous arrange : une case neuve est automatiquement « sans arrondissement, sans station, sans départ ».</div>
+        <div class="box usage"><b class="lbl">Utilisation</b> Appelé par <code class="inl">Controleur.initialiserPlateau()</code> (nouvelle partie) et par <code class="inl">ChargeurPlateau</code> (chargement).</div>
+    </div>
+
+    <div class="methode">
+        <h4>get/affecter Arrondissement / Station / Depart (numCase, valeur)</h4>
+        <div class="box comment"><b class="lbl">Comment</b> Chaque accesseur teste d'abord que <code class="inl">numCase</code> est dans les bornes du tableau avant de lire/écrire. En lecture hors-bornes, on renvoie 0 (« vide ») ; en écriture hors-bornes, on ne fait rien.</div>
+        <div class="box pourquoi"><b class="lbl">Pourquoi cette « programmation défensive »</b> Les indices viennent de clics souris et de fichiers externes : ils peuvent être faux. En blindant l'accès, on évite un <code class="inl">ArrayIndexOutOfBoundsException</code> qui ferait planter le jeu. C'est un choix de <b>robustesse</b>.</div>
+        <div class="box usage"><b class="lbl">Utilisation</b> Ce sont les seules portes d'entrée vers les données ; tout passe par elles (IHM via Controleur, Chargeur, Enregistreur).</div>
+    </div>
+
+    <!-- ===== GraphePlateau ===== -->
+    <div id="m-graphe"></div>
+    <h3>GraphePlateau — le graphe (matrice d'adjacence)</h3>
+<pre><span class="kw">private boolean</span>[][] matriceAretes;   <span class="cm">// matriceAretes[i][j] == true  ⟺  arête entre i et j</span></pre>
+
+    <div class="box pourquoi">
+        <b class="lbl">Choix n°2 : une matrice d'adjacence <code class="inl">boolean[taille][taille]</code></b>
+        Un graphe peut se représenter de deux façons : une <b>matrice d'adjacence</b> (un grand tableau 2D de booléens) ou
+        des <b>listes d'adjacence</b> (chaque sommet garde la liste de ses voisins). Nous avons choisi la <b>matrice</b> car&nbsp;:
+        <ul class="clean" style="margin:6px 0 0">
+            <li>Tester « y a-t-il une arête entre i et j ? » est <b>immédiat (O(1))</b> : une simple lecture <code class="inl">matriceAretes[i][j]</code>.</li>
+            <li>Le graphe est <b>non orienté</b> : on garantit la symétrie en écrivant <code class="inl">[i][j]</code> ET <code class="inl">[j][i]</code> en même temps.</li>
+            <li>C'est <b>simple à comprendre et à coder</b> ; les plateaux visés sont petits (7×7, 10×10), donc le coût mémoire est négligeable.</li>
+        </ul>
+        <span class="pill">limite assumée : pour un plateau géant, une liste d'adjacence serait plus économe (voir §10)</span>
+    </div>
+
+    <div class="methode">
+        <h4>public void ajouterArete(int i, int j)</h4>
+        <div class="box comment"><b class="lbl">Comment</b> Après vérification des bornes, met <code class="inl">matriceAretes[i][j] = true</code> <b>et</b> <code class="inl">matriceAretes[j][i] = true</code>.</div>
+        <div class="box pourquoi"><b class="lbl">Pourquoi écrire les deux</b> Une ligne de métro n'a pas de sens : « i relié à j » = « j relié à i ». Écrire les deux cases rend la matrice <b>symétrique</b>, donc <code class="inl">aArete(i,j)</code> et <code class="inl">aArete(j,i)</code> donnent toujours la même réponse.</div>
+        <div class="box usage"><b class="lbl">Utilisation</b> Appelée par <code class="inl">genererAretesAuto()</code> et par <code class="inl">ChargeurPlateau</code> (relecture des arêtes d'un fichier).</div>
+    </div>
+
+    <div class="methode">
+        <h4>public int getNbAretes()</h4>
+        <div class="box comment"><b class="lbl">Comment</b> Double boucle, mais la boucle interne démarre à <code class="inl">j = i + 1</code> (triangle supérieur de la matrice) et compte les <code class="inl">true</code>.</div>
+        <div class="box pourquoi"><b class="lbl">Pourquoi <code class="inl">j = i + 1</code> et pas <code class="inl">j = 0</code></b> La matrice étant symétrique, l'arête {i, j} apparaît <b>deux fois</b> (en [i][j] et [j][i]). En ne parcourant que la moitié au-dessus de la diagonale, on compte <b>chaque arête une seule fois</b>. Sinon on afficherait le double.</div>
+        <div class="box usage"><b class="lbl">Utilisation</b> Affiché à l'écran : « Nombre d'arêtes : … ». C'est une donnée de contrôle pour l'utilisateur.</div>
+    </div>
+
+    <div class="methode">
+        <h4>public void vider() / aDesAretes()</h4>
+        <div class="box comment"><b class="lbl">Comment</b> <code class="inl">vider()</code> repasse toute la matrice à <code class="inl">false</code> ; <code class="inl">aDesAretes()</code> renvoie <code class="inl">true</code> dès qu'elle trouve une arête.</div>
+        <div class="box pourquoi"><b class="lbl">Pourquoi</b> <code class="inl">vider()</code> garantit que la régénération du graphe repart <b>de zéro</b> (idempotence : recalculer deux fois donne le même résultat, sans arêtes fantômes).</div>
+        <div class="box usage"><b class="lbl">Utilisation</b> <code class="inl">vider()</code> est la première ligne de <code class="inl">genererAretesAuto()</code>.</div>
+    </div>
+
+    <p><b><code class="inl">genererAretesAuto()</code> est le cœur du projet</b> — il a sa propre section détaillée :
+    voir <a href="#aretes">§4 · Sélection des arêtes</a>.</p>
+
+    <!-- ===== ChargeurPlateau ===== -->
+    <div id="m-chargeur"></div>
+    <h3>ChargeurPlateau — lecture & validation d'un fichier</h3>
+    <div class="methode">
+        <h4>public static Plateau charger(File fichier)</h4>
+        <div class="box comment"><b class="lbl">Comment</b> Lit le fichier ligne par ligne avec un <code class="inl">Scanner</code>. La 1ʳᵉ ligne donne <code class="inl">largeur;hauteur</code>. Les <code class="inl">taille</code> lignes suivantes décrivent les cases (<code class="inl">indice;arrondissement;station;depart</code>). Les lignes restantes décrivent les arêtes (<code class="inl">source;destination</code>). À chaque étape, une série de contrôles peut interrompre la lecture en renvoyant <code class="inl">null</code>.</div>
+        <div class="box pourquoi"><b class="lbl">Pourquoi renvoyer <code class="inl">null</code> et pas planter</b> Un fichier peut être corrompu, modifié à la main, incomplet. Plutôt que de laisser une exception remonter, on renvoie <code class="inl">null</code> = « chargement échoué ». L'IHM le détecte et affiche proprement le <code class="inl">PanelErreur</code>. <b>On ne fait jamais confiance à une donnée externe.</b></div>
+        <div class="box usage"><b class="lbl">Utilisation</b> Appelée par <code class="inl">Controleur.chargerPlateau()</code> quand on clique « Charger le plateau ».</div>
+    </div>
+    <p>Le détail des 8 contrôles est en <a href="#verif">§5 · Vérifications & contraintes</a>.</p>
+
+    <!-- ===== EnregistreurPlateau ===== -->
+    <div id="m-enregistreur"></div>
+    <h3>EnregistreurPlateau — écriture d'un fichier</h3>
+    <div class="methode">
+        <h4>public static boolean enregistrer(Plateau plateau, String nomFichier)</h4>
+        <div class="box comment"><b class="lbl">Comment</b> (1) <b>Régénère les arêtes</b> (<code class="inl">genererAretesAuto</code>) pour sauver un graphe à jour ; (2) crée le dossier <code class="inl">sauvegarde/</code> s'il n'existe pas ; (3) ajoute l'extension <code class="inl">.txt</code> si l'utilisateur l'a oubliée ; (4) écrit l'en-tête, puis une ligne par case, puis une ligne par arête (uniquement le triangle supérieur <code class="inl">j &gt; i</code>).</div>
+        <div class="box pourquoi"><b class="lbl">Pourquoi régénérer les arêtes au moment de sauver</b> Pour garantir que le fichier reflète <b>exactement</b> le placement actuel des stations, même si l'utilisateur a déplacé des stations juste avant. <b>Pourquoi écrire <code class="inl">j &gt; i</code></b> : même raison que <code class="inl">getNbAretes()</code> — on n'écrit chaque arête qu'une fois pour ne pas doubler le fichier.</div>
+        <div class="box usage"><b class="lbl">Utilisation</b> Bouton « Valider » de la création et « Sauvegarder les modifications » de l'écran de jeu.</div>
+    </div>
+
+    <!-- ===== ValidateurPlateau ===== -->
+    <div id="m-validateur"></div>
+    <h3>ValidateurPlateau — vérifier une règle du jeu</h3>
+    <div class="methode">
+        <h4>public static boolean validerDeparts(Plateau plateau, int nbJoueurs)</h4>
+        <div class="box comment"><b class="lbl">Comment</b> Pour chaque joueur de 1 à <code class="inl">nbJoueurs</code>, parcourt toutes les cases et compte combien portent son départ. Si ce n'est pas <b>exactement 1</b>, renvoie <code class="inl">false</code> (et explique l'erreur en console).</div>
+        <div class="box pourquoi"><b class="lbl">Pourquoi exactement 1</b> C'est une <b>règle du jeu</b> : « chaque joueur place SA station de départ » (1 joueur = 1 ligne = 1 base). Zéro départ = joueur sans réseau ; deux départs = triche. La validation empêche de sauvegarder un plateau injouable.</div>
+        <div class="box usage"><b class="lbl">Utilisation</b> Appelée avant la sauvegarde finale dans <code class="inl">ListenerJeu</code> (bouton « Sauvegarder »).</div>
+    </div>
+
+    <!-- ===== ConfigurationPlateau ===== -->
+    <div id="m-config"></div>
+    <h3>ConfigurationPlateau — déduire la config d'un plateau chargé</h3>
+    <div class="methode">
+        <h4>public static int[] detecterMaxJoueursEtStations(Plateau, int nbJoueursDefaut, int nbStationsDefaut)</h4>
+        <div class="box comment"><b class="lbl">Comment</b> Parcourt toutes les cases et garde le <b>maximum</b> des numéros de station et des numéros de départ rencontrés. Renvoie un tableau <code class="inl">{maxJoueurs, maxStations}</code>.</div>
+        <div class="box pourquoi"><b class="lbl">Pourquoi</b> Quand on <b>charge</b> un plateau existant, on ne connaît pas sa configuration d'origine. Plutôt que de la demander, on la <b>déduit du contenu</b> : s'il existe un « Joueur 3 » quelque part, c'est qu'il y a au moins 3 joueurs. L'interface s'adapte alors automatiquement (les menus déroulants proposent le bon nombre de joueurs/stations).</div>
+        <div class="box usage"><b class="lbl">Utilisation</b> <code class="inl">Controleur.mettreAJourConfigurationDepuisPlateau()</code>, juste après un chargement réussi.</div>
+    </div>
+
+    <!-- ===== GestionnairePlacement ===== -->
+    <div id="m-placement"></div>
+    <h3>GestionnairePlacement — la logique de pose</h3>
+    <div class="methode">
+        <h4>public static void gererClic(int index, String modeSelection, Object selectionItem, Controleur ctrl)</h4>
+        <div class="box comment"><b class="lbl">Comment</b> Selon le mode (« STATION » ou « DEPART ») et l'élément choisi dans le menu déroulant : convertit le libellé (« Tour Eiffel », « Joueur 2 », « Aucun ») en numéro, puis appelle <code class="inl">ctrl.affecterStation()</code> ou <code class="inl">ctrl.affecterDepart()</code>. <b>Cas spécial des départs</b> : avant de poser le départ du joueur N, il <b>efface l'ancien départ</b> de ce même joueur ailleurs sur le plateau.</div>
+        <div class="box pourquoi"><b class="lbl">Pourquoi effacer l'ancien départ</b> Pour <b>garantir la règle « 1 seul départ par joueur »</b> dès la saisie, et non pas seulement à la validation. C'est de la prévention : l'utilisateur ne peut pas créer deux départs pour le même joueur. <b>Pourquoi sortir cette logique de l'IHM</b> : transformer un libellé texte en numéro est de la logique « métier », elle n'a pas sa place dans le code d'affichage.</div>
+        <div class="box usage"><b class="lbl">Utilisation</b> Appelée par <code class="inl">PanelJeu.caseCliquee()</code> à chaque clic sur une case en mode édition.</div>
+    </div>
+
+    <!-- ===== UtilitaireJeu ===== -->
+    <div id="m-utilitaire"></div>
+    <h3>UtilitaireJeu — les constantes partagées</h3>
+    <div class="methode">
+        <h4>getNomsStations() · getCouleurs() · getCheminImageStation(int)</h4>
+        <div class="box comment"><b class="lbl">Comment</b> Renvoient respectivement le tableau des noms de stations (« Tour Eiffel », « Louvre »…), le tableau des 20 couleurs d'arrondissement, et le chemin d'une image de station. <code class="inl">getCheminImageStation</code> <b>essaie plusieurs chemins</b> (<code class="inl">plateau/images/</code>, <code class="inl">../plateau/images/</code>…) et renvoie le premier qui existe.</div>
+        <div class="box pourquoi"><b class="lbl">Pourquoi centraliser ces constantes</b> Les couleurs et noms sont utilisés à plusieurs endroits (création ET jeu). En les définissant <b>à un seul endroit</b>, on évite les incohérences (même couleur pour le même arrondissement partout) et on n'a qu'un seul fichier à modifier. <b>Pourquoi tester plusieurs chemins d'image</b> : le programme peut être lancé depuis différents dossiers de travail ; on rend le chargement des images <b>robuste</b> quel que soit le répertoire courant.</div>
+        <div class="box usage"><b class="lbl">Utilisation</b> Couleurs → <code class="inl">CasePanel</code> et <code class="inl">PanelCreation</code> ; noms → menus déroulants ; chemins → cache d'images de <code class="inl">PanelJeu</code>.</div>
+    </div>
+
+    <!-- ===== Controleur ===== -->
+    <div id="m-controleur"></div>
+    <h3>Controleur — la façade</h3>
+    <p>Le contrôleur est presque entièrement composé de méthodes « passe-plat » qui délèguent au métier
+    (<code class="inl">getLargeur()</code> → <code class="inl">metier.getLargeur()</code>). Quelques méthodes orchestrent plusieurs classes métier :</p>
+    <table>
+        <tr><th>Méthode</th><th>Ce qu'elle fait</th><th>Pourquoi elle est dans le contrôleur</th></tr>
+        <tr><td><code class="inl">chargerPlateau(File)</code></td><td>Appelle <code class="inl">ChargeurPlateau.charger()</code> ; si non null, remplace le plateau courant</td><td>Le remplacement du modèle est une décision d'orchestration</td></tr>
+        <tr><td><code class="inl">mettreAJourConfigurationDepuisPlateau()</code></td><td>Combine <code class="inl">ConfigurationPlateau</code> + <code class="inl">setConfigJeu</code></td><td>Coordonne deux classes métier en une action</td></tr>
+        <tr><td><code class="inl">validerDepartsPlateau()</code></td><td>Relaie vers <code class="inl">ValidateurPlateau</code></td><td>La Vue ne doit pas connaître le Validateur directement</td></tr>
+        <tr><td><code class="inl">genererAretesAuto()</code></td><td>Relaie vers <code class="inl">graphe.genererAretesAuto()</code></td><td>Point d'entrée unique pour recalculer le réseau</td></tr>
+    </table>
+    <div class="box pourquoi">
+        <b class="lbl">Pourquoi tant de méthodes « inutiles » qui ne font que relayer ?</b>
+        C'est le prix — assumé — du découplage. Ces méthodes forment l'<b>API que la Vue a le droit d'utiliser</b>.
+        La Vue ne voit que le contrôleur, jamais <code class="inl">Plateau</code> ni <code class="inl">GraphePlateau</code>.
+        Si la structure interne du métier change, <b>seul le contrôleur est impacté</b>, pas les 11 classes d'IHM.
+        C'est exactement le rôle d'une <b>façade</b>.
+    </div>
+</section>
+
+<!-- ============================ 4 ============================ -->
+<section id="aretes">
+    <h2>⭐ 4 · La sélection des arêtes (le sujet n°1)</h2>
+    <p>C'est <b>l'algorithme à maîtriser parfaitement</b>. Il transforme un placement de stations en un réseau de lignes de métro.</p>
+
+<pre><span class="kw">public void</span> <span class="fn">genererAretesAuto</span>(<span class="ty">Plateau</span> plateau) {
+    <span class="kw">int</span> taille = plateau.getLargeur() * plateau.getHauteur();
+    <span class="kw">this</span>.vider();                                  <span class="cm">// on repart de zéro</span>
+
+    <span class="cm">// Les 4 directions « vers le bas / la droite » : Est, Sud-Est, Sud, Sud-Ouest</span>
+    <span class="kw">int</span>[] deplacementsX = {<span class="nb">1</span>, <span class="nb">1</span>, <span class="nb">0</span>, <span class="nb">-1</span>};
+    <span class="kw">int</span>[] deplacementsY = {<span class="nb">0</span>, <span class="nb">1</span>, <span class="nb">1</span>,  <span class="nb">1</span>};
+
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nb">0</span>; i &lt; taille; i++) {
+        <span class="kw">if</span> (plateau.getStation(i) == <span class="nb">0</span>) <span class="kw">continue</span>;  <span class="cm">// pas de station = pas un sommet</span>
+
+        <span class="kw">int</span> x = i % plateau.getLargeur();          <span class="cm">// indice 1D → coordonnées 2D</span>
+        <span class="kw">int</span> y = i / plateau.getLargeur();
+
+        <span class="kw">for</span> (<span class="kw">int</span> direction = <span class="nb">0</span>; direction &lt; <span class="nb">4</span>; direction++) {
+            <span class="kw">int</span> cx = x + deplacementsX[direction];
+            <span class="kw">int</span> cy = y + deplacementsY[direction];
+
+            <span class="cm">// on avance dans la direction tant qu'on reste sur le plateau…</span>
+            <span class="kw">while</span> (cx &gt;= <span class="nb">0</span> &amp;&amp; cx &lt; plateau.getLargeur() &amp;&amp; cy &gt;= <span class="nb">0</span> &amp;&amp; cy &lt; plateau.getHauteur()) {
+                <span class="kw">int</span> indexCible = cy * plateau.getLargeur() + cx;
+                <span class="kw">if</span> (plateau.getStation(indexCible) &gt; <span class="nb">0</span>) {  <span class="cm">// première station trouvée ?</span>
+                    <span class="kw">this</span>.ajouterArete(i, indexCible);
+                    <span class="kw">break</span>;                              <span class="cm">// on s'arrête au sommet le plus proche</span>
+                }
+                cx += deplacementsX[direction];          <span class="cm">// sinon on continue tout droit</span>
+                cy += deplacementsY[direction];
+            }
+        }
+    }
+}</pre>
+
+    <h3>Comment ça marche, en 4 idées</h3>
+    <div class="box comment">
+        <b class="lbl">1. On ne relie QUE les stations</b>
+        On saute toute case dont <code class="inl">getStation(i) == 0</code>. Les sommets du graphe sont les stations, pas les cases.
+    </div>
+    <div class="box comment">
+        <b class="lbl">2. Conversion indice ⇄ coordonnées</b>
+        Comme tout est stocké à plat, on retrouve la colonne et la ligne d'une station avec
+        <code class="inl">x = i % largeur</code> et <code class="inl">y = i / largeur</code>, et on revient à l'indice avec
+        <code class="inl">indice = y × largeur + x</code>. C'est ce qui permet de « se déplacer » dans la grille.
+    </div>
+    <div class="box comment">
+        <b class="lbl">3. Un « rayon » jusqu'à la station la plus proche</b>
+        Dans chaque direction, la boucle <code class="inl">while</code> avance case par case. Dès qu'elle rencontre une station,
+        elle pose l'arête et fait <code class="inl">break</code>. On <b>traverse les cases vides</b> (sans station) et on s'arrête
+        à la <b>première station</b> : c'est « la prochaine station sur la ligne », même si elle est loin.
+    </div>
+    <div class="box comment">
+        <b class="lbl">4. On repart de zéro à chaque appel</b>
+        <code class="inl">vider()</code> au début → l'algorithme est <b>rejouable</b> : on peut le relancer après chaque clic
+        sans accumuler de vieilles arêtes.
+    </div>
+
+    <h3>🎯 LE choix à justifier : pourquoi 4 directions et pas 8 ?</h3>
+    <div class="box pourquoi">
+        <b class="lbl">Le raisonnement complet (à connaître par cœur)</b>
+        Une station peut se connecter dans <b>8 directions</b> (E, SE, S, SO, O, NO, N, NE — comme les règles du jeu).
+        Mais le graphe est <b>non orienté</b> : l'arête entre A (au nord) et B (au sud) est <b>la même</b>, qu'on la regarde
+        « du nord vers le sud » ou « du sud vers le nord ».<br><br>
+        On a donc choisi <b>4 directions seulement</b> : les 4 qui pointent « vers la droite / vers le bas »
+        (Est, Sud-Est, Sud, Sud-Ouest). Comme <code class="inl">ajouterArete</code> écrit la liaison dans les deux sens,
+        <b>quand on traite la station du nord, on crée déjà la liaison avec celle du sud</b>. Quand viendra le tour de la
+        station du sud, sa direction « Nord » n'a plus besoin d'être explorée : l'arête existe déjà.
+        <br><br>
+        <b>Résultat :</b> les 4 directions « avant » de chaque sommet couvrent automatiquement les 4 directions « arrière »
+        des autres sommets. On obtient bien les 8 connexions possibles, mais avec <b>deux fois moins de travail</b> et
+        <b>aucune arête en double</b>.
+    </div>
+
+    <div class="schema">
+            <span class="g">NO</span>     <span class="g">N</span>     <span class="g">NE</span>          Directions EXPLORÉES (4) :  Est, Sud-Est, Sud, Sud-Ouest
+              \    |    /             Directions DÉDUITES  (4) :  Ouest, Nord-Ouest, Nord, Nord-Est
+               \   |   /                          (obtenues gratuitement par la symétrie de la matrice)
+        <span class="g">O</span> ───────[ <span class="b">STATION</span> ]─────── <span class="o">E</span>
+               /   |   \
+              /    |    \
+            <span class="o">SO</span>     <span class="o">S</span>     <span class="o">SE</span>          <span class="o">orange</span> = exploré directement   ·   <span class="g">vert</span> = déduit par une autre station
+    </div>
+
+    <div class="box pourquoi">
+        <b class="lbl">Pourquoi la génération AUTOMATIQUE plutôt que tracer les lignes à la main ?</b>
+        Le concepteur ne place que les <b>stations</b> ; le logiciel en déduit tout le réseau. Avantages :
+        (1) <b>pas d'erreur humaine</b> (on ne peut pas oublier ou doubler une ligne) ; (2) <b>cohérence garantie</b>
+        (la même règle s'applique partout) ; (3) <b>mise à jour instantanée</b> : on déplace une station, le réseau se
+        recalcule tout seul. C'est ce qui rend l'éditeur agréable et fiable.
+    </div>
+
+    <div class="box jury">
+        <b class="lbl">Questions probables sur cet algorithme</b>
+        <ul class="clean" style="margin:4px 0 0">
+            <li><b>« Et si vous mettiez 8 directions ? »</b> → Ça marcherait aussi, mais on créerait chaque arête deux fois (travail inutile) ; la symétrie de la matrice nous l'évite.</li>
+            <li><b>« Pourquoi le <code class="inl">break</code> ? »</b> → Pour ne relier qu'à la station <b>la plus proche</b> dans la ligne, pas à toutes les stations alignées derrière.</li>
+            <li><b>« Pourquoi <code class="inl">continue</code> si station == 0 ? »</b> → Une case sans station n'est pas un sommet du graphe ; inutile d'explorer depuis elle.</li>
+            <li><b>« Complexité ? »</b> → Pour chaque case (N = largeur×hauteur), on explore 4 directions sur une longueur max ~max(largeur,hauteur). Soit de l'ordre de O(N × côté). Sur des plateaux 7×7 à 10×10, c'est instantané.</li>
+        </ul>
+    </div>
+</section>
+
+<!-- ============================ 5 ============================ -->
+<section id="verif">
+    <h2>5 · Algorithmes de vérification & contraintes</h2>
+
+    <p>Le programme refuse les données incohérentes à <b>trois moments</b> : à la <b>saisie</b> (configuration), à la
+    <b>validation</b> du plateau (création / jeu) et au <b>chargement</b> d'un fichier. C'est la « défense en profondeur ».</p>
+
+    <h3>5.1 · La « coloration » : contraintes sur les arrondissements</h3>
+    <div class="box attention">
+        <b class="lbl">Point important à clarifier devant le jury</b>
+        Dans un problème <b>classique</b> de coloration de graphe, la contrainte est : « deux sommets adjacents doivent avoir
+        des couleurs différentes ». <b>Ce n'est PAS le cas ici</b>, et c'est volontaire&nbsp;: un arrondissement de Paris est
+        une <b>zone</b> qui s'étale sur <b>plusieurs cases contiguës de même couleur</b>. Deux cases voisines <b>peuvent et
+        doivent</b> pouvoir partager la même couleur. Ici, « coloration » = <b>affecter un arrondissement (une couleur) à chaque case</b>.
+    </div>
+    <p>Les contraintes réellement vérifiées sur la coloration sont&nbsp;:</p>
+    <table>
+        <tr><th>Contrainte</th><th>Où</th><th>Comment c'est vérifié</th></tr>
+        <tr><td><b>Toutes les cases doivent être coloriées</b> avant de valider</td><td><code class="inl">PanelCreation</code> (bouton Valider)</td><td>On parcourt <code class="inl">tabCases</code> : si une case est encore <code class="inl">LIGHT_GRAY</code> (gris = vide), on bloque la validation</td></tr>
+        <tr><td><b>Nombre d'arrondissements ≤ 20</b></td><td>Config + Chargeur</td><td>20 = le nombre réel d'arrondissements de Paris ; valeur bornée à la saisie et au chargement (<code class="inl">arr 0..20</code>)</td></tr>
+        <tr><td><b>Une seule couleur par case</b></td><td>Modèle</td><td>Garanti par construction : un seul <code class="inl">int</code> par case dans <code class="inl">tabArrondissements</code></td></tr>
+    </table>
+
+    <h3>5.2 · Les 8 contrôles du chargement de fichier</h3>
+    <p>La méthode <code class="inl">ChargeurPlateau.charger()</code> applique une vérification à chaque étape. Si une seule échoue → <code class="inl">null</code> → écran d'erreur.</p>
+    <table>
+        <tr><th>#</th><th>Contrôle</th><th>Pourquoi</th></tr>
+        <tr><td>1</td><td>Le fichier existe et est lisible</td><td>Éviter une exception d'accès disque</td></tr>
+        <tr><td>2</td><td>L'en-tête a exactement 2 valeurs</td><td>Sans largeur ET hauteur, on ne sait rien dimensionner</td></tr>
+        <tr><td>3</td><td>Dimensions positives et &lt; 100</td><td>Refuser des tailles absurdes (négatives, ou un plateau de 10 000×10 000)</td></tr>
+        <tr><td>4</td><td>Une ligne de case a au moins 2 champs</td><td>Il faut au minimum un indice et un arrondissement</td></tr>
+        <tr><td>5</td><td>Les indices se suivent de 0 à taille−1</td><td>Détecter une ligne manquante ou en désordre</td></tr>
+        <tr><td>6</td><td>Valeurs dans les bornes (arr ≤ 20, station ≤ 10, départ ≤ 4)</td><td>Refuser un « arrondissement 57 » impossible</td></tr>
+        <tr><td>7</td><td>Les extrémités d'une arête existent sur le plateau</td><td>Pas d'arête vers une case inexistante</td></tr>
+        <tr><td>8</td><td>On a lu EXACTEMENT <code class="inl">taille</code> cases</td><td>Détecter un fichier tronqué</td></tr>
+    </table>
+    <div class="box comment">
+        <b class="lbl">+ Filets de sécurité</b>
+        Le tout est dans un <code class="inl">try/catch</code> : un <code class="inl">NumberFormatException</code> (quelqu'un a écrit
+        « A;B » au lieu de chiffres) est attrapé et transformé en « fichier corrompu ». Et si le fichier ne contenait <b>aucune
+        arête</b>, on les <b>génère automatiquement</b> (<code class="inl">genererAretesAuto</code>) — pratique pour importer un plateau
+        décrit uniquement par ses stations.
+    </div>
+
+    <h3>5.3 · Contrôles de saisie (formulaire de configuration)</h3>
+    <p>Dans <code class="inl">PanelConfiguration</code>, avant de créer le plateau&nbsp;: champs non vides, valeurs numériques
+    (<code class="inl">try/catch</code> sur <code class="inl">Integer.parseInt</code>), bornes maximales
+    (joueurs ≤ 4, stations ≤ 6, arrondissements ≤ 20), valeurs strictement positives, et cohérence
+    (la largeur et la hauteur doivent être ≥ au nombre de joueurs, sinon on ne pourrait pas placer tous les départs).</p>
+
+    <h3>5.4 · Contrôle de la règle « 1 départ par joueur »</h3>
+    <p>Géré <b>deux fois</b> : en <b>prévention</b> (<code class="inl">GestionnairePlacement</code> efface l'ancien départ avant
+    d'en poser un nouveau) et en <b>validation finale</b> (<code class="inl">ValidateurPlateau.validerDeparts</code> exige
+    exactement 1 départ par joueur avant la sauvegarde).</p>
+
+    <div class="box pourquoi">
+        <b class="lbl">Pourquoi vérifier au même endroit plusieurs fois (à la saisie ET au chargement) ?</b>
+        Parce que les données peuvent arriver par deux chemins : <b>l'interface</b> (qu'on maîtrise) et <b>un fichier</b>
+        (qu'un utilisateur peut éditer à la main). On ne peut faire confiance qu'à ce qu'on a soi-même contrôlé : on valide
+        donc <b>à chaque frontière</b> du programme.
+    </div>
+</section>
+
+<!-- ============================ 6 ============================ -->
+<section id="ihm">
+    <h2>6 · Côté IHM (Swing) — le code et ses justifications</h2>
+
+    <h3>6.1 · La hiérarchie Frame / Panel</h3>
+    <p>Chaque écran = une <b>Frame</b> (la fenêtre, <code class="inl">extends JFrame</code>) qui contient un <b>Panel</b>
+    (le contenu, <code class="inl">extends JPanel</code>). La Frame est volontairement <b>minimaliste</b> : elle fixe le titre,
+    la taille, le centrage et délègue tout l'affichage au Panel.</p>
+    <div class="box pourquoi">
+        <b class="lbl">Pourquoi séparer Frame et Panel ?</b>
+        Un <code class="inl">JPanel</code> est <b>réutilisable</b> et <b>imbriquable</b> (on peut mettre un panel dans un panel),
+        alors qu'une <code class="inl">JFrame</code> est une fenêtre du système. En mettant le contenu dans un Panel, on garde
+        la possibilité de le réorganiser, et la Frame ne porte aucune logique.
+    </div>
+
+    <h3>6.2 · Les gestionnaires de disposition (Layouts) — chaque choix a une raison</h3>
+    <table>
+        <tr><th>Layout</th><th>Où</th><th>Pourquoi celui-là</th></tr>
+        <tr><td><b>BorderLayout</b><br>(5 zones : N/S/E/O/Centre)</td><td><code class="inl">PanelJeu</code>, <code class="inl">PanelCreation</code></td><td>Idéal pour séparer « outils à gauche » (WEST) et « grand plateau au centre » (CENTER). Le centre s'étire, les bords gardent leur taille.</td></tr>
+        <tr><td><b>GridLayout</b><br>(grille de cases identiques)</td><td>Le plateau, le formulaire, les boutons d'arrondissement</td><td>Toutes les cellules ont <b>exactement la même taille</b> → parfait pour une grille de jeu régulière (hauteur×largeur cases) et pour un formulaire « libellé / champ ».</td></tr>
+        <tr><td><b>GridBagLayout</b></td><td><code class="inl">PanelAccueil</code>, zone d'aperçu vide</td><td>Sert ici à <b>centrer un seul bloc</b> au milieu, quelle que soit la taille de la fenêtre.</td></tr>
+        <tr><td><b>BoxLayout</b> (+ Box)</td><td>Colonne d'outils de <code class="inl">PanelJeu</code></td><td>Empile les composants <b>verticalement</b> et permet de gérer finement l'espacement (voir ci-dessous).</td></tr>
+        <tr><td><b>FlowLayout</b></td><td>Petits regroupements (label + champ)</td><td>Aligne simplement de gauche à droite ; utilisé pour ne pas étirer un champ de texte.</td></tr>
+    </table>
+
+    <h3>6.3 · Les « Box » — la question que tu m'as posée</h3>
+<pre>this.panelGauche.setLayout(<span class="kw">new</span> <span class="ty">BoxLayout</span>(this.panelGauche, BoxLayout.Y_AXIS));
+...
+this.panelGauche.add(this.lblJoueurs);
+this.panelGauche.add(<span class="ty">Box</span>.createVerticalStrut(<span class="nb">10</span>));   <span class="cm">// ← espace vide de 10 px</span>
+this.panelGauche.add(this.lblStations);
+this.panelGauche.add(<span class="ty">Box</span>.createVerticalStrut(<span class="nb">10</span>));</pre>
+    <div class="box comment">
+        <b class="lbl">Ce que c'est</b>
+        <code class="inl">BoxLayout.Y_AXIS</code> empile les composants les uns <b>sous</b> les autres (colonne).
+        <code class="inl">Box.createVerticalStrut(10)</code> insère un <b>séparateur invisible</b> de 10 pixels de haut entre deux
+        composants. C'est un « espaceur ».
+    </div>
+    <div class="box pourquoi">
+        <b class="lbl">Pourquoi utiliser des Box plutôt qu'autre chose ?</b>
+        <ul class="clean" style="margin:4px 0 0">
+            <li>Un <code class="inl">GridLayout</code> imposerait à <b>tous</b> les éléments la même hauteur : impossible d'aérer
+            sélectivement (un petit espace ici, un grand là).</li>
+            <li>Avec les <code class="inl">strut</code>, on contrôle l'espacement <b>au pixel près, élément par élément</b>
+            (10 px entre les infos, 20 px avant une nouvelle section, 30 px avant le bouton sauvegarder). C'est ce qui donne
+            une colonne <b>lisible et hiérarchisée</b>.</li>
+            <li>C'est plus simple que de calculer des marges avec un GridBagLayout pour un simple empilement vertical.</li>
+        </ul>
+    </div>
+    <div class="box comment">
+        <b class="lbl">Les compagnons des Box</b>
+        <code class="inl">setAlignmentX(LEFT_ALIGNMENT)</code> force tous les composants à s'aligner à gauche (sinon BoxLayout
+        les centre). <code class="inl">setMaximumSize(...)</code> empêche un menu déroulant de s'étirer sur toute la hauteur
+        disponible. <code class="inl">setBorder(createTitledBorder("Informations du Jeu"))</code> dessine un cadre titré
+        autour du bloc.
+    </div>
+
+    <h3>6.4 · Le dessin personnalisé : <code class="inl">paintComponent</code> vs <code class="inl">paint</code></h3>
+    <h4>a) CasePanel : dessiner une case (paintComponent)</h4>
+<pre><span class="kw">protected void</span> <span class="fn">paintComponent</span>(<span class="ty">Graphics</span> g) {
+    <span class="kw">super</span>.paintComponent(g);
+    <span class="cm">// 1. fond = couleur de l'arrondissement</span>
+    <span class="kw">int</span> arr = ctrl.getArrondissement(index);
+    <span class="kw">if</span> (arr == <span class="nb">0</span>) g.setColor(Color.LIGHT_GRAY);
+    <span class="kw">else</span> g.setColor(tabCouleurs[arr - <span class="nb">1</span>]);
+    g.fillRect(<span class="nb">0</span>, <span class="nb">0</span>, w, h);
+    <span class="cm">// 2. image de la station par-dessus</span>
+    <span class="kw">if</span> (station &gt; <span class="nb">0</span>) g.drawImage(panelJeu.getImageStation(station), ...);
+    <span class="cm">// 3. texte "D1", "D2"… si départ</span>
+    <span class="kw">if</span> (depart &gt; <span class="nb">0</span>) g.drawString(<span class="st">"D"</span> + depart, <span class="nb">5</span>, <span class="nb">18</span>);
+}</pre>
+    <div class="box pourquoi">
+        <b class="lbl">Pourquoi redéfinir paintComponent ?</b>
+        C'est la méthode <b>recommandée par Swing</b> pour dessiner le contenu d'un composant (elle profite du double buffering,
+        donc pas de clignotement). On y superpose trois couches dans l'ordre : <b>fond coloré → image de station → texte du départ</b>.
+        Chaque case <b>se dessine elle-même</b> à partir des données lues via le contrôleur : la Vue ne stocke rien, elle reflète le Modèle.
+    </div>
+
+    <h4>b) panelApercuGrille : dessiner les lignes de métro (paint)</h4>
+<pre>this.panelApercuGrille = <span class="kw">new</span> <span class="ty">JPanel</span>() {
+    <span class="kw">public void</span> <span class="fn">paint</span>(<span class="ty">Graphics</span> g) {
+        <span class="kw">super</span>.paint(g);                  <span class="cm">// dessine d'ABORD les cases enfants</span>
+        <span class="ty">Graphics2D</span> arete = (<span class="ty">Graphics2D</span>) g;
+        arete.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON);  <span class="cm">// lignes lissées</span>
+        arete.setStroke(<span class="kw">new</span> <span class="ty">BasicStroke</span>(<span class="nb">3</span>));   <span class="cm">// épaisseur 3 px</span>
+        <span class="cm">// pour chaque arête, tracer une ligne entre les centres des 2 cases</span>
+        <span class="kw">for</span> (...) <span class="kw">if</span> (ctrl.aArete(i, j)) arete.drawLine(x1, y1, x2, y2);
+    }
+};</pre>
+    <div class="box pourquoi">
+        <b class="lbl">Pourquoi <code class="inl">paint</code> ici et pas <code class="inl">paintComponent</code> ?</b>
+        Les lignes de métro doivent apparaître <b>PAR-DESSUS</b> les cases. Or les composants enfants (les CasePanel) sont
+        dessinés <b>après</b> le <code class="inl">paintComponent</code> du parent. En redéfinissant <code class="inl">paint</code>
+        et en appelant <code class="inl">super.paint(g)</code> en premier (qui dessine les enfants), <b>puis</b> nos lignes,
+        on est sûr que les arêtes se voient au-dessus de la grille. C'est un choix précis lié à l'ordre de rendu de Swing.
+    </div>
+    <div class="box comment">
+        <b class="lbl">Pourquoi Graphics2D ?</b>
+        <code class="inl">Graphics2D</code> (sous-classe de <code class="inl">Graphics</code>) offre l'<b>anti-aliasing</b>
+        (lignes lissées, pas en escalier) et le réglage de l'<b>épaisseur du trait</b> (<code class="inl">BasicStroke</code>).
+        Une ligne de métro grise de 3 px, lissée, est bien plus lisible qu'un trait fin pixelisé.
+    </div>
+
+    <h3>6.5 · La gestion des événements (Listeners)</h3>
+    <p>On utilise <b>trois styles d'écouteurs</b>, choisis selon le contexte :</p>
+    <table>
+        <tr><th>Style</th><th>Exemple</th><th>Pourquoi ce style ici</th></tr>
+        <tr><td><b>La classe s'écoute elle-même</b><br>(<code class="inl">implements ActionListener</code>)</td><td><code class="inl">PanelConfiguration</code>, <code class="inl">PanelCreation</code></td><td>Peu de boutons, logique courte ; <code class="inl">e.getSource()</code> suffit à savoir lequel a été cliqué.</td></tr>
+        <tr><td><b>Une classe écouteur dédiée</b><br>(<code class="inl">ListenerJeu</code>)</td><td><code class="inl">PanelJeu</code> (import / créer / sauvegarder)</td><td>Le PanelJeu est déjà gros : on <b>sort</b> la logique des boutons dans une classe à part pour l'alléger et la rendre lisible.</td></tr>
+        <tr><td><b>Classe anonyme interne</b></td><td>Les boutons radio Station/Départ, le clic sur une CasePanel</td><td>Comportement <b>minuscule et unique</b> (activer un menu, transmettre un index). Écrire une classe entière serait disproportionné.</td></tr>
+    </table>
+    <div class="box comment">
+        <b class="lbl">Le groupe de boutons radio (ButtonGroup)</b>
+        <code class="inl">rbStation</code> et <code class="inl">rbDepart</code> sont placés dans un <code class="inl">ButtonGroup</code>.
+        C'est ce qui garantit qu'<b>un seul des deux</b> peut être sélectionné à la fois (mode « station » OU mode « départ »).
+        Le clic active/désactive le menu déroulant correspondant.
+    </div>
+    <div class="box comment">
+        <b class="lbl">Le coloriage « au pinceau » (PanelCreation)</b>
+        <code class="inl">PanelCreation</code> implémente <code class="inl">MouseListener</code> ET
+        <code class="inl">MouseMotionListener</code>. <code class="inl">mousePressed</code> ET
+        <code class="inl">mouseDragged</code> appellent la même méthode <code class="inl">colorierCaseSousSouris</code> :
+        ainsi on peut <b>peindre en glissant</b> la souris (un clic colorie, un glissé colorie en continu). On retrouve la
+        case sous le curseur avec <code class="inl">getComponentAt(e.getPoint())</code>.
+    </div>
+
+    <h3>6.6 · Le cache d'images des stations</h3>
+<pre><span class="kw">private</span> <span class="ty">Image</span>[] stationImages = <span class="kw">new</span> <span class="ty">Image</span>[<span class="nb">11</span>];
+
+<span class="kw">public</span> <span class="ty">Image</span> <span class="fn">getImageStation</span>(<span class="kw">int</span> n) {
+    <span class="kw">if</span> (stationImages[n] == <span class="kw">null</span>)                 <span class="cm">// pas encore chargée ?</span>
+        stationImages[n] = <span class="kw">new</span> <span class="ty">ImageIcon</span>(chemin).getImage();  <span class="cm">// on la charge UNE fois</span>
+    <span class="kw">return</span> stationImages[n];                       <span class="cm">// puis on la réutilise</span>
+}</pre>
+    <div class="box pourquoi">
+        <b class="lbl">Pourquoi un cache (mémoïsation) ?</b>
+        Chaque case se redessine très souvent (à chaque <code class="inl">repaint</code>). Sans cache, on rechargerait le
+        fichier image du disque à chaque dessin → lent et saccadé. On charge donc chaque image <b>une seule fois</b>, on la
+        garde en mémoire, et on la réutilise. C'est un choix de <b>performance</b> classique.
+    </div>
+
+    <h3>6.7 · L'écran d'erreur dédié (PanelErreur)</h3>
+    <div class="box pourquoi">
+        <b class="lbl">Pourquoi une classe entière juste pour un message d'erreur ?</b>
+        Quand un fichier est corrompu, plutôt que d'afficher un message brut dans la console (invisible pour l'utilisateur),
+        on affiche un panneau clair et rouge à la place du plateau. En faire une classe (<code class="inl">PanelErreur</code>)
+        rend le code de <code class="inl">PanelJeu</code> plus lisible et le message réutilisable. C'est un souci d'<b>expérience
+        utilisateur</b>.
+    </div>
+</section>
+
+<!-- ============================ 7 ============================ -->
+<section id="technique">
+    <h2>7 · Synthèse des choix techniques</h2>
+    <table>
+        <tr><th>Choix</th><th>Alternative possible</th><th>Justification retenue</th></tr>
+        <tr><td><b>Java + Swing</b></td><td>JavaFX, web</td><td>Au programme de la SAE ; bibliothèque standard, stable, sans dépendance externe</td></tr>
+        <tr><td><b>Architecture MVC</b></td><td>Tout dans les fenêtres</td><td>Découplage, testabilité, lisibilité, maintenance</td></tr>
+        <tr><td><b>Matrice d'adjacence</b></td><td>Listes d'adjacence</td><td>Test d'arête en O(1), symétrie facile, simple pour de petits plateaux</td></tr>
+        <tr><td><b>Tableaux 1D + indice = y·largeur+x</b></td><td>Tableau 2D, objets Case</td><td>Un seul indice par case → IHM et fichier simplifiés, même indexation que le graphe</td></tr>
+        <tr><td><b>Classes utilitaires statiques</b></td><td>Objets avec état</td><td>Aucun état à conserver → inutile d'instancier ; responsabilité unique</td></tr>
+        <tr><td><b>Génération auto des arêtes</b></td><td>Tracé manuel</td><td>Zéro erreur, cohérence, mise à jour instantanée</td></tr>
+        <tr><td><b>Fichier texte « ; » séparé</b></td><td>Binaire, JSON, base de données</td><td>Lisible, éditable, débogable à l'œil, trivial à parser</td></tr>
+        <tr><td><b>Chargement renvoyant <code class="inl">null</code></b></td><td>Exceptions remontées</td><td>L'échec de chargement est un cas <b>normal</b> à gérer, pas une erreur fatale</td></tr>
+        <tr><td><b>Cache d'images</b></td><td>Rechargement à chaque dessin</td><td>Performance d'affichage</td></tr>
+    </table>
+</section>
+
+<!-- ============================ 8 ============================ -->
+<section id="donnees">
+    <h2>8 · Les données affichées (et pourquoi elles)</h2>
+    <p>L'écran de jeu (<code class="inl">PanelJeu</code>) affiche en permanence trois informations chiffrées et un aperçu graphique.</p>
+    <table>
+        <tr><th>Donnée affichée</th><th>D'où elle vient</th><th>Pourquoi on la montre</th></tr>
+        <tr><td><b>Nombre de joueurs</b></td><td><code class="inl">ctrl.getNbJoueurs()</code></td><td>Vérifier d'un coup d'œil la config (= nombre de lignes de métro / de départs attendus)</td></tr>
+        <tr><td><b>Nombre de stations</b></td><td><code class="inl">ctrl.getNbStations()</code></td><td>Indique le nombre de types de métro disponibles dans cette partie</td></tr>
+        <tr><td><b>Nombre d'arêtes</b></td><td><code class="inl">graphe.getNbAretes()</code></td><td>Le <b>retour direct</b> de l'algorithme : on voit le réseau grossir en temps réel à chaque station posée</td></tr>
+        <tr><td><b>Le plateau colorié</b></td><td>Chaque <code class="inl">CasePanel</code></td><td>Visualiser les arrondissements (zones de Paris)</td></tr>
+        <tr><td><b>Les images de stations</b></td><td>Cache d'images</td><td>Identifier le type de chaque station d'un coup d'œil</td></tr>
+        <tr><td><b>Les marqueurs « D1, D2… »</b></td><td><code class="inl">getDepart()</code></td><td>Repérer les bases de départ des joueurs</td></tr>
+        <tr><td><b>Les lignes grises (arêtes)</b></td><td>Tracées dans <code class="inl">paint</code></td><td>Visualiser concrètement le réseau de métro généré</td></tr>
+    </table>
+    <div class="box pourquoi">
+        <b class="lbl">Le fil conducteur de l'affichage</b>
+        On affiche systématiquement <b>le résultat des traitements métier</b> : le nombre d'arêtes prouve que l'algorithme
+        tourne, le plateau colorié prouve la coloration, les D1/D2 prouvent les départs. <b>L'interface est le miroir du
+        modèle</b> — chaque donnée visible correspond à une donnée calculée ou stockée côté métier, mise à jour par
+        <code class="inl">repaint()</code> après chaque action.
+    </div>
+</section>
+
+<!-- ============================ 9 ============================ -->
+<section id="jury">
+    <h2>9 · Questions probables du jury (avec réponses)</h2>
+
+    <div class="box jury"><b class="lbl">« Expliquez votre algorithme de génération des arêtes. »</b>
+    On parcourt chaque station ; pour chacune on regarde dans 4 des 8 directions (les 4 « vers l'avant »), on avance jusqu'à
+    trouver la station la plus proche, et on crée une arête. Les 4 autres directions sont couvertes gratuitement car la matrice
+    est symétrique. (→ détailler avec le schéma du §4.)</div>
+
+    <div class="box jury"><b class="lbl">« Pourquoi une matrice et pas une liste d'adjacence ? »</b>
+    Test d'arête en temps constant, symétrie triviale à maintenir, code simple ; et nos plateaux sont petits donc le coût
+    mémoire d'une matrice est négligeable. Pour un très grand plateau, une liste serait plus économe — c'est une amélioration
+    identifiée.</div>
+
+    <div class="box jury"><b class="lbl">« C'est de la coloration de graphe ? Les cases voisines doivent être de couleurs différentes ? »</b>
+    Non, et c'est volontaire. Ici la couleur = l'arrondissement, et un arrondissement est une zone faite de plusieurs cases
+    voisines de même couleur. La contrainte qu'on vérifie est différente : <b>toutes</b> les cases doivent être coloriées avant
+    de valider, et le nombre d'arrondissements est borné à 20.</div>
+
+    <div class="box jury"><b class="lbl">« Où est le MVC ? Donnez le chemin d'un clic. »</b>
+    Clic sur une case → <code class="inl">CasePanel</code> → <code class="inl">PanelJeu.caseCliquee</code> →
+    <code class="inl">GestionnairePlacement.gererClic</code> via le <code class="inl">Controleur</code> →
+    modification du <code class="inl">Plateau</code> → <code class="inl">genererAretesAuto</code> → <code class="inl">repaint</code>.
+    La Vue déclenche, le Métier calcule, le Contrôleur relie.</div>
+
+    <div class="box jury"><b class="lbl">« Que se passe-t-il si on charge un fichier corrompu ? »</b>
+    <code class="inl">ChargeurPlateau</code> applique 8 contrôles + un <code class="inl">try/catch</code>. Au moindre problème, il
+    renvoie <code class="inl">null</code>, et l'IHM affiche le <code class="inl">PanelErreur</code> sans planter.</div>
+
+    <div class="box jury"><b class="lbl">« Pourquoi des méthodes statiques ? »</b>
+    Ces classes n'ont pas d'état à mémoriser : ce sont des fonctions pures (entrée → sortie). Le static évite de créer des
+    objets inutiles et exprime bien qu'il s'agit d'outils.</div>
+
+    <div class="box jury"><b class="lbl">« Comment garantissez-vous qu'un joueur n'a qu'un seul départ ? »</b>
+    Deux niveaux : à la pose, on efface l'ancien départ du joueur (<code class="inl">GestionnairePlacement</code>) ; à la
+    sauvegarde, <code class="inl">ValidateurPlateau</code> exige exactement 1 départ par joueur.</div>
+
+    <div class="box jury"><b class="lbl">« Pourquoi <code class="inl">j = i+1</code> quand vous comptez/écrivez les arêtes ? »</b>
+    La matrice est symétrique : l'arête {i,j} y figure deux fois. On ne parcourt que le triangle supérieur pour la compter /
+    l'écrire une seule fois.</div>
+
+    <div class="box jury"><b class="lbl">« À quoi sert le contrôleur, à part recopier des appels ? »</b>
+    C'est la façade : il définit ce que la Vue a le droit de faire et isole le métier. Si le modèle change, seul le contrôleur
+    est touché, pas les 11 classes d'interface.</div>
+</section>
+
+<!-- ============================ 10 ============================ -->
+<section id="ameliorations">
+    <h2>10 · Limites assumées & améliorations possibles</h2>
+    <p>Montrer qu'on a du recul sur son code est très apprécié à l'oral.</p>
+    <ul class="clean">
+        <li><b>Matrice d'adjacence et grands plateaux</b> : la mémoire croît en taille². Pour un plateau immense, une <b>liste
+        d'adjacence</b> serait plus adaptée.</li>
+        <li><b>Champs statiques publics</b> dans <code class="inl">PanelConfiguration</code> (<code class="inl">txtLargeur</code>…) :
+        pratiques mais c'est un raccourci ; il serait plus propre de passer les valeurs par le contrôleur.</li>
+        <li><b>Messages d'erreur en console</b> (<code class="inl">System.out.println</code>) : un utilisateur ne les voit pas ;
+        on pourrait tout faire passer par des <code class="inl">JOptionPane</code> / panneaux visuels.</li>
+        <li><b>Pas d'objet <code class="inl">Case</code></b> : trois tableaux parallèles fonctionnent mais une classe
+        <code class="inl">Case</code> serait plus orientée objet et plus extensible.</li>
+        <li><b>Le jeu lui-même n'est pas implémenté</b> : on a l'éditeur de plateau et le calcul du graphe ; le déroulement
+        des manches et le calcul des scores (décrits dans les règles) restent à faire.</li>
+    </ul>
+</section>
+
+<!-- ============================ 11 ============================ -->
+<section id="glossaire">
+    <h2>11 · Glossaire express</h2>
+    <table>
+        <tr><th>Terme</th><th>Définition rapide</th></tr>
+        <tr><td><b>Sommet</b></td><td>Une station (case avec <code class="inl">station &gt; 0</code>)</td></tr>
+        <tr><td><b>Arête</b></td><td>Une ligne de métro reliant deux stations</td></tr>
+        <tr><td><b>Graphe non orienté</b></td><td>Une arête n'a pas de sens : A–B = B–A</td></tr>
+        <tr><td><b>Matrice d'adjacence</b></td><td>Tableau 2D où <code class="inl">[i][j]=true</code> ⟺ arête entre i et j</td></tr>
+        <tr><td><b>MVC</b></td><td>Modèle (données) / Vue (affichage) / Contrôleur (liaison)</td></tr>
+        <tr><td><b>Façade</b></td><td>Classe unique par laquelle la Vue accède au Métier (le Controleur)</td></tr>
+        <tr><td><b>Coloration</b></td><td>Affecter un arrondissement (une couleur) à chaque case</td></tr>
+        <tr><td><b>Méthode statique</b></td><td>Appelable sans créer d'objet : <code class="inl">Classe.methode()</code></td></tr>
+        <tr><td><b>Idempotent</b></td><td>Relancer le traitement donne le même résultat (cas de <code class="inl">genererAretesAuto</code>)</td></tr>
+        <tr><td><b>Programmation défensive</b></td><td>Vérifier les bornes/entrées avant de s'en servir, pour ne pas planter</td></tr>
+    </table>
+</section>
+
+<footer>
+    Fiche de révision générée pour l'oral du 16/06 · « Les Cartographes du Métro » · Bon courage 🚇<br>
+    Astuce : ouvre ce fichier dans ton navigateur, utilise le sommaire à gauche pour naviguer.
+</footer>
+
+</main>
+</div>
+</body>
+</html>
