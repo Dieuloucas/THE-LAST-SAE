@@ -213,6 +213,7 @@ public class PanelChargement extends JPanel implements ActionListener
         {
             g.drawImage(this.imgBackground, 0, 0, getWidth(), getHeight(), this);
         }
+        g.setColor(new Color(0, 0, 0, 130));
         g.fillRect(0, 0, getWidth(), getHeight());
     }
 }
