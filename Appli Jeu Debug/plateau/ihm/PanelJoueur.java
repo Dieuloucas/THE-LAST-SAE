@@ -1,8 +1,9 @@
 package plateau.ihm;
 
+import plateau.Controleur;
+
 import java.awt.BorderLayout;
 import javax.swing.*;
-import plateau.Controleur;
 
 // Fenêtre d'un joueur : uniquement le plateau (la grille).
 // Toutes les infos de jeu sont regroupées dans la bande centrale (FrameInfos).

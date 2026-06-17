@@ -112,8 +112,6 @@ public class Controleur
 		this.partie            = new Partie(this.metier, nbManches);
 		this.resultatsAffiches = false;
 
-		if (this.modeDebug) afficherInfosDemarrage();
-
 		this.frameInfos = new FrameInfos(this);
 
 		int nb = this.partie.getNbJoueurs();
@@ -122,6 +120,7 @@ public class Controleur
 			this.framesJoueurs[i] = new FrameJoueur(this, i + 1);
 
 		placerFenetres();
+		if (this.modeDebug) afficherInfosDemarrage();
 	}
 
 	// Place la bande d'infos au centre et les plateaux de part et d'autre.
@@ -274,6 +273,29 @@ public class Controleur
 	}
 	public ArrayList<Integer> getCheminJoueur(int numeroJoueur) { return this.partie == null ? new ArrayList<Integer>() : this.partie.getCheminJoueur(numeroJoueur); }
 
+	// MODE DEBUG : accès au graphe et à la pioche pour la démonstration.
+	public boolean aArete(int i, int j)                  { return this.metier.getGraphe().aArete(i, j); }
+	public int     getNbStations()                       { return this.partie == null ? 0 : this.partie.getNbStations(); }
+	public void forcerCarte(int type, boolean foncee)
+	{
+		if (this.partie == null) return;
+		this.partie.forcerCarteDebug(type, foncee);
+		if (this.modeDebug)
+		{
+			String nom = (type == Carte.JOKER) ? "Joker" : ("Station " + type);
+			System.out.println("[DEBUG] Carte forcee : " + nom + (foncee ? " (foncee)" : " (claire)"));
+		}
+	}
+
+	// MODE DEBUG : termine immédiatement la manche en cours (passe au calcul des scores).
+	public void sauterManche()
+	{
+		if (this.partie == null) return;
+		this.partie.sauterMancheDebug();
+		if (this.modeDebug) System.out.println("[DEBUG] Manche sautee (fin forcee)");
+		rafraichirTout();
+	}
+
 	// Couleur d'un joueur pour une manche (les couleurs tournent à chaque manche).
 	public Color getCouleurJoueur(int numeroJoueur, int numeroManche)
 	{
@@ -328,29 +350,6 @@ public class Controleur
 	public int getHauteur()             { return this.metier.getHauteur(); }
 	public int getArrondissement(int i) { return this.metier.getArrondissement(i); }
 	public int getStation(int i)        { return this.metier.getStation(i); }
-
-	// MODE DEBUG : accès au graphe et à la pioche pour la démonstration.
-	public boolean aArete(int i, int j)                  { return this.metier.getGraphe().aArete(i, j); }
-	public int     getNbStations()                       { return this.partie == null ? 0 : this.partie.getNbStations(); }
-	public void forcerCarte(int type, boolean foncee)
-	{
-		if (this.partie == null) return;
-		this.partie.forcerCarteDebug(type, foncee);
-		if (this.modeDebug)
-		{
-			String nom = (type == Carte.JOKER) ? "Joker" : ("Station " + type);
-			System.out.println("[DEBUG] Carte forcee : " + nom + (foncee ? " (foncee)" : " (claire)"));
-		}
-	}
-
-	// MODE DEBUG : termine immédiatement la manche en cours (passe au calcul des scores).
-	public void sauterManche()
-	{
-		if (this.partie == null) return;
-		this.partie.sauterMancheDebug();
-		if (this.modeDebug) System.out.println("[DEBUG] Manche sautee (fin forcee)");
-		rafraichirTout();
-	}
 
 	/*-------------------------------------*/
 	/* Images                              */

@@ -57,7 +57,7 @@ public class ChargeurPlateau
 					// 5. L'indice doit suivre un ordre strict de 0 à (taille - 1)
 					if (index != compteurCases) return null;
 
-					// --- SÉCURITÉS SUR LES VALEURS ---
+					// On vérifie chaque valeur lue avant de l'enregistrer dans le plateau
 					
 					int arrondissement = Integer.parseInt(elements[1]);
 					if (arrondissement < 0 || arrondissement > 20) return null;
@@ -110,13 +110,13 @@ public class ChargeurPlateau
 		catch (NumberFormatException e)
 		{
 			// Est déclenché si quelqu'un a écrit du texte (ex: "A;B") au lieu de nombres
-			System.err.println("Fichier corrompu : valeurs non numériques détectées.");
+			System.out.println("Fichier corrompu : valeurs non numériques détectées.");
 			return null;
 		}
 		catch (Exception e)
 		{
 			// Attrape toute autre erreur imprévue
-			System.err.println("Erreur lors de la lecture du fichier : " + e.getMessage());
+			System.out.println("Erreur lors de la lecture du fichier : " + e.getMessage());
 			return null;
 		}
 	}
